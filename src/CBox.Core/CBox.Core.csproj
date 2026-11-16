@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- CA1416：CBox.Core 实际只跑在 Windows（ACL、路径处理），跨平台警告不适用 -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <RootNamespace>CBox.Core</RootNamespace>
