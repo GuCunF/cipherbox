@@ -1,0 +1,41 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 构建全部项目
+        run: |
+          dotnet build src/CBox.Core/CBox.Core.csproj -c Release --nologo
+          dotnet build src/CBox.Encrypt/CBox.Encrypt.csproj -c Release --nologo
+          dotnet build src/CBox.Decrypt/CBox.Decrypt.csproj -c Release --nologo
+          dotnet build src/CBox.App/CBox.App.csproj -c Release --nologo
+
+      - name: 冒烟测试
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tools/smoke.ps1
+
+      - name: 词条一致性
+        shell: powershell
+        run: |
+          powershell -ExecutionPolicy Bypass -File tools/check-i18n-pairs.ps1
+          powershell -ExecutionPolicy Bypass -File tools/check-strings.ps1
+
+      - name: 隐私检查
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tools/check-privacy.ps1

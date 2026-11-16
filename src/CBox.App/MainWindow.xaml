@@ -1,0 +1,363 @@
+<Window x:Class="CBox.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:CBox.App"
+        Title="CipherBox" Height="760" Width="920"
+        MinHeight="520" MinWidth="720"
+        WindowStartupLocation="CenterScreen"
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock x:Name="AppTitle" Text="CipherBox" FontSize="20" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="SubtitleText" Text="{ui:Tr app.subtitle}"
+                           Foreground="#666666" Margin="0,4,0,0" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <CheckBox x:Name="ProModeCheckBox" Content="{ui:Tr opt.pro}" IsChecked="False"
+                          VerticalAlignment="Center" Margin="0,0,12,0"
+                          Checked="ProMode_Changed" Unchecked="ProMode_Changed"
+                          ToolTip="{ui:Tr opt.pro.tip}" />
+                <Button x:Name="OptionsToggle" Content="{ui:Tr opt.show}"
+                        VerticalAlignment="Center" Padding="12,4" Click="OptionsToggle_Click"
+                        ToolTip="{ui:Tr opt.show.tip}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- 选项默认收起：标题旁边塞一排控件既挤又容易和标题重叠 -->
+        <Border Grid.Row="1" x:Name="OptionsPanel" Visibility="Collapsed"
+                Background="#F7F7F7" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4"
+                Padding="12,8,12,4" Margin="0,0,0,10">
+            <WrapPanel>
+                <CheckBox x:Name="LogCheckBox" Content="{ui:Tr opt.log}" IsChecked="True"
+                          VerticalAlignment="Center" Margin="0,0,16,6"
+                          ToolTip="{ui:Tr opt.log.tip}" />
+                <CheckBox x:Name="LogPathsCheckBox" Content="{ui:Tr opt.logpaths}" IsChecked="False"
+                          Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="LogPaths_Changed" Unchecked="LogPaths_Changed"
+                          ToolTip="{ui:Tr opt.logpaths.tip}" />
+                <CheckBox x:Name="LogSnapshotCheckBox" Content="{ui:Tr opt.logsnapshot}" IsChecked="False"
+                          Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="LogSnapshot_Changed" Unchecked="LogSnapshot_Changed"
+                          ToolTip="{ui:Tr opt.logsnapshot.tip}" />
+                <CheckBox x:Name="LogAclCheckBox" Content="{ui:Tr opt.logacl}" IsChecked="False"
+                          Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="LogAcl_Changed" Unchecked="LogAcl_Changed"
+                          ToolTip="{ui:Tr opt.logacl.tip}" />
+                <CheckBox x:Name="KeepFailedCheckBox" Content="{ui:Tr opt.keepfailed}" IsChecked="False"
+                          Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="KeepFailed_Changed" Unchecked="KeepFailed_Changed"
+                          ToolTip="{ui:Tr opt.keepfailed.tip}" />
+                <CheckBox x:Name="SoundCheckBox" Content="{ui:Tr opt.sound}" IsChecked="True"
+                          VerticalAlignment="Center" Margin="0,0,8,6"
+                          Checked="SoundCheckBox_Changed" Unchecked="SoundCheckBox_Changed"
+                          ToolTip="{ui:Tr opt.sound.tip}" />
+                <ComboBox x:Name="SoundPresetBox" Width="110" Height="26" Margin="0,0,16,6"
+                          VerticalAlignment="Center" SelectionChanged="SoundPreset_Changed"
+                          ToolTip="{ui:Tr sound.preset.tip}">
+                    <ComboBoxItem Content="{ui:Tr sound.quiet}" Tag="{x:Static ui:SoundPreset.Quiet}" />
+                    <ComboBoxItem Content="{ui:Tr sound.standard}" Tag="{x:Static ui:SoundPreset.Standard}" IsSelected="True" />
+                    <ComboBoxItem Content="{ui:Tr sound.strong}" Tag="{x:Static ui:SoundPreset.Strong}" />
+                    <ComboBoxItem Content="{ui:Tr sound.silent}" Tag="{x:Static ui:SoundPreset.Silent}" />
+                </ComboBox>
+                <CheckBox x:Name="SlowCheckBox" Content="{ui:Tr opt.slow}" IsChecked="False"
+                          VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="SlowCheckBox_Changed" Unchecked="SlowCheckBox_Changed"
+                          ToolTip="{ui:Tr opt.slow.tip}" />
+                <ComboBox x:Name="FaultCombo" Width="120" Height="26" Margin="0,0,16,6"
+                          VerticalAlignment="Center" SelectionChanged="FaultCombo_Changed"
+                          ToolTip="{ui:Tr fault.tip}">
+                    <ComboBoxItem Content="{ui:Tr fault.none}" IsSelected="True" />
+                    <ComboBoxItem Content="{ui:Tr fault.encrypt}" />
+                    <ComboBoxItem Content="{ui:Tr fault.decrypt}" />
+                </ComboBox>
+                <ComboBox x:Name="LanguageCombo" Width="110" Height="26" Margin="0,0,16,6"
+                          VerticalAlignment="Center" SelectionChanged="Language_Changed"
+                          ToolTip="{ui:Tr opt.lang.tip}" />
+                <Button Content="{ui:Tr opt.logdir}" Height="26" Padding="10,0" Margin="0,0,10,6"
+                        Click="OpenLogFolder_Click" />
+                <Button x:Name="EnvButton" Content="{ui:Tr opt.envissue}" Height="26" Padding="10,0"
+                        Margin="0,0,0,6" Visibility="Collapsed" Click="EnvButton_Click"
+                        ToolTip="{ui:Tr opt.envissue.tip}" />
+            </WrapPanel>
+        </Border>
+
+        <TabControl Grid.Row="2" x:Name="Tabs">
+
+            <!-- ================= 加密 ================= -->
+            <TabItem Header="{ui:Tr tab.encrypt}" Padding="16">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <RadioButton x:Name="EncModeFile" Content="{ui:Tr enc.mode.file}" IsChecked="True"
+                                     VerticalAlignment="Center" Margin="0,0,20,0"
+                                     Checked="EncMode_Changed" />
+                        <RadioButton x:Name="EncModeFolder" Content="{ui:Tr enc.mode.folder}"
+                                     VerticalAlignment="Center"
+                                     ToolTip="{ui:Tr enc.mode.folder.tip}"
+                                     Checked="EncMode_Changed" />
+                        <ComboBox x:Name="FolderModeBox" Width="200" Height="26" Margin="16,0,0,0"
+                                 VerticalAlignment="Center" Visibility="Collapsed"
+                                 SelectionChanged="FolderMode_Changed"
+                                 ToolTip="{ui:Tr folder.mode.tip}">
+                            <ComboBoxItem Content="{ui:Tr folder.mode.archive}" Tag="Archive" IsSelected="True" />
+                            <ComboBoxItem Content="{ui:Tr folder.mode.batch}" Tag="Batch" />
+                        </ComboBox>
+                        <ComboBox x:Name="ArchiveLevelBox" Width="215" Height="26" Margin="8,0,0,0"
+                                 VerticalAlignment="Center" Visibility="Collapsed"
+                                 SelectionChanged="ArchiveLevel_Changed"
+                                 ToolTip="{ui:Tr archive.level.tip}">
+                            <ComboBoxItem Content="{ui:Tr archive.level.normal}" Tag="Normal" IsSelected="True" />
+                            <ComboBoxItem Content="{ui:Tr archive.level.full}" Tag="Full" />
+                        </ComboBox>
+                    </StackPanel>
+
+                    <Border x:Name="FolderHintBox" Visibility="Collapsed"
+                            Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1"
+                            CornerRadius="4" Padding="10,8" Margin="0,0,0,12">
+                        <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="#444444" />
+                    </Border>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="EncInputLabel" Text="{ui:Tr enc.input}" Style="{StaticResource FieldLabel}" />
+                        <TextBox x:Name="EncInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
+                        <Button Grid.Column="2" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
+                    </Grid>
+
+                    <Grid x:Name="EncOutputRow" Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr enc.output}" Style="{StaticResource FieldLabel}" />
+                        <TextBox x:Name="EncOutputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
+                        <Button Grid.Column="2" Content="{ui:Tr common.saveas}" Click="EncOutputBrowse_Click" />
+                    </Grid>
+
+                    <Grid Grid.Row="2" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr common.password}" Style="{StaticResource FieldLabel}" />
+                        <PasswordBox x:Name="EncPassword" Style="{StaticResource InputPasswordBox}" Grid.Column="1" />
+                    </Grid>
+
+                    <Grid Grid.Row="3" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{ui:Tr enc.password2}" Style="{StaticResource FieldLabel}" />
+                        <PasswordBox x:Name="EncPassword2" Style="{StaticResource InputPasswordBox}" Grid.Column="1"
+                                     PasswordChanged="EncPassword_Changed" />
+                        <TextBlock x:Name="PwdStrengthText" Grid.Column="1" Grid.Row="1"
+                                   Foreground="#666666" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid Grid.Row="4" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr enc.strength}" Style="{StaticResource FieldLabel}" />
+                        <ComboBox x:Name="EncStrengthCombo" Grid.Column="1" Height="30" Width="230"
+                                  SelectionChanged="EncStrength_Changed">
+                            <ComboBoxItem Content="{ui:Tr enc.strength.quick}" />
+                            <ComboBoxItem Content="{ui:Tr enc.strength.standard}" IsSelected="True" />
+                            <ComboBoxItem Content="{ui:Tr enc.strength.strong}" />
+                        </ComboBox>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
+                            <TextBlock x:Name="EncStrengthHint" Foreground="#888888" TextWrapping="Wrap" />
+                            <CheckBox x:Name="SkipTypeCheckBox" Content="{ui:Tr enc.skipcheck}"
+                                      Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
+                                      ToolTip="{ui:Tr enc.skipcheck.tip}" />
+                            <CheckBox x:Name="FullEncryptBox" Content="{ui:Tr enc.full}"
+                                      Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
+                                      ToolTip="{ui:Tr enc.full.tip}" />
+                            <StackPanel x:Name="AlgPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,6,0,0">
+                                <TextBlock Text="{ui:Tr enc.alg}" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <ComboBox x:Name="AlgCombo" Width="190" Height="26" VerticalAlignment="Center"
+                                          ToolTip="{ui:Tr enc.alg.tip}" />
+                            </StackPanel>
+                            <StackPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
+                                        Visibility="Collapsed" Margin="0,6,0,0">
+                                <TextBlock Text="{ui:Tr enc.displayname}" Foreground="#888888"
+                                           VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBox x:Name="DisplayNameBox" Width="200" Height="24"
+                                         VerticalContentAlignment="Center"
+                                         TextChanged="DisplayName_Changed"
+                                         ToolTip="{ui:Tr enc.displayname.tip}" />
+                                <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="#888888"
+                                           VerticalAlignment="Center" Margin="6,0,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="5" Margin="0,4,0,14">
+                        <ProgressBar x:Name="EncProgress" Height="24"
+                                     Minimum="0" Maximum="100" Value="0" />
+                        <TextBlock x:Name="EncProgressText" Text=""
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#333333" />
+                    </Grid>
+
+                    <StackPanel x:Name="EncButtonRow" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button x:Name="EncStartButton" Content="{ui:Tr enc.start}" Width="120"
+                                Click="EncStart_Click" IsDefault="True" />
+                        <CheckBox x:Name="TestFailEncCheckBox" Content="{ui:Tr fault.arm}"
+                                  VerticalAlignment="Center" Margin="14,0,0,0" IsChecked="False"
+                                  Visibility="Collapsed"
+                                  Checked="TestFailEnc_Changed" Unchecked="TestFailEnc_Changed"
+                                  ToolTip="{ui:Tr fault.arm.tip}" />
+                        <TextBlock x:Name="EncHint" Margin="12,0,0,0" VerticalAlignment="Center"
+                                   Foreground="#888888" Text="{ui:Tr enc.drop.hint}" />
+                    </StackPanel>
+                </Grid>
+                </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ================= 解密 ================= -->
+            <TabItem Header="{ui:Tr tab.decrypt}" Padding="16">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <RadioButton x:Name="DecModeFile" Content="{ui:Tr dec.mode.file}" IsChecked="True"
+                                     VerticalAlignment="Center" Margin="0,0,20,0"
+                                     Checked="DecMode_Changed" />
+                        <RadioButton x:Name="DecModeFolder" Content="{ui:Tr dec.mode.folder}"
+                                     VerticalAlignment="Center"
+                                     ToolTip="{ui:Tr dec.mode.folder.tip}"
+                                     Checked="DecMode_Changed" />
+                    </StackPanel>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="DecInputLabel" Text="{ui:Tr dec.input}" Style="{StaticResource FieldLabel}" />
+                        <TextBox x:Name="DecInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
+                                 TextChanged="DecInput_TextChanged" />
+                        <Button Grid.Column="2" Content="{ui:Tr common.browse}" Click="DecInputBrowse_Click" />
+                    </Grid>
+
+                    <Grid x:Name="DecOutputRow" Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr dec.output}" Style="{StaticResource FieldLabel}" />
+                        <TextBox x:Name="DecOutputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
+                        <Button Grid.Column="2" Content="{ui:Tr common.choose}" Click="DecOutputBrowse_Click" />
+                    </Grid>
+
+                    <Grid x:Name="DecNameRow" Grid.Row="2" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr dec.savename}" Style="{StaticResource FieldLabel}" />
+                        <TextBox x:Name="DecNameBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
+                                 TextChanged="DecName_Changed" ToolTip="{ui:Tr dec.savename.tip}" />
+                        <TextBlock x:Name="DecNameHint" Grid.Column="2" VerticalAlignment="Center"
+                                   Foreground="#888888" Text="{ui:Tr dec.savename.hint}" />
+                    </Grid>
+
+                    <Grid Grid.Row="3" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="96" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:Tr common.password}" Style="{StaticResource FieldLabel}" />
+                        <PasswordBox x:Name="DecPassword" Style="{StaticResource InputPasswordBox}" Grid.Column="1" />
+                    </Grid>
+
+                    <Grid Grid.Row="4" Margin="0,8,0,14">
+                        <ProgressBar x:Name="DecProgress" Height="24"
+                                     Minimum="0" Maximum="100" Value="0" />
+                        <TextBlock x:Name="DecProgressText" Text=""
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontSize="13" FontWeight="SemiBold" Foreground="#333333" />
+                    </Grid>
+
+                    <StackPanel x:Name="DecButtonRow" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button x:Name="DecStartButton" Content="{ui:Tr dec.start}" Width="120"
+                                Click="DecStart_Click" />
+                        <CheckBox x:Name="TestFailDecCheckBox" Content="{ui:Tr fault.arm}"
+                                  VerticalAlignment="Center" Margin="14,0,0,0" IsChecked="False"
+                                  Visibility="Collapsed"
+                                  Checked="TestFailDec_Changed" Unchecked="TestFailDec_Changed"
+                                  ToolTip="{ui:Tr fault.arm.tip}" />
+                        <Button x:Name="PreviewButton" Content="{ui:Tr preview.button}" Width="110" Margin="8,0,0,0"
+                                Click="PreviewArchive_Click" Visibility="Collapsed"
+                                ToolTip="{ui:Tr preview.button.tip}" />
+                        <Button x:Name="DecViewButton" Content="{ui:Tr dec.view}" Width="100" Margin="8,0,0,0"
+                                Click="DecView_Click" Visibility="Collapsed"
+                                ToolTip="{ui:Tr dec.view.tip}" />
+                        <TextBlock x:Name="DecHint" Margin="12,0,0,0" VerticalAlignment="Center"
+                                   Foreground="#888888" Text="{ui:Tr dec.output.hint}" />
+                    </StackPanel>
+                </Grid>
+                </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+
+        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="#F5F5F5" CornerRadius="4"
+                BorderBrush="#E0E0E0" BorderThickness="1">
+            <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="#333333" FontSize="14" />
+        </Border>
+    </Grid>
+</Window>

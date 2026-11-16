@@ -1,0 +1,39 @@
+﻿# 构建产物
+bin/
+obj/
+dist/
+publish/
+
+# 本机构建缓存（构建脚本会生成在项目内）
+.dotnet_home/
+.nuget/
+packages-local/
+
+# 开发日志：含本机路径、用户名与排查细节，不进公开仓库
+logs/
+
+# 本地测试素材：可能是个人真实文件，绝不入库
+testdata/
+
+# 临时测试产物
+tools/_*
+
+# IDE / 系统
+.vs/
+.idea/
+*.user
+*.suo
+*.swp
+Thumbs.db
+desktop.ini
+
+# 构建状态（版本号提醒用）
+.build-state.txt
+
+# 发布打包产物
+release/dist/
+
+# 本机部署工具：目标是本机目录，且依赖固定路径，不入公开仓库
+tools/deploy-*.ps1
+deploy-*.cmd
+deploy-and-run.cmd

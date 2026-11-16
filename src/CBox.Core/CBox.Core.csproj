@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>CBox.Core</RootNamespace>
+    <AssemblyName>CBox.Core</AssemblyName>
+  </PropertyGroup>
+
+  <!-- 语言包。文件名必须用连字符（strings-zh-CN.json）：
+       用点号会被 MSBuild 当成区域性，资源被塞进附属程序集，主 DLL 里就找不到了 -->
+  <ItemGroup>
+    <EmbeddedResource Include="Strings\*.json" />
+  </ItemGroup>
+
+</Project>
