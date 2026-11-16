@@ -190,6 +190,23 @@ powershell -ExecutionPolicy Bypass -File .\tools\check-privacy.ps1
 
 ---
 
+## 下载
+
+Windows 安装包与免安装压缩包见 [Releases](https://github.com/GuCunF/cipherbox/releases)。
+
+| 文件 | 说明 |
+|---|---|
+| `CipherBox-v2.0.0-Setup.exe` | 安装包（自包含 .NET 运行时，无需额外安装） |
+| `CipherBox-v2.0.0-win-x64.zip` | 免安装版（需目标机已安装 .NET 10 桌面运行时） |
+
+## 代码签名
+
+Windows 发布包计划通过 **[SignPath Foundation](https://signpath.org/)**（面向开源项目的免费代码签名项目）完成代码签名；
+申请进行中，签名后的版本会在 Release 页标注。
+
+在此之前，Windows 可能提示"未知发布者"。请以本仓库的 Release 页与下方校验值为准：
+
+发布包会同时附上 SHA256，可用 `Get-FileHash <文件> -Algorithm SHA256` 核对。
 ## 许可
 
 [MIT](LICENSE)
