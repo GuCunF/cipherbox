@@ -88,6 +88,60 @@ public partial class MainWindow : Window
     /// 选完目标路径就探测能否写入。等到点了「开始加密」才失败，用户会以为是程序坏了。
     /// 真正写文件之前先探一下，把问题提前暴露。
     /// </summary>
+    // ---------------- 自绘标题栏 ----------------
+
+    private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2)
+        {
+            ToggleMaximize();
+            return;
+        }
+
+        if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
+
+    private void MinButton_Click(object sender, RoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
+
+    private void MaxButton_Click(object sender, RoutedEventArgs e) => ToggleMaximize();
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void ToggleMaximize()
+    {
+        if (WindowState == WindowState.Maximized)
+        {
+            SystemCommands.RestoreWindow(this);
+        }
+        else
+        {
+            SystemCommands.MaximizeWindow(this);
+        }
+    }
+
+    /// <summary>
+    /// 无边框窗口最大化会溢出屏幕几个像素，用 Margin 补偿；
+    /// 顺便切换最大化/还原的图标。
+    /// </summary>
+    private void MainWindow_StateChanged(object sender, EventArgs e)
+    {
+        if (RootGrid is null)
+        {
+            return;
+        }
+
+        bool maximized = WindowState == WindowState.Maximized;
+        RootGrid.Margin = maximized ? new Thickness(7) : new Thickness(0);
+
+        if (MaxButton is not null)
+        {
+            MaxButton.Content = maximized ? "\u2750" : "\u25A1";
+        }
+    }
+
     private void WarnIfTargetNotWritable(string targetPath)
     {
         if (string.IsNullOrWhiteSpace(targetPath))
@@ -1326,7 +1380,7 @@ public partial class MainWindow : Window
         }
 
         var original = StatusText.Foreground;
-        StatusText.Foreground = Brushes.SeaGreen;
+        StatusText.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess");
 
         await Task.Delay(600);
 
@@ -2030,9 +2084,9 @@ public partial class MainWindow : Window
         PwdStrengthText.Text = UiText.Get($"pwd.level.{key}") + "　·　" + UiText.Get($"pwd.hint.{key}");
         PwdStrengthText.Foreground = level switch
         {
-            PasswordLevel.Strong => System.Windows.Media.Brushes.SeaGreen,
-            PasswordLevel.Medium => System.Windows.Media.Brushes.DarkGoldenrod,
-            _ => System.Windows.Media.Brushes.Firebrick,
+            PasswordLevel.Strong => (System.Windows.Media.Brush)FindResource("BrushSuccess"),
+            PasswordLevel.Medium => (System.Windows.Media.Brush)FindResource("BrushWarning"),
+            _ => (System.Windows.Media.Brush)FindResource("BrushDanger"),
         };
     }
 
@@ -2065,7 +2119,7 @@ public partial class MainWindow : Window
         }
 
         StatusText.Text = message;
-        StatusText.Foreground = error ? Brushes.Firebrick : new SolidColorBrush(Color.FromRgb(0x33, 0x33, 0x33));
+        StatusText.Foreground = (System.Windows.Media.Brush)FindResource(error ? "BrushDanger" : "BrushText");
         _statusError = error;
 
         if (error)

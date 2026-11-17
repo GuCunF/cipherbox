@@ -5,9 +5,49 @@
         Title="CipherBox" Height="760" Width="920"
         MinHeight="520" MinWidth="720"
         WindowStartupLocation="CenterScreen"
-        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico">
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico"
+        Background="{StaticResource BrushWindowBackground}"
+        WindowStyle="None" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged">
 
-    <Grid Margin="18">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 自绘标题栏：深蓝底，与图标同色系 -->
+        <Border x:Name="TitleBar" Grid.Row="0" Height="40" Background="{StaticResource BrushPrimary}"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="Assets/CipherBox.ico" Width="18" Height="18"
+                       Margin="12,0,10,0" VerticalAlignment="Center" />
+
+                <TextBlock Grid.Column="1" x:Name="TitleBarText" Text="CipherBox" Foreground="White"
+                           FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button x:Name="MinButton" Content="&#x2014;" Style="{StaticResource CaptionButton}"
+                            Click="MinButton_Click" />
+                    <Button x:Name="MaxButton" Content="&#x25A1;" Style="{StaticResource CaptionButton}"
+                            Click="MaxButton_Click" />
+                    <Button x:Name="CloseButton" Content="&#x2715;" Style="{StaticResource CaptionCloseButton}"
+                            Click="CloseButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -22,10 +62,10 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <TextBlock x:Name="AppTitle" Text="CipherBox" FontSize="20" FontWeight="SemiBold"
+                <TextBlock x:Name="AppTitle" Text="CipherBox" FontSize="{StaticResource FontTitle}" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" />
                 <TextBlock x:Name="SubtitleText" Text="{ui:Tr app.subtitle}"
-                           Foreground="#666666" Margin="0,4,0,0" TextWrapping="Wrap" />
+                           Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -33,7 +73,7 @@
                           VerticalAlignment="Center" Margin="0,0,12,0"
                           Checked="ProMode_Changed" Unchecked="ProMode_Changed"
                           ToolTip="{ui:Tr opt.pro.tip}" />
-                <Button x:Name="OptionsToggle" Content="{ui:Tr opt.show}"
+                <Button Style="{StaticResource SecondaryButton}" x:Name="OptionsToggle" Content="{ui:Tr opt.show}"
                         VerticalAlignment="Center" Padding="12,4" Click="OptionsToggle_Click"
                         ToolTip="{ui:Tr opt.show.tip}" />
             </StackPanel>
@@ -41,7 +81,7 @@
 
         <!-- 选项默认收起：标题旁边塞一排控件既挤又容易和标题重叠 -->
         <Border Grid.Row="1" x:Name="OptionsPanel" Visibility="Collapsed"
-                Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
+                Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8"
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
                 <CheckBox x:Name="LogCheckBox" Content="{ui:Tr opt.log}" IsChecked="True"
@@ -128,8 +168,8 @@
                     </StackPanel>
 
                     <Border x:Name="FolderHintBox" Visibility="Collapsed"
-                            Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
-                            CornerRadius="4" Padding="10,8" Margin="0,0,0,12">
+                            Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8"
+                            Padding="10,8" Margin="0,0,0,12">
                         <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="#444444" />
                     </Border>
 
@@ -188,7 +228,7 @@
                         <PasswordBox x:Name="EncPassword2" Style="{StaticResource InputPasswordBox}" Grid.Column="1"
                                      PasswordChanged="EncPassword_Changed" />
                         <TextBlock x:Name="PwdStrengthText" Grid.Column="1" Grid.Row="1"
-                                   Foreground="#666666" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                   Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
                     </Grid>
                     <Grid Grid.Row="4" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -235,7 +275,7 @@
                                      Minimum="0" Maximum="100" Value="0" />
                         <TextBlock x:Name="EncProgressText" Text=""
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   FontSize="13" FontWeight="SemiBold" Foreground="#333333" />
+                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
                     </Grid>
 
                     <StackPanel x:Name="EncButtonRow" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Top">
@@ -328,7 +368,7 @@
                                      Minimum="0" Maximum="100" Value="0" />
                         <TextBlock x:Name="DecProgressText" Text=""
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   FontSize="13" FontWeight="SemiBold" Foreground="#333333" />
+                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
                     </Grid>
 
                     <StackPanel x:Name="DecButtonRow" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top">
@@ -355,8 +395,9 @@
 
         </TabControl>
 
-        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6">
-            <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="#333333" FontSize="14" />
+        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8">
+            <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="{StaticResource BrushText}" FontSize="{StaticResource FontBody}" />
         </Border>
+        </Grid>
     </Grid>
 </Window>
