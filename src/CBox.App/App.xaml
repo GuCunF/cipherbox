@@ -3,25 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
         <Style TargetType="TextBlock" x:Key="FieldLabel">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,8,0" />
             <!-- 标签长度随语言变化，允许换行，避免英文被裁掉 -->
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
-        <Style TargetType="TextBox" x:Key="InputTextBox">
-            <Setter Property="Height" Value="30" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="6,0" />
-        </Style>
-        <Style TargetType="PasswordBox" x:Key="InputPasswordBox">
-            <Setter Property="Height" Value="30" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="6,0" />
-        </Style>
+        <Style TargetType="TextBox" x:Key="InputTextBox" BasedOn="{StaticResource ThemedTextBox}" />
+        <Style TargetType="PasswordBox" x:Key="InputPasswordBox" BasedOn="{StaticResource ThemedPasswordBox}" />
         <Style TargetType="Button">
             <Setter Property="Height" Value="30" />
             <Setter Property="Padding" Value="12,0" />
         </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

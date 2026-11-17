@@ -41,7 +41,7 @@
 
         <!-- 选项默认收起：标题旁边塞一排控件既挤又容易和标题重叠 -->
         <Border Grid.Row="1" x:Name="OptionsPanel" Visibility="Collapsed"
-                Background="#F7F7F7" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4"
+                Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6"
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
                 <CheckBox x:Name="LogCheckBox" Content="{ui:Tr opt.log}" IsChecked="True"
@@ -104,10 +104,10 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                        <RadioButton x:Name="EncModeFile" Content="{ui:Tr enc.mode.file}" IsChecked="True"
+                        <RadioButton Style="{StaticResource PillRadio}" x:Name="EncModeFile" Content="{ui:Tr enc.mode.file}" IsChecked="True"
                                      VerticalAlignment="Center" Margin="0,0,20,0"
                                      Checked="EncMode_Changed" />
-                        <RadioButton x:Name="EncModeFolder" Content="{ui:Tr enc.mode.folder}"
+                        <RadioButton Style="{StaticResource PillRadio}" x:Name="EncModeFolder" Content="{ui:Tr enc.mode.folder}"
                                      VerticalAlignment="Center"
                                      ToolTip="{ui:Tr enc.mode.folder.tip}"
                                      Checked="EncMode_Changed" />
@@ -128,7 +128,7 @@
                     </StackPanel>
 
                     <Border x:Name="FolderHintBox" Visibility="Collapsed"
-                            Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1"
+                            Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1"
                             CornerRadius="4" Padding="10,8" Margin="0,0,0,12">
                         <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="#444444" />
                     </Border>
@@ -152,7 +152,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="EncInputLabel" Text="{ui:Tr enc.input}" Style="{StaticResource FieldLabel}" />
                         <TextBox x:Name="EncInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
-                        <Button Grid.Column="2" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
+                        <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
                     </Grid>
 
                     <Grid x:Name="EncOutputRow" Grid.Row="1" Margin="0,0,0,10">
@@ -163,7 +163,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr enc.output}" Style="{StaticResource FieldLabel}" />
                         <TextBox x:Name="EncOutputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
-                        <Button Grid.Column="2" Content="{ui:Tr common.saveas}" Click="EncOutputBrowse_Click" />
+                        <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.saveas}" Click="EncOutputBrowse_Click" />
                     </Grid>
 
                     <Grid Grid.Row="2" Margin="0,0,0,10">
@@ -239,7 +239,7 @@
                     </Grid>
 
                     <StackPanel x:Name="EncButtonRow" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Top">
-                        <Button x:Name="EncStartButton" Content="{ui:Tr enc.start}" Width="120"
+                        <Button Style="{StaticResource PrimaryButton}" x:Name="EncStartButton" Content="{ui:Tr enc.start}" Width="120"
                                 Click="EncStart_Click" IsDefault="True" />
                         <CheckBox x:Name="TestFailEncCheckBox" Content="{ui:Tr fault.arm}"
                                   VerticalAlignment="Center" Margin="14,0,0,0" IsChecked="False"
@@ -259,10 +259,10 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                        <RadioButton x:Name="DecModeFile" Content="{ui:Tr dec.mode.file}" IsChecked="True"
+                        <RadioButton Style="{StaticResource PillRadio}" x:Name="DecModeFile" Content="{ui:Tr dec.mode.file}" IsChecked="True"
                                      VerticalAlignment="Center" Margin="0,0,20,0"
                                      Checked="DecMode_Changed" />
-                        <RadioButton x:Name="DecModeFolder" Content="{ui:Tr dec.mode.folder}"
+                        <RadioButton Style="{StaticResource PillRadio}" x:Name="DecModeFolder" Content="{ui:Tr dec.mode.folder}"
                                      VerticalAlignment="Center"
                                      ToolTip="{ui:Tr dec.mode.folder.tip}"
                                      Checked="DecMode_Changed" />
@@ -287,7 +287,7 @@
                         <TextBlock x:Name="DecInputLabel" Text="{ui:Tr dec.input}" Style="{StaticResource FieldLabel}" />
                         <TextBox x:Name="DecInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
                                  TextChanged="DecInput_TextChanged" />
-                        <Button Grid.Column="2" Content="{ui:Tr common.browse}" Click="DecInputBrowse_Click" />
+                        <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.browse}" Click="DecInputBrowse_Click" />
                     </Grid>
 
                     <Grid x:Name="DecOutputRow" Grid.Row="1" Margin="0,0,0,10">
@@ -298,7 +298,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr dec.output}" Style="{StaticResource FieldLabel}" />
                         <TextBox x:Name="DecOutputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
-                        <Button Grid.Column="2" Content="{ui:Tr common.choose}" Click="DecOutputBrowse_Click" />
+                        <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.choose}" Click="DecOutputBrowse_Click" />
                     </Grid>
 
                     <Grid x:Name="DecNameRow" Grid.Row="2" Margin="0,0,0,10">
@@ -332,17 +332,17 @@
                     </Grid>
 
                     <StackPanel x:Name="DecButtonRow" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top">
-                        <Button x:Name="DecStartButton" Content="{ui:Tr dec.start}" Width="120"
+                        <Button Style="{StaticResource PrimaryButton}" x:Name="DecStartButton" Content="{ui:Tr dec.start}" Width="120"
                                 Click="DecStart_Click" />
                         <CheckBox x:Name="TestFailDecCheckBox" Content="{ui:Tr fault.arm}"
                                   VerticalAlignment="Center" Margin="14,0,0,0" IsChecked="False"
                                   Visibility="Collapsed"
                                   Checked="TestFailDec_Changed" Unchecked="TestFailDec_Changed"
                                   ToolTip="{ui:Tr fault.arm.tip}" />
-                        <Button x:Name="PreviewButton" Content="{ui:Tr preview.button}" Width="110" Margin="8,0,0,0"
+                        <Button Style="{StaticResource SecondaryButton}" x:Name="PreviewButton" Content="{ui:Tr preview.button}" Width="110" Margin="8,0,0,0"
                                 Click="PreviewArchive_Click" Visibility="Collapsed"
                                 ToolTip="{ui:Tr preview.button.tip}" />
-                        <Button x:Name="DecViewButton" Content="{ui:Tr dec.view}" Width="100" Margin="8,0,0,0"
+                        <Button Style="{StaticResource SecondaryButton}" x:Name="DecViewButton" Content="{ui:Tr dec.view}" Width="100" Margin="8,0,0,0"
                                 Click="DecView_Click" Visibility="Collapsed"
                                 ToolTip="{ui:Tr dec.view.tip}" />
                         <TextBlock x:Name="DecHint" Margin="12,0,0,0" VerticalAlignment="Center"
@@ -355,8 +355,7 @@
 
         </TabControl>
 
-        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="#F5F5F5" CornerRadius="4"
-                BorderBrush="#E0E0E0" BorderThickness="1">
+        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6">
             <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="#333333" FontSize="14" />
         </Border>
     </Grid>
