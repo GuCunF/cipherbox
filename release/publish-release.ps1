@@ -85,7 +85,7 @@ try {
         ForEach-Object { Copy-Item $_.FullName (Join-Path $output $_.Name) -Force }
 
     # 4. 附上发布用文档
-    foreach ($doc in @('LICENSE', 'README.md')) {
+    foreach ($doc in @('LICENSE', 'README.md', 'README.en.md')) {
         # LICENSE 与 README 以仓库根目录为唯一来源，避免两份内容漂移
         $source = Join-Path $repoRoot $doc
 
