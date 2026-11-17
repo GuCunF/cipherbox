@@ -28,7 +28,7 @@ $rules = @(
     @{ Name = '本机用户名';     Pattern = 'abc54' },
     @{ Name = '用户目录路径';   Pattern = '[A-Za-z]:\\+Users\\+' },
     @{ Name = '本机测试目录';   Pattern = '非库测试文件夹' },
-    @{ Name = '本机账户名';     Pattern = 'GuCun|GUCUN' },
+    @{ Name = '本机账户名';     Pattern = 'GuCun(?!F)|GUCUN(?!F)' },   # GuCunF 是公开的 GitHub 用户名，不算泄露
     @{ Name = '其他项目痕迹';   Pattern = 'NapCat|LangBot|索拉里斯|PVZ|阿里云|腾讯云' },
     @{ Name = '疑似凭据';       Pattern = '(?i)(api[_-]?key|secret[_-]?key|access[_-]?token|BEGIN [A-Z ]*PRIVATE KEY)' },
     @{ Name = '内网/公网 IP';   Pattern = '\b(?:(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\.\d{1,3})\b' }
