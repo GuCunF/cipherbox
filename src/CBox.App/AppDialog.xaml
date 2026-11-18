@@ -10,46 +10,77 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
+        WindowStyle="None"
         Background="{StaticResource BrushSurface}"
         Icon="Assets/CipherBox.ico">
 
-    <Grid Margin="22,20,22,18">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="4" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- 图标 + 正文 -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!-- 自绘标题栏：拖动由 WindowChrome 的 CaptionHeight 负责 -->
+        <Border Grid.Row="0" Background="{StaticResource BrushPrimary}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <Border x:Name="IconBadge" Grid.Column="0" Width="34" Height="34" CornerRadius="17"
-                    VerticalAlignment="Top" Margin="0,0,14,0">
-                <TextBlock x:Name="IconGlyph" FontSize="17" FontWeight="Bold" Foreground="White"
-                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+                <TextBlock Grid.Column="0" FontSize="12" Foreground="White" VerticalAlignment="Center"
+                           Margin="12,0,0,0" TextTrimming="CharacterEllipsis"
+                           Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}" />
 
-            <StackPanel Grid.Column="1">
-                <TextBlock x:Name="HeadingText" FontSize="15" FontWeight="SemiBold"
-                           Foreground="{StaticResource BrushText}" TextWrapping="Wrap"
-                           Margin="0,0,0,8" />
-                <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto">
-                    <TextBlock x:Name="BodyText" Foreground="{StaticResource BrushText}"
-                               TextWrapping="Wrap" LineHeight="20" />
-                </ScrollViewer>
+                <Button Grid.Column="1" Content="&#x2715;" Width="42" Height="32"
+                        Style="{StaticResource CaptionCloseButton}"
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="ChromeClose_Click" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="22,18,22,18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- 图标 + 正文 -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="IconBadge" Grid.Column="0" Width="34" Height="34" CornerRadius="17"
+                        VerticalAlignment="Top" Margin="0,0,14,0">
+                    <TextBlock x:Name="IconGlyph" FontSize="17" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="HeadingText" FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource BrushText}" TextWrapping="Wrap"
+                               Margin="0,0,0,8" />
+                    <ScrollViewer MaxHeight="340" VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="BodyText" Foreground="{StaticResource BrushText}"
+                                   TextWrapping="Wrap" LineHeight="20" />
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+
+            <!-- 按钮区 -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button x:Name="PrimaryButton" Style="{StaticResource PrimaryButton}"
+                        MinWidth="92" Margin="0,0,10,0" Click="Primary_Click" />
+                <Button x:Name="SecondaryButton" Style="{StaticResource SecondaryButton}"
+                        MinWidth="92" Click="Secondary_Click" />
             </StackPanel>
         </Grid>
-
-        <!-- 按钮区 -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button x:Name="PrimaryButton" Style="{StaticResource PrimaryButton}"
-                    MinWidth="92" Margin="0,0,10,0" Click="Primary_Click" />
-            <Button x:Name="SecondaryButton" Style="{StaticResource SecondaryButton}"
-                    MinWidth="92" Click="Secondary_Click" />
-        </StackPanel>
     </Grid>
 </Window>

@@ -4,9 +4,36 @@
         xmlns:ui="clr-namespace:CBox.App"
         Title="{ui:Tr conflict.title}" Height="360" Width="620"
         ResizeMode="NoResize" ShowInTaskbar="False"
-        WindowStartupLocation="CenterOwner" Icon="Assets/CipherBox.ico" Background="{StaticResource BrushSurface}">
+        WindowStartupLocation="CenterOwner" Icon="Assets/CipherBox.ico" Background="{StaticResource BrushSurface}" WindowStyle="None">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="4" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
 
-    <Grid Margin="18">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 自绘标题栏：拖动由 WindowChrome 的 CaptionHeight 负责，这里只画外观 -->
+        <Border Grid.Row="0" Background="{StaticResource BrushPrimary}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" FontSize="12" Foreground="White" VerticalAlignment="Center"
+                           Margin="12,0,0,0" TextTrimming="CharacterEllipsis"
+                           Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}" />
+
+                <Button Grid.Column="1" Content="&#x2715;" Width="42" Height="32"
+                        Style="{StaticResource CaptionCloseButton}"
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        Click="ChromeClose_Click" />
+            </Grid>
+        </Border>     <Grid Grid.Row="1" Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -38,5 +65,6 @@
             <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr conflict.cancel}" Width="130" Height="34"
                     Click="Cancel_Click" IsCancel="True" />
         </StackPanel>
+    </Grid>
     </Grid>
 </Window>

@@ -169,4 +169,7 @@ public partial class ArchivePreviewWindow : Window
 
     /// <summary>用户勾选要导出的条目；取消时为空。</summary>
     public IReadOnlyList<string> SelectedEntries { get; private set; } = Array.Empty<string>();
+
+    /// <summary>自绘标题栏的关闭按钮。</summary>
+    private void ChromeClose_Click(object sender, RoutedEventArgs e) => Close();
 }

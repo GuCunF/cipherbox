@@ -49,4 +49,7 @@ public partial class ConflictDialog : Window
         Choice = ConflictChoice.Cancel;
         DialogResult = false;
     }
+
+    /// <summary>自绘标题栏的关闭按钮。</summary>
+    private void ChromeClose_Click(object sender, RoutedEventArgs e) => Close();
 }

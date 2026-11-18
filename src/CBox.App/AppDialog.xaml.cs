@@ -135,4 +135,7 @@ public partial class AppDialog : Window
         _result = false;
         Close();
     }
+
+    /// <summary>自绘标题栏的关闭按钮。</summary>
+    private void ChromeClose_Click(object sender, RoutedEventArgs e) => Close();
 }

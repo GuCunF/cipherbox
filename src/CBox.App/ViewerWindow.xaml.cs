@@ -863,4 +863,7 @@ public partial class ViewerWindow : Window
         // MessageBoxImage.None：带图标会再播一次系统音，和我们的提示音叠成"双响"
         AppDialog.Error(UiText.Get("view.error.title"), message, this);
     }
+
+    /// <summary>自绘标题栏的关闭按钮。</summary>
+    private void ChromeClose_Click(object sender, RoutedEventArgs e) => Close();
 }
