@@ -56,6 +56,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -142,7 +144,7 @@
             </WrapPanel>
         </Border>
 
-        <TabControl Grid.Row="2" x:Name="Tabs">
+        <TabControl Grid.Row="2" x:Name="Tabs" VerticalAlignment="Top" MinHeight="460">
 
             <!-- ================= 加密 ================= -->
             <TabItem Header="{ui:Tr tab.encrypt}" Padding="16">
@@ -400,7 +402,7 @@
 
         </TabControl>
 
-        <Border Grid.Row="3" Margin="0,12,0,0" Padding="12,10" Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8">
+        <Border Grid.Row="4" Margin="0,12,0,0" Padding="12,10" Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8">
             <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="{StaticResource BrushText}" FontSize="{StaticResource FontBody}" />
         </Border>
         </Grid>
