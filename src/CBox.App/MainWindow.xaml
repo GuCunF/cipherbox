@@ -129,9 +129,9 @@
                 <ComboBox x:Name="LanguageCombo" Width="110" Height="26" Margin="0,0,16,6"
                           VerticalAlignment="Center" SelectionChanged="Language_Changed"
                           ToolTip="{ui:Tr opt.lang.tip}" />
-                <Button Content="{ui:Tr opt.logdir}" Height="26" Padding="10,0" Margin="0,0,10,6"
+                <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr opt.logdir}" Height="26" Padding="10,0" Margin="0,0,10,6"
                         Click="OpenLogFolder_Click" />
-                <Button x:Name="EnvButton" Content="{ui:Tr opt.envissue}" Height="26" Padding="10,0"
+                <Button Style="{StaticResource SecondaryButton}" x:Name="EnvButton" Content="{ui:Tr opt.envissue}" Height="26" Padding="10,0"
                         Margin="0,0,0,6" Visibility="Collapsed" Click="EnvButton_Click"
                         ToolTip="{ui:Tr opt.envissue.tip}" />
             </WrapPanel>

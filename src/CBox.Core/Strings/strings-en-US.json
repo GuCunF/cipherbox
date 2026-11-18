@@ -336,5 +336,11 @@
   "filetype.hint.audio": "Audio cannot be previewed inside the window. Export the file and open it with a player.",
   "filetype.hint.executable": "Executables are not meant to be viewed. Export the file and verify its source before running it.",
   "filetype.hint.sqlite": "A database needs dedicated tools. Export the file and inspect it there.",
-  "filetype.hint.unknown": "The type could not be recognised; it may be binary data. Export it and open it with the right program."
+  "filetype.hint.unknown": "The type could not be recognised; it may be binary data. Export it and open it with the right program.",
+  "dialog.info.title": "Notice",
+  "dialog.warn.title": "Warning",
+  "dialog.error.title": "Error",
+  "dialog.confirm.title": "Please confirm",
+  "dialog.yes": "Yes",
+  "dialog.no": "No"
 }

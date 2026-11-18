@@ -224,12 +224,7 @@ public partial class MainWindow : Window
         lines.Add(string.Empty);
         lines.Add(UiText.Get("env.detail.hint"));
 
-        MessageBox.Show(
-            this,
-            string.Join(Environment.NewLine, lines),
-            UiText.Get("env.title"),
-            MessageBoxButton.OK,
-            MessageBoxImage.Warning);
+        AppDialog.Warn(UiText.Get("env.title"), string.Join(Environment.NewLine, lines), this);
     }
 
     private void EnvButton_Click(object sender, RoutedEventArgs e)
@@ -243,12 +238,7 @@ public partial class MainWindow : Window
             lines.Add(string.Empty);
         }
 
-        MessageBox.Show(
-            this,
-            string.Join(Environment.NewLine, lines).TrimEnd(),
-            UiText.Get("env.detail.title"),
-            MessageBoxButton.OK,
-            MessageBoxImage.Warning);
+        AppDialog.Warn(UiText.Get("env.detail.title"), string.Join(Environment.NewLine, lines).TrimEnd(), this);
     }
 
     // ---------------- 诊断日志 ----------------
@@ -1145,15 +1135,9 @@ public partial class MainWindow : Window
         }
 
         // 重启会丢掉当前界面里的一切——已选的文件、输入的口令、还没开始的操作
-        var answer = MessageBox.Show(
-            this,
-            UiText.Get("lang.restart.body"),
-            UiText.Get("lang.restart.title"),
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question,
-            MessageBoxResult.No);
+        bool answer = AppDialog.Confirm(UiText.Get("lang.restart.title"), UiText.Get("lang.restart.body"), UiText.Get("dialog.yes"), UiText.Get("dialog.no"), this);
 
-        if (answer != MessageBoxResult.Yes)
+        if (!answer)
         {
             // 用户反悔：把下拉框选回当前语言，别让它显示一个并没有生效的选择
             _languageReady = false;
@@ -1637,8 +1621,7 @@ public partial class MainWindow : Window
             SetStatus(summary);
             SoundFeedback.PlaySuccess();
 
-            MessageBox.Show(this, summary, UiText.Get("folder.title"), MessageBoxButton.OK,
-                report.Failed > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+            if (report.Failed > 0) { AppDialog.Warn(UiText.Get("folder.title"), summary, this); } else { AppDialog.Info(UiText.Get("folder.title"), summary, this); }
         }
         catch (Exception ex)
         {
@@ -1759,8 +1742,7 @@ public partial class MainWindow : Window
             SetStatus(summary);
             SoundFeedback.PlaySuccess();
 
-            MessageBox.Show(this, summary, UiText.Get("folder.decrypt.title"), MessageBoxButton.OK,
-                report.Failed > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+            if (report.Failed > 0) { AppDialog.Warn(UiText.Get("folder.decrypt.title"), summary, this); } else { AppDialog.Info(UiText.Get("folder.decrypt.title"), summary, this); }
         }
         catch (Exception ex)
         {
@@ -2107,7 +2089,7 @@ public partial class MainWindow : Window
 
         // 用 None 而不是 Error：带图标的那种 MessageBox 会自己再播一次系统音，
         // 叠加起来就是"双响"，又吵又乱。
-        MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.None);
+        AppDialog.Error(title, message, this);
     }
 
     private void SetStatus(string message, bool error = false)

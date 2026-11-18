@@ -31,8 +31,7 @@ public partial class ArchivePreviewWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, UiText.Get("preview.failed", ex.Message),
-                UiText.Get("preview.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            AppDialog.Error(UiText.Get("preview.title"), UiText.Get("preview.failed", ex.Message), this);
             Close();
             return;
         }
@@ -151,8 +150,7 @@ public partial class ArchivePreviewWindow : Window
 
         if (chosen.Count == 0)
         {
-            MessageBox.Show(this, UiText.Get("preview.nothing"), UiText.Get("preview.title"),
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            AppDialog.Info(UiText.Get("preview.title"), UiText.Get("preview.nothing"), this);
             return;
         }
 

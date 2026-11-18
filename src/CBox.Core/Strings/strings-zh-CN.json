@@ -324,5 +324,11 @@
   "filetype.hint.audio": "音频不支持在窗口内受控预览。请导出后用播放器打开。",
   "filetype.hint.executable": "可执行文件不是用来查看的。请导出后确认来源再运行。",
   "filetype.hint.sqlite": "数据库文件需要专门的工具浏览。请导出后查看。",
-  "filetype.hint.unknown": "无法识别这个文件的类型，可能是二进制数据。请导出后用对应程序打开。"
+  "filetype.hint.unknown": "无法识别这个文件的类型，可能是二进制数据。请导出后用对应程序打开。",
+  "dialog.info.title": "提示",
+  "dialog.warn.title": "注意",
+  "dialog.error.title": "出错了",
+  "dialog.confirm.title": "请确认",
+  "dialog.yes": "是",
+  "dialog.no": "否"
 }

@@ -22,11 +22,7 @@ public partial class App : Application
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         CbxLog.Crash(e.Exception);
-        MessageBox.Show(
-            UiText.Get("crash.message", CbxLog.LogDirectory) + "\n\n" + e.Exception.Message,
-            UiText.Get("app.title"),
-            MessageBoxButton.OK,
-            MessageBoxImage.Error);
+        AppDialog.Error(UiText.Get("app.title"), UiText.Get("crash.message", CbxLog.LogDirectory) + Environment.NewLine + Environment.NewLine + e.Exception.Message);
         e.Handled = true;
     }
 

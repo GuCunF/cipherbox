@@ -146,13 +146,9 @@ public partial class ViewerWindow : Window
 
         if (_reader.PlainSize > ImageConfirmBytes)
         {
-            var answer = MessageBox.Show(
-                UiText.Get("view.image.toobig", $"{_reader.PlainSize / 1024.0 / 1024.0:F1}"),
-                UiText.Get("view.image.toobig.title"),
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+            var answer = AppDialog.Confirm(UiText.Get("view.image.toobig.title"), UiText.Get("view.image.toobig", $"{_reader.PlainSize / 1024.0 / 1024.0:F1}"), UiText.Get("dialog.yes"), UiText.Get("dialog.no"), this);
 
-            if (answer != MessageBoxResult.Yes)
+            if (!answer)
             {
                 ShowMessage(UiText.Get("view.image.cancelled"));
                 return;
@@ -223,13 +219,7 @@ public partial class ViewerWindow : Window
 
         if (_reader.PlainSize > EditMaxBytes)
         {
-            MessageBox.Show(
-                this,
-                UiText.Get("view.edit.toobig", _reader.PlainSize) + Environment.NewLine + Environment.NewLine +
-                UiText.Get("view.edit.toobig.hint"),
-                UiText.Get("view.image.toobig.title"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            AppDialog.Info(UiText.Get("view.image.toobig.title"), UiText.Get("view.edit.toobig", _reader.PlainSize) + Environment.NewLine + Environment.NewLine + UiText.Get("view.edit.toobig.hint"), this);
 
             return;
         }
@@ -329,16 +319,9 @@ public partial class ViewerWindow : Window
             {
                 CbxLog.Warn($"保存前检测到文件已变化：{CbxLog.SafePath(_path)}");
 
-                var answer = MessageBox.Show(
-                    this,
-                    UiText.Get("view.conflict") + Environment.NewLine + Environment.NewLine +
-                    UiText.Get("view.conflict.hint"),
-                    UiText.Get("view.conflict.title"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning,
-                    MessageBoxResult.No);
+                bool answer = AppDialog.Confirm(UiText.Get("view.conflict.title"), UiText.Get("view.conflict") + Environment.NewLine + Environment.NewLine + UiText.Get("view.conflict.hint"), UiText.Get("dialog.yes"), UiText.Get("dialog.no"), this);
 
-                if (answer != MessageBoxResult.Yes)
+                if (!answer)
                 {
                     CbxLog.Info("用户取消覆盖");
                     return;
@@ -370,12 +353,7 @@ public partial class ViewerWindow : Window
             CbxLog.Info($"保存成功：{CbxLog.SafePath(_path)}");
             SoundFeedback.PlaySuccess();
 
-            MessageBox.Show(
-                this,
-                UiText.Get("view.saved"),
-                UiText.Get("view.saved.title"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            AppDialog.Info(UiText.Get("view.saved.title"), UiText.Get("view.saved"), this);
 
             await ReloadAsync();
         }
@@ -795,22 +773,17 @@ public partial class ViewerWindow : Window
 
             StatusText.Text = UiText.Get("view.export.done.status", report.OutputPath, report.PlainSize, report.Elapsed.TotalSeconds, report.MegabytesPerSecond);
 
-            MessageBox.Show(
-                UiText.Get("view.export.done.msg", report.OutputPath) + Environment.NewLine + Environment.NewLine +
-                UiText.Get("view.export.done.warn"),
-                UiText.Get("view.export.done.title"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            AppDialog.Info(UiText.Get("view.export.done.title"), UiText.Get("view.export.done.msg", report.OutputPath) + Environment.NewLine + Environment.NewLine + UiText.Get("view.export.done.warn"), this);
         }
         catch (CbxException ex)
         {
             CbxLog.Warn($"导出失败：{ex.Message}");
-            MessageBox.Show(ex.Message, UiText.Get("view.export.failed.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            AppDialog.Warn(UiText.Get("view.export.failed.title"), ex.Message, this);
         }
         catch (Exception ex)
         {
             CbxLog.Error("导出异常", ex);
-            MessageBox.Show(UiText.Get("view.export.failed", ex.Message), UiText.Get("view.export.failed.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            AppDialog.Error(UiText.Get("view.export.failed.title"), UiText.Get("view.export.failed", ex.Message), this);
         }
         finally
         {
@@ -888,6 +861,6 @@ public partial class ViewerWindow : Window
         SoundFeedback.PlayFailure();
 
         // MessageBoxImage.None：带图标会再播一次系统音，和我们的提示音叠成"双响"
-        MessageBox.Show(this, message, UiText.Get("view.error.title"), MessageBoxButton.OK, MessageBoxImage.None);
+        AppDialog.Error(UiText.Get("view.error.title"), message, this);
     }
 }
