@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private bool _soundReady;
     private bool _statusError;
     private bool _pseudoMaximized;
+    private DateTime _lastLayoutLog = DateTime.MinValue;
     private double _restoreLeft;
     private double _restoreTop;
     private double _restoreWidth;
@@ -210,6 +211,13 @@ public partial class MainWindow : Window
     /// <summary>诊断：记录窗口与内容区的实际尺寸，用来确认布局约束。</summary>
     private void LogLayoutMetrics()
     {
+        // 拖窗口时 SizeChanged 会密集触发，日志做节流，避免刷屏
+        if ((DateTime.Now - _lastLayoutLog).TotalMilliseconds < 800)
+        {
+            return;
+        }
+
+        _lastLayoutLog = DateTime.Now;
         try
         {
             CbxLog.Info($"诊断：窗口尺寸 {ActualWidth:F0}×{ActualHeight:F0}，" +
