@@ -62,6 +62,8 @@ public partial class MainWindow : Window
         AppMode.Load();
         ProModeCheckBox.IsChecked = AppMode.IsProfessional;
 
+        Loaded += (_, _) => LogLayoutMetrics();
+
         HideTestOnlyControls();
 #if CBTEST
         TestFailEncCheckBox.Visibility = Visibility.Visible;
@@ -163,6 +165,21 @@ public partial class MainWindow : Window
     /// 顺便切换最大化/还原的图标。
     /// </summary>
     private void MainWindow_StateChanged(object sender, EventArgs e) => ApplyChromeState();
+
+    /// <summary>诊断：记录窗口与内容区的实际尺寸，用来确认布局约束。</summary>
+    private void LogLayoutMetrics()
+    {
+        try
+        {
+            CbxLog.Info($"诊断：窗口尺寸 {ActualWidth:F0}×{ActualHeight:F0}，" +
+                        $"内容区 {ContentHost?.ActualWidth:F0}×{ContentHost?.ActualHeight:F0}，" +
+                        $"系统缩放 {PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11:F2}");
+        }
+        catch
+        {
+            // 诊断失败不影响使用
+        }
+    }
 
     /// <summary>按当前是"贴满工作区"还是"普通窗口"，调整圆角、留白与图标。</summary>
     private void ApplyChromeState()
