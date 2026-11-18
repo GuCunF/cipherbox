@@ -128,17 +128,34 @@ public partial class MainWindow : Window
     /// </summary>
     private void MainWindow_StateChanged(object sender, EventArgs e)
     {
-        if (RootGrid is null)
+        if (ChromeBorder is null)
         {
             return;
         }
 
         bool maximized = WindowState == WindowState.Maximized;
-        RootGrid.Margin = maximized ? new Thickness(7) : new Thickness(0);
 
-        if (MaxButton is not null)
+        // 最大化时去掉圆角外框的留白与圆角，否则内容会被挤出去、四角露馅
+        ChromeBorder.Margin = maximized ? new Thickness(0) : new Thickness(8);
+        ChromeBorder.CornerRadius = maximized ? new CornerRadius(0) : new CornerRadius(10);
+
+        if (CaptionBar is not null)
         {
-            MaxButton.Content = maximized ? "\u2750" : "\u25A1";
+            CaptionBar.CornerRadius = maximized ? new CornerRadius(0) : new CornerRadius(10, 10, 0, 0);
+        }
+
+        // 最大化 / 还原的图标切换（Path 画的，比字符清晰）
+        if (MaxGlyph is not null)
+        {
+            MaxGlyph.Data = Geometry.Parse(maximized
+                ? "M2.5,0.5 L10.5,0.5 L10.5,8.5 M0.5,2.5 L8.5,2.5 L8.5,10.5 L0.5,10.5 Z"
+                : "M0.5,0.5 L10.5,0.5 L10.5,10.5 L0.5,10.5 Z");
+        }
+
+        // 最大化时窗口占满屏幕，内容区不需要额外的 18px 外边距
+        if (ContentHost is not null)
+        {
+            ContentHost.Margin = maximized ? new Thickness(10, 10, 10, 10) : new Thickness(18);
         }
     }
 
