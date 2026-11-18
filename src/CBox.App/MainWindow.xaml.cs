@@ -635,12 +635,14 @@ public partial class MainWindow : Window
         {
             string message = DescribeError(ex);
             SetStatus(message, error: true);
+            SetProgressFailed(EncProgress);
             ShowErrorDialog(UiText.Get("error.encrypt.title"), message);
         }
         catch (Exception ex)
         {
             string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
             SetStatus(text, error: true);
+            SetProgressFailed(EncProgress);
             ShowErrorDialog(UiText.Get("error.encrypt.title"), text);
         }
         finally
@@ -759,12 +761,14 @@ public partial class MainWindow : Window
         {
             string message = DescribeError(ex);
             SetStatus(message, error: true);
+            SetProgressFailed(DecProgress);
             ShowErrorDialog(UiText.Get("error.decrypt.title"), message);
         }
         catch (Exception ex)
         {
             string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
             SetStatus(text, error: true);
+            SetProgressFailed(DecProgress);
             ShowErrorDialog(UiText.Get("error.decrypt.title"), text);
         }
         finally
@@ -2217,6 +2221,17 @@ public partial class MainWindow : Window
         // 用 None 而不是 Error：带图标的那种 MessageBox 会自己再播一次系统音，
         // 叠加起来就是"双响"，又吵又乱。
         AppDialog.Error(title, message, this);
+    }
+
+    /// <summary>失败时把进度条刷成红色，和完成时的绿色形成对比。</summary>
+    private void SetProgressFailed(ProgressBar? bar)
+    {
+        if (bar is null)
+        {
+            return;
+        }
+
+        bar.Foreground = (System.Windows.Media.Brush)FindResource("BrushDanger");
     }
 
     private void SetStatus(string message, bool error = false)
