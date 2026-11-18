@@ -330,5 +330,6 @@
   "dialog.error.title": "出错了",
   "dialog.confirm.title": "请确认",
   "dialog.yes": "是",
-  "dialog.no": "否"
+  "dialog.no": "否",
+  "progress.failed": "失败"
 }

@@ -342,5 +342,6 @@
   "dialog.error.title": "Error",
   "dialog.confirm.title": "Please confirm",
   "dialog.yes": "Yes",
-  "dialog.no": "No"
+  "dialog.no": "No",
+  "progress.failed": "Failed"
 }

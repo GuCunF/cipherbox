@@ -643,14 +643,14 @@ public partial class MainWindow : Window
         {
             string message = DescribeError(ex);
             SetStatus(message, error: true);
-            SetProgressFailed(EncProgress);
+            SetProgressFailed(EncProgress, EncProgressText);
             ShowErrorDialog(UiText.Get("error.encrypt.title"), message);
         }
         catch (Exception ex)
         {
             string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
             SetStatus(text, error: true);
-            SetProgressFailed(EncProgress);
+            SetProgressFailed(EncProgress, EncProgressText);
             ShowErrorDialog(UiText.Get("error.encrypt.title"), text);
         }
         finally
@@ -769,14 +769,14 @@ public partial class MainWindow : Window
         {
             string message = DescribeError(ex);
             SetStatus(message, error: true);
-            SetProgressFailed(DecProgress);
+            SetProgressFailed(DecProgress, DecProgressText);
             ShowErrorDialog(UiText.Get("error.decrypt.title"), message);
         }
         catch (Exception ex)
         {
             string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
             SetStatus(text, error: true);
-            SetProgressFailed(DecProgress);
+            SetProgressFailed(DecProgress, DecProgressText);
             ShowErrorDialog(UiText.Get("error.decrypt.title"), text);
         }
         finally
@@ -2231,8 +2231,11 @@ public partial class MainWindow : Window
         AppDialog.Error(title, message, this);
     }
 
-    /// <summary>失败时把进度条刷成红色，和完成时的绿色形成对比。</summary>
-    private void SetProgressFailed(ProgressBar? bar)
+    /// <summary>
+    /// 失败时把整条进度条填满并刷成红色，和完成时的整条绿色形成对比。
+    /// 不看进度走到哪——失败就是失败，用满格红色最直观。
+    /// </summary>
+    private void SetProgressFailed(ProgressBar? bar, System.Windows.Controls.TextBlock? caption)
     {
         if (bar is null)
         {
@@ -2240,7 +2243,15 @@ public partial class MainWindow : Window
         }
 
         bar.Foreground = (System.Windows.Media.Brush)FindResource("BrushDanger");
+        bar.Value = bar.Maximum;
+
+        if (caption is not null)
+        {
+            caption.Text = UiText.Get("progress.failed");
+            caption.Foreground = System.Windows.Media.Brushes.White;
+        }
     }
+
 
     private void SetStatus(string message, bool error = false)
     {
