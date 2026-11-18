@@ -70,9 +70,9 @@
   "strength.hint.quick": "只适合临时文件或不太重要的内容",
   "strength.hint.standard": "日常使用选这个就好",
   "strength.hint.strong": "重要资料用这个，加解密会慢一点",
-  "strength.hint.quick.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（约为标准的 1/6，耗时不到 0.1 秒）",
-  "strength.hint.standard.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（约 0.1 秒）",
-  "strength.hint.strong.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（约为标准的 17 倍，耗时约 2 秒）",
+  "strength.hint.quick.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（最省时间，但抗爆破能力最弱）",
+  "strength.hint.standard.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（耗时取决于电脑性能）",
+  "strength.hint.strong.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（约为标准的 17 倍，打开会明显变慢）",
 
   "overwrite.title": "文件已存在",
   "overwrite.heading": "目标位置已经有一个同名文件",
