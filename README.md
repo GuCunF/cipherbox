@@ -209,6 +209,27 @@ Windows 发布包计划通过 **[SignPath Foundation](https://signpath.org/)**�
 在此之前，Windows 可能提示"未知发布者"。请以本仓库的 Release 页与下方校验值为准：
 
 发布包会同时附上 SHA256，可用 `Get-FileHash <文件> -Algorithm SHA256` 核对。
+
+### 如果弹出「Windows 已保护你的电脑」
+
+**这是 Windows 对未签名程序的默认提示，不是病毒警告，也不是本程序的行为。**
+
+从网络下载的文件会被 Windows 打上"来自网络"的标记，双击时就会拦一下。放行方法：
+
+1. 点提示框里的 **「更多信息」**
+2. 这时会出现 **「仍要运行」** 按钮
+3. 点它即可
+
+如果你不放心，可以先用命令行核对文件：
+
+```powershell
+Get-FileHash CipherBox-v2.0.1-Setup.exe -Algorithm SHA256
+```
+
+把结果和 Release 页面列出的 SHA256 对比，一致就说明文件没被篡改。
+
+> 提示：把安装包放在桌面或下载文件夹里双击，比放在自建目录里更容易触发这个拦截。
+
 ## 许可
 
 [MIT](LICENSE)

@@ -206,6 +206,27 @@ Windows builds are intended to be code-signed through the **[SignPath Foundation
 
 Until then Windows may show "Unknown publisher". Verify downloads against this repository's Releases page and the SHA256 values listed there — check them with `Get-FileHash <file> -Algorithm SHA256`.
 
+### If Windows shows "Windows protected your PC"
+
+**This is Windows' default prompt for unsigned programs — not a virus warning, and not something this app does.**
+
+Files downloaded from the internet are tagged by Windows, so the first double-click gets intercepted once. To proceed:
+
+1. Click **"More info"** in the dialog
+2. A **"Run anyway"** button appears
+3. Click it
+
+If you want to be sure the file is intact, verify it first:
+
+```powershell
+Get-FileHash CipherBox-v2.0.1-Setup.exe -Algorithm SHA256
+```
+
+Compare the output with the SHA256 listed on the Releases page. If they match, the file has not been tampered with.
+
+> Tip: double-clicking from your Desktop or Downloads folder triggers this interception more often than running from a folder you created yourself.
+
+
 ## License
 
 [MIT](LICENSE)
