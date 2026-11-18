@@ -16,6 +16,11 @@ public partial class MainWindow : Window
     private bool _languageReady;
     private bool _soundReady;
     private bool _statusError;
+    private bool _pseudoMaximized;
+    private double _restoreLeft;
+    private double _restoreTop;
+    private double _restoreWidth;
+    private double _restoreHeight;
     private readonly List<EnvironmentIssue> _environmentIssues = new();
 
     public MainWindow()
@@ -112,50 +117,68 @@ public partial class MainWindow : Window
 
     private void ToggleMaximize()
     {
-        if (WindowState == WindowState.Maximized)
+        // 不用系统最大化：无边框窗口做系统最大化会盖住任务栏，
+        // 而且窗口尺寸会超出工作区，内容被裁。改成自己贴到工作区。
+        if (_pseudoMaximized)
         {
-            SystemCommands.RestoreWindow(this);
+            Left = _restoreLeft;
+            Top = _restoreTop;
+            Width = _restoreWidth;
+            Height = _restoreHeight;
+            _pseudoMaximized = false;
         }
         else
         {
-            SystemCommands.MaximizeWindow(this);
+            _restoreLeft = Left;
+            _restoreTop = Top;
+            _restoreWidth = Width;
+            _restoreHeight = Height;
+
+            Rect work = SystemParameters.WorkArea;
+            Left = work.Left;
+            Top = work.Top;
+            Width = work.Width;
+            Height = work.Height;
+            _pseudoMaximized = true;
         }
+
+        ApplyChromeState();
     }
 
     /// <summary>
     /// 无边框窗口最大化会溢出屏幕几个像素，用 Margin 补偿；
     /// 顺便切换最大化/还原的图标。
     /// </summary>
-    private void MainWindow_StateChanged(object sender, EventArgs e)
+    private void MainWindow_StateChanged(object sender, EventArgs e) => ApplyChromeState();
+
+    /// <summary>按当前是"贴满工作区"还是"普通窗口"，调整圆角、留白与图标。</summary>
+    private void ApplyChromeState()
     {
         if (ChromeBorder is null)
         {
             return;
         }
 
-        bool maximized = WindowState == WindowState.Maximized;
+        bool full = _pseudoMaximized;
 
-        // 最大化时去掉圆角外框的留白与圆角，否则内容会被挤出去、四角露馅
-        ChromeBorder.Margin = maximized ? new Thickness(0) : new Thickness(8);
-        ChromeBorder.CornerRadius = maximized ? new CornerRadius(0) : new CornerRadius(10);
+        ChromeBorder.Margin = full ? new Thickness(0) : new Thickness(8);
+        ChromeBorder.CornerRadius = full ? new CornerRadius(0) : new CornerRadius(10);
 
         if (CaptionBar is not null)
         {
-            CaptionBar.CornerRadius = maximized ? new CornerRadius(0) : new CornerRadius(10, 10, 0, 0);
+            CaptionBar.CornerRadius = full ? new CornerRadius(0) : new CornerRadius(10, 10, 0, 0);
         }
 
-        // 最大化 / 还原的图标切换（Path 画的，比字符清晰）
         if (MaxGlyph is not null)
         {
-            MaxGlyph.Data = Geometry.Parse(maximized
+            MaxGlyph.Data = Geometry.Parse(full
                 ? "M2.5,0.5 L10.5,0.5 L10.5,8.5 M0.5,2.5 L8.5,2.5 L8.5,10.5 L0.5,10.5 Z"
                 : "M0.5,0.5 L10.5,0.5 L10.5,10.5 L0.5,10.5 Z");
         }
 
-        // 最大化时窗口占满屏幕，内容区不需要额外的 18px 外边距
         if (ContentHost is not null)
         {
-            ContentHost.Margin = maximized ? new Thickness(10, 10, 10, 10) : new Thickness(18);
+            ContentHost.Margin = full ? new Thickness(8) : new Thickness(18);
         }
     }
 
