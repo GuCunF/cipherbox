@@ -12,7 +12,8 @@
 # 这里把逻辑放在 .ps1（UTF-8 BOM），.cmd 只做纯 ASCII 启动器。
 
 param(
-    [switch]$Restore
+    [switch]$Restore,
+    [switch]$Yes
 )
 
 $ErrorActionPreference = 'Stop'
@@ -121,11 +122,13 @@ if (-not $Restore) {
     Show-Slots
 
     Write-Host ("  本次写入：_snap\{0}（会覆盖该槽原有内容）" -f $target) -ForegroundColor Yellow
-    $answer = Read-Host '  继续？[Y/n]'
+    if (-not $Yes) {
+        $answer = Read-Host '  继续？[Y/n]'
 
-    if ($answer -and $answer -notmatch '^[Yy]') {
-        Write-Host '  已取消。' -ForegroundColor DarkGray
-        return
+        if ($answer -and $answer -notmatch '^[Yy]') {
+            Write-Host '  已取消。' -ForegroundColor DarkGray
+            return
+        }
     }
 
     Write-Host '  正在复制…' -ForegroundColor Cyan
@@ -184,11 +187,13 @@ if ($null -eq $state) {
 Write-Host ''
 Write-Host ("  将从 _snap\{0}（{1}，{2} 个文件）覆盖到 src\" -f $slot, $state.When, $state.Count) -ForegroundColor Yellow
 Write-Host '  注意：src\ 里当前的内容会被替换。' -ForegroundColor Yellow
-$answer = Read-Host '  继续？[y/N]'
+if (-not $Yes) {
+    $answer = Read-Host '  继续？[y/N]'
 
-if ($answer -notmatch '^[Yy]') {
-    Write-Host '  已取消。' -ForegroundColor DarkGray
-    return
+    if ($answer -notmatch '^[Yy]') {
+        Write-Host '  已取消。' -ForegroundColor DarkGray
+        return
+    }
 }
 
 # 恢复前先把当前状态保险到临时槽，恢复后仍可反悔
