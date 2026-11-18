@@ -114,6 +114,12 @@ public partial class AppDialog : Window
         IconGlyph.Text = glyph;
         IconBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
 
+        // 三色提醒：整个标题栏跟着变色，远看就知道严重程度
+        if (CaptionBar is not null)
+        {
+            CaptionBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
+        }
+
         // 标题栏文字：用窗口标题承载，保持在任务栏/悬停提示里也有意义
         Title = title;
 

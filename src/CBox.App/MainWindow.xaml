@@ -6,14 +6,18 @@
         MinHeight="520" MinWidth="720"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico"
-        Background="{StaticResource BrushWindowBackground}"
-        WindowStyle="None" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged">
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
                       CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
+    <!-- 圆角外框 + 阴影：AllowsTransparency 打开后由这层负责外观 -->
+    <Border x:Name="ChromeBorder" CornerRadius="10" Background="{StaticResource BrushWindowBackground}" Margin="8">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.22" BlurRadius="14" ShadowDepth="2" Direction="270" />
+        </Border.Effect>
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -21,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <!-- 自绘标题栏：深蓝底，与图标同色系 -->
-        <Border x:Name="TitleBar" Grid.Row="0" Height="40" Background="{StaticResource BrushPrimary}"
+        <Border x:Name="CaptionBar" Grid.Row="0" Height="40" Background="{StaticResource BrushPrimary}" CornerRadius="10,10,0,0"
                 MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -400,4 +404,5 @@
         </Border>
         </Grid>
     </Grid>
+    </Border>
 </Window>
