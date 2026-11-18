@@ -84,6 +84,13 @@ public partial class AppDialog : Window
 
         dialog.ApplyKind();
 
+        // 原来系统 MessageBox 会自带提示音，自绘之后要补回来；
+        // 警告和错误要让人"听得到"，普通提示与确认则不打扰。
+        if (kind is Kind.Warn or Kind.Error)
+        {
+            SoundFeedback.PlayFailure();
+        }
+
         // 所有者：优先传入的窗口，其次主窗口，都没有就居中屏幕
         Window? actualOwner = owner ?? Application.Current?.MainWindow;
 

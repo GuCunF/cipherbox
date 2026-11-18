@@ -192,6 +192,12 @@ public partial class MainWindow : Window
         if (ContentHost is not null)
         {
             ContentHost.Margin = full ? new Thickness(28, 18, 28, 14) : new Thickness(18);
+
+            // 全屏是为了"看得清、点得准"：整块内容等比放大，而不是缩成中间一条。
+            // LayoutTransform 是矢量缩放，文字不会糊。
+            ContentHost.LayoutTransform = full
+                ? new ScaleTransform(1.22, 1.22)
+                : Transform.Identity;
         }
     }
 
