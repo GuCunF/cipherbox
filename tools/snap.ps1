@@ -25,6 +25,8 @@ $lastFile = Join-Path $snapRoot 'last.txt'
 # 备份范围：源码 + 几个关键配置文件
 $fileList = @('Directory.Build.props', 'README.md', 'README.en.md', 'SECURITY.md')
 $releaseFiles = @('CipherBox.iss', 'publish-release.ps1')
+# 开发日志不进 git（含本机路径），所以必须由这里兜底备份
+$logDir = 'logs'
 
 function Get-SlotState {
     param([string]$Slot)
@@ -66,6 +68,11 @@ function Write-SwappedSlot {
         if (Test-Path $source) {
             Copy-Item $source (Join-Path $dir $name) -Force
         }
+    }
+
+    $logsSource = Join-Path $repoRoot $logDir
+    if (Test-Path $logsSource) {
+        Copy-Item $logsSource (Join-Path $dir $logDir) -Recurse -Force
     }
 
     $relTarget = Join-Path $dir 'release'
@@ -214,6 +221,12 @@ foreach ($name in $fileList) {
     if (Test-Path $source) {
         Copy-Item $source (Join-Path $repoRoot $name) -Force
     }
+}
+
+# 日志不进 git，恢复时也要一起还原
+$logsBackup = Join-Path $state.Path $logDir
+if (Test-Path $logsBackup) {
+    Copy-Item $logsBackup (Join-Path $repoRoot $logDir) -Recurse -Force
 }
 
 foreach ($name in $releaseFiles) {
