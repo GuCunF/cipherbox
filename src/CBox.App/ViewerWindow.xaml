@@ -13,9 +13,6 @@
 
     <!-- 圆角外框 + 阴影：AllowsTransparency 打开后由这层负责外观 -->
     <Border x:Name="ChromeBorder" CornerRadius="10" Background="{StaticResource BrushSurface}" Margin="8">
-        <Border.Effect>
-            <DropShadowEffect Color="#000000" Opacity="0.22" BlurRadius="14" ShadowDepth="2" Direction="270" />
-        </Border.Effect>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />

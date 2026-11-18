@@ -117,8 +117,15 @@ public partial class MainWindow : Window
 
     private void ToggleMaximize()
     {
-        // 不用系统最大化：无边框窗口做系统最大化会盖住任务栏，
-        // 而且窗口尺寸会超出工作区，内容被裁。改成自己贴到工作区。
+        // 无边框窗口 + AllowTransparency 是全窗软件渲染，切换时最耗的是「多次重排」。
+        // 这里用 SuspendLayout 的思路：先把内容区可视化树停掉更新，等尺寸改完再恢复。
+        bool full = !_pseudoMaximized;
+
+        if (ContentHost is not null)
+        {
+            ContentHost.Visibility = Visibility.Hidden;
+        }
+
         if (_pseudoMaximized)
         {
             Left = _restoreLeft;
@@ -143,6 +150,12 @@ public partial class MainWindow : Window
         }
 
         ApplyChromeState();
+
+        if (ContentHost is not null)
+        {
+            Dispatcher.BeginInvoke(new Action(() => ContentHost.Visibility = Visibility.Visible),
+                System.Windows.Threading.DispatcherPriority.Loaded);
+        }
     }
 
     /// <summary>
