@@ -94,9 +94,9 @@
   "strength.hint.quick": "Only for temporary or low-value files",
   "strength.hint.standard": "A good default for everyday use",
   "strength.hint.strong": "For important data; slightly slower",
-  "strength.hint.quick.pro": "PBKDF2-SHA256 · {0:N0} iterations (about 1/6 of Standard)",
-  "strength.hint.standard.pro": "PBKDF2-SHA256 · {0:N0} iterations",
-  "strength.hint.strong.pro": "PBKDF2-SHA256 · {0:N0} iterations (about 17× Standard)",
+  "strength.hint.quick.pro": "PBKDF2-SHA256 · {0:N0} iterations (about 1/6 of Standard, under 0.1 s)",
+  "strength.hint.standard.pro": "PBKDF2-SHA256 · {0:N0} iterations (about 0.1 s)",
+  "strength.hint.strong.pro": "PBKDF2-SHA256 · {0:N0} iterations (about 17× Standard, takes ~2 s)",
 
   "overwrite.title": "File already exists",
   "overwrite.heading": "A file with the same name already exists here",
