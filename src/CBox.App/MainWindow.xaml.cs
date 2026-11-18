@@ -1701,7 +1701,12 @@ public partial class MainWindow : Window
         }
 
         // 目标已存在就换个名字，而不是拒绝——报错会让人以为按钮没反应
-        string output = MakeUniqueDirectory(source + ".cbx");
+        // 归档模式输出的是单个 .cbx 文件，批量模式输出的是目录，两者命名规则不同：
+        // 归档要「编号插在扩展名前」，批量要「编号追加末尾」。
+        bool archiveMode = (FolderModeBox?.SelectedItem as ComboBoxItem)?.Tag as string != "Batch";
+        string output = archiveMode
+            ? MakeUniqueFile(source + ".cbx")
+            : MakeUniqueDirectory(source + ".cbx");
 
         var profile = BuildEncryptProfile();
         var passwordBytes = Encoding.UTF8.GetBytes(password);
@@ -1723,12 +1728,11 @@ public partial class MainWindow : Window
 
         try
         {
-            bool asArchive = (FolderModeBox?.SelectedItem as ComboBoxItem)?.Tag as string != "Batch";
             bool fullLevel = (ArchiveLevelBox?.SelectedItem as ComboBoxItem)?.Tag as string == "Full";
 
             var report = await Task.Run(() =>
             {
-                if (asArchive)
+                if (archiveMode)
                 {
                     CbxArchive.Create(source, output, passwordBytes, profile, previewable: !fullLevel);
                     return new FolderReport(1, 1, 0, 0, output);
@@ -1946,6 +1950,48 @@ public partial class MainWindow : Window
     /// 目标文件夹已存在时生成 "xxx (2)" 这样的新名字。
     /// 直接报错会让人以为"点了没反应"，而覆盖又绝对不行。
     /// </summary>
+    /// <summary>
+    /// 给「输出是单个文件」的场景生成不冲突的名字（归档加密就是这种）。
+    ///
+    /// 和 MakeUniqueDirectory 的区别：这里**永远按文件名处理**，编号插在扩展名前面。
+    /// 之前复用 MakeUniqueDirectory 会出问题——它靠「同名目录是否存在」判断目标类型，
+    /// 而批量加密产生的同名目录会让它误判，于是生成 "xxx.cbx (1)" 这种编号在扩展名后的怪名字。
+    /// </summary>
+    private static string MakeUniqueFile(string path)
+    {
+        if (!File.Exists(path) && !Directory.Exists(path))
+        {
+            return path;
+        }
+
+        string directory = Path.GetDirectoryName(path) ?? string.Empty;
+        string stem = Path.GetFileNameWithoutExtension(path);
+        string extension = Path.GetExtension(path);
+
+        // 原名已经是 "xxx (3)" 的话从 4 开始，避免叠成 "xxx (1) (1)"
+        int start = 1;
+        var match = System.Text.RegularExpressions.Regex.Match(stem, @"^(.*) \((\d+)\)$");
+        if (match.Success)
+        {
+            stem = match.Groups[1].Value;
+            start = int.Parse(match.Groups[2].Value) + 1;
+        }
+
+        for (int i = start; i < 10_000; i++)
+        {
+            string candidateName = $"{stem} ({i}){extension}";
+            string candidate = directory.Length == 0 ? candidateName : Path.Combine(directory, candidateName);
+
+            if (!File.Exists(candidate) && !Directory.Exists(candidate))
+            {
+                CbxLog.Info($"另存为新文件：{Path.GetFileName(path)} → {candidateName}");
+                return candidate;
+            }
+        }
+
+        throw new CbxException("同名文件太多了，无法生成新文件名。");
+    }
+
     private static string MakeUniqueDirectory(string path)
     {
         if (!Directory.Exists(path) && !File.Exists(path))
