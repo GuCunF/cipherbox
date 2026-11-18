@@ -4,7 +4,7 @@
         xmlns:ui="clr-namespace:CBox.App"
         Title="{ui:Tr overwrite.title}" Height="300" Width="600"
         ResizeMode="NoResize" ShowInTaskbar="False"
-        WindowStartupLocation="CenterOwner" Icon="Assets/CipherBox.ico">
+        WindowStartupLocation="CenterOwner" Icon="Assets/CipherBox.ico" Background="{StaticResource BrushSurface}">
 
     <Grid Margin="18">
         <Grid.RowDefinitions>
@@ -18,17 +18,17 @@
 
         <StackPanel Grid.Row="1" Margin="0,14,0,0">
             <TextBlock x:Name="PathText" TextWrapping="Wrap" FontFamily="Consolas"
-                       Background="#F5F5F5" Padding="8" />
-            <TextBlock x:Name="InfoText" Foreground="#666666" Margin="0,8,0,0" />
+                       Background="{StaticResource BrushSurfaceAlt}" Padding="8" />
+            <TextBlock x:Name="InfoText" Foreground="{StaticResource BrushTextMuted}" Margin="0,8,0,0" />
             <TextBlock Text="{ui:Tr overwrite.warning}"
-                       Foreground="#B22222" Margin="0,14,0,0" TextWrapping="Wrap" />
+                       Foreground="{StaticResource BrushDanger}" Margin="0,14,0,0" TextWrapping="Wrap" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
-            <Button Content="{ui:Tr overwrite.replace}" Width="90" Height="32" Margin="0,0,8,0" Click="Replace_Click" />
-            <Button Content="{ui:Tr overwrite.saveas}" Width="130" Height="32" Margin="0,0,8,0"
+            <Button Style="{StaticResource PrimaryButton}" Content="{ui:Tr overwrite.replace}" Width="90" Height="32" Margin="0,0,8,0" Click="Replace_Click" />
+            <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr overwrite.saveas}" Width="130" Height="32" Margin="0,0,8,0"
                     Click="SaveAsNew_Click" IsDefault="True" />
-            <Button Content="{ui:Tr common.cancel}" Width="90" Height="32" Click="Cancel_Click" IsCancel="True" />
+            <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.cancel}" Width="90" Height="32" Click="Cancel_Click" IsCancel="True" />
         </StackPanel>
     </Grid>
 </Window>
