@@ -338,7 +338,7 @@
                     <Border Background="{StaticResource BrushSurfaceAlt}" CornerRadius="3">
                         <Grid>
                             <Rectangle x:Name="PART_Track" />
-                            <Rectangle x:Name="PART_Indicator" Fill="{StaticResource BrushPrimary}"
+                            <Rectangle x:Name="PART_Indicator" Fill="{TemplateBinding Foreground}"
                                        RadiusX="3" RadiusY="3" HorizontalAlignment="Left" />
                         </Grid>
                     </Border>

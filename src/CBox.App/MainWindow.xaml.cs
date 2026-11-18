@@ -600,6 +600,7 @@ public partial class MainWindow : Window
             {
                 EncProgress.Value = p * 100;
                 EncProgressText.Text = $"{p * 100:F0}%";
+        EncProgressText.Foreground = System.Windows.Media.Brushes.White;
                 SetStatus(UiText.Get("status.encrypting", $"{p * 100:F0}"));
             });
 
@@ -613,6 +614,8 @@ public partial class MainWindow : Window
 
             EncProgress.Value = 100;
             EncProgressText.Text = "100%";
+        EncProgressText.Foreground = System.Windows.Media.Brushes.White;
+        if (EncProgress is not null) { EncProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
 
             if (!SoundFeedback.PlaySuccess(report.Elapsed))
             {
@@ -691,6 +694,7 @@ public partial class MainWindow : Window
             {
                 DecProgress.Value = p * 100;
                 DecProgressText.Text = $"{p * 100:F0}%";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
                 SetStatus(UiText.Get("status.decrypting", $"{p * 100:F0}"));
             });
 
@@ -736,6 +740,8 @@ public partial class MainWindow : Window
 
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
+        if (DecProgress is not null) { DecProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
 
             if (!SoundFeedback.PlaySuccess(report.Elapsed))
             {
@@ -1010,7 +1016,9 @@ public partial class MainWindow : Window
         EncProgress.Value = 0;
         DecProgress.Value = 0;
         EncProgressText.Text = string.Empty;
+        if (EncProgress is not null) { EncProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushPrimary"); }
         DecProgressText.Text = string.Empty;
+        if (DecProgress is not null) { DecProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushPrimary"); }
 
         // 处理期间把状态栏放大加粗，否则底下一行小字很容易被忽略
         StatusText.FontSize = 18;
@@ -1694,6 +1702,7 @@ public partial class MainWindow : Window
 
             EncProgress.Value = p.Done * 100.0 / p.Total;
             EncProgressText.Text = $"{p.Done}/{p.Total}";
+        EncProgressText.Foreground = System.Windows.Media.Brushes.White;
             SetStatus(UiText.Get("folder.running", p.Done + 1, p.Total, p.Current));
         });
 
@@ -1717,6 +1726,8 @@ public partial class MainWindow : Window
 
             EncProgress.Value = 100;
             EncProgressText.Text = "100%";
+        EncProgressText.Foreground = System.Windows.Media.Brushes.White;
+        if (EncProgress is not null) { EncProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
             ScrubPassword(EncPassword);
             ScrubPassword(EncPassword2);
 
@@ -1782,6 +1793,7 @@ public partial class MainWindow : Window
 
             DecProgress.Value = p.Done * 100.0 / p.Total;
             DecProgressText.Text = $"{p.Done}/{p.Total}";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
             SetStatus(UiText.Get("folder.decrypt.running", p.Done + 1, p.Total, p.Current));
         });
 
@@ -1835,6 +1847,7 @@ public partial class MainWindow : Window
                     {
                         DecProgress.Value = p * 100;
                         DecProgressText.Text = $"{p:P0}";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
                     }));
 
                     return new FolderReport(count, count, 0, 0, output, Formats: $"归档 {count} 个条目");
@@ -1845,6 +1858,8 @@ public partial class MainWindow : Window
 
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
+        if (DecProgress is not null) { DecProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
             ScrubPassword(DecPassword);
 
             string summary = UiText.Get("folder.done", report.Succeeded, report.Skipped, report.Failed)
@@ -1999,6 +2014,7 @@ public partial class MainWindow : Window
         {
             DecProgress.Value = p * 100;
             DecProgressText.Text = $"{p * 100:F0}%";
+        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
         });
 
         Directory.CreateDirectory(outputDirectory);
