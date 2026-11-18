@@ -249,7 +249,7 @@
                             <ComboBoxItem Content="{ui:Tr enc.strength.strong}" />
                         </ComboBox>
                         <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
-                            <TextBlock x:Name="EncStrengthHint" Foreground="#888888" TextWrapping="Wrap" />
+                            <TextBlock x:Name="EncStrengthHint" Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" TextWrapping="Wrap" />
                             <CheckBox x:Name="SkipTypeCheckBox" Content="{ui:Tr enc.skipcheck}"
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
                                       ToolTip="{ui:Tr enc.skipcheck.tip}" />
@@ -257,19 +257,19 @@
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
                                       ToolTip="{ui:Tr enc.full.tip}" />
                             <StackPanel x:Name="AlgPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,6,0,0">
-                                <TextBlock Text="{ui:Tr enc.alg}" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{ui:Tr enc.alg}" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox x:Name="AlgCombo" Width="190" Height="26" VerticalAlignment="Center"
                                           ToolTip="{ui:Tr enc.alg.tip}" />
                             </StackPanel>
                             <StackPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
                                         Visibility="Collapsed" Margin="0,6,0,0">
-                                <TextBlock Text="{ui:Tr enc.displayname}" Foreground="#888888"
+                                <TextBlock Text="{ui:Tr enc.displayname}" Foreground="{StaticResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBox x:Name="DisplayNameBox" Width="200" Height="24"
                                          VerticalContentAlignment="Center"
                                          TextChanged="DisplayName_Changed"
                                          ToolTip="{ui:Tr enc.displayname.tip}" />
-                                <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="#888888"
+                                <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="{StaticResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="6,0,0,0" />
                             </StackPanel>
                         </StackPanel>
@@ -292,7 +292,7 @@
                                   Checked="TestFailEnc_Changed" Unchecked="TestFailEnc_Changed"
                                   ToolTip="{ui:Tr fault.arm.tip}" />
                         <TextBlock x:Name="EncHint" Margin="12,0,0,0" VerticalAlignment="Center"
-                                   Foreground="#888888" Text="{ui:Tr enc.drop.hint}" />
+                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr enc.drop.hint}" />
                     </StackPanel>
                 </Grid>
                 </StackPanel>
@@ -356,7 +356,7 @@
                         <TextBox x:Name="DecNameBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
                                  TextChanged="DecName_Changed" ToolTip="{ui:Tr dec.savename.tip}" />
                         <TextBlock x:Name="DecNameHint" Grid.Column="2" VerticalAlignment="Center"
-                                   Foreground="#888888" Text="{ui:Tr dec.savename.hint}" />
+                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr dec.savename.hint}" />
                     </Grid>
 
                     <Grid Grid.Row="3" Margin="0,0,0,10">
@@ -391,7 +391,7 @@
                                 Click="DecView_Click" Visibility="Collapsed"
                                 ToolTip="{ui:Tr dec.view.tip}" />
                         <TextBlock x:Name="DecHint" Margin="12,0,0,0" VerticalAlignment="Center"
-                                   Foreground="#888888" Text="{ui:Tr dec.output.hint}" />
+                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr dec.output.hint}" />
                     </StackPanel>
                 </Grid>
                 </StackPanel>
