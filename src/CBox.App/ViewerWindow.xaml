@@ -72,13 +72,21 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock x:Name="EncodingText" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" />
-                <TextBlock x:Name="StatusText" Foreground="{StaticResource BrushTextMuted}" Margin="12,0,0,0" VerticalAlignment="Center" />
-                <ProgressBar x:Name="LoadProgress" Width="140" Height="6" Margin="12,0,0,0"
-                             Minimum="0" Maximum="100" Visibility="Collapsed" VerticalAlignment="Center" />
+            <Grid Grid.Column="0" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <StackPanel x:Name="ZoomPanel" Orientation="Horizontal" Margin="16,0,0,0"
+                <TextBlock x:Name="EncodingText" Grid.Column="0" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" />
+                <!-- 状态文字放在可伸缩列里并允许换行：内容长的时候不再被右侧按钮挤掉 -->
+                <TextBlock x:Name="StatusText" Grid.Column="1" Foreground="{StaticResource BrushTextMuted}"
+                           Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" />
+                <ProgressBar x:Name="LoadProgress" Grid.Column="1" Width="140" Height="6" Margin="12,0,0,0"
+                             Minimum="0" Maximum="100" HorizontalAlignment="Left" Visibility="Collapsed" VerticalAlignment="Center" />
+
+                <StackPanel x:Name="ZoomPanel" Grid.Column="2" Orientation="Horizontal" Margin="16,0,0,0"
                             VerticalAlignment="Center" Visibility="Collapsed">
                     <TextBlock Text="{ui:Tr view.zoom}" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" />
                     <Slider x:Name="ZoomSlider" Width="150" Margin="8,0" Minimum="0" Maximum="100"
@@ -88,7 +96,7 @@
                     <Button Style="{StaticResource SecondaryButton}" x:Name="FitButton" Content="{ui:Tr view.fit}" Height="26" Padding="10,0"
                             Margin="4,0,0,0" Click="Fit_Click" />
                 </StackPanel>
-            </StackPanel>
+            </Grid>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Style="{StaticResource SecondaryButton}" x:Name="CancelButton" Content="{ui:Tr view.cancel}" Width="70" Margin="0,0,8,0"

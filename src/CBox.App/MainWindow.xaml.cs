@@ -1013,6 +1013,7 @@ public partial class MainWindow : Window
             string candidate = Path.Combine(directory, $"{stem} ({i}){extension}");
             if (!File.Exists(candidate))
             {
+                CbxLog.Info($"另存为新文件：{Path.GetFileName(path)} → {Path.GetFileName(candidate)}");
                 return candidate;
             }
         }

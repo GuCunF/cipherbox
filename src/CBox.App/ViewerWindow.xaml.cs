@@ -282,7 +282,8 @@ public partial class ViewerWindow : Window
             CancelEditButton.Visibility = Visibility.Visible;
 
             EncodingText.Text = UiText.Get("view.encoding", decoded.EncodingName ?? "-");
-            StatusText.Text = UiText.Get("view.edit.hint", _editProfile?.ToString() ?? string.Empty);
+            StatusText.Text = UiText.Get("view.edit.hint");
+            StatusText.ToolTip = _editProfile?.ToString();
 
             CbxLog.Info($"进入编辑：{CbxLog.SafePath(_path)}（编码 {decoded.EncodingName}，参数 {_editProfile}）");
         }

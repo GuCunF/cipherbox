@@ -129,7 +129,7 @@
   "view.export": "Export",
   "view.export.tip": "Decrypt the file into a folder. The exported file is no longer protected.",
   "view.edit.hint": "Editing — click Save to re-encrypt with the original parameters and overwrite the file.",
-  "view.edit.hint.pro": "Editing — saving re-encrypts with the original parameters: {0}",
+  "view.edit.hint.pro": "Editing — saving re-encrypts with the original parameters (hover here to see them)",
   "view.edit.toobig": "This file is {0:N0} bytes, above the 10 MB built-in editing limit.",
   "view.edit.toobig.hint": "Large content would freeze the editor. Decrypt it to disk, edit it with another program, then encrypt again.",
   "view.edit.wrongpass": "Incorrect passphrase; cannot start editing.",
