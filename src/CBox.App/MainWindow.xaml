@@ -14,7 +14,7 @@
     </WindowChrome.WindowChrome>
 
     <!-- 圆角外框 + 阴影：AllowsTransparency 打开后由这层负责外观 -->
-    <Border x:Name="ChromeBorder" CornerRadius="10" Background="{StaticResource BrushWindowBackground}" Margin="8">
+    <Border x:Name="ChromeBorder" CornerRadius="10" BorderBrush="{StaticResource BrushBorderStrong}" BorderThickness="1" Background="{StaticResource BrushWindowBackground}" Margin="8">
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

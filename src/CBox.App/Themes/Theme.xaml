@@ -12,6 +12,8 @@
     <SolidColorBrush x:Key="BrushPrimaryDark" Color="#17497F" />
     <SolidColorBrush x:Key="BrushPrimaryLight" Color="#E8F0FA" />
     <SolidColorBrush x:Key="BrushBorder" Color="#D6DEE8" />
+    <!-- 窗口外框用的深色边框：比控件边框深一档，让窗口边界能看出来 -->
+    <SolidColorBrush x:Key="BrushBorderStrong" Color="#A8B6C6" />
     <SolidColorBrush x:Key="BrushBorderFocus" Color="#1F5FA8" />
     <SolidColorBrush x:Key="BrushText" Color="#1F2933" />
     <SolidColorBrush x:Key="BrushTextMuted" Color="#6B7785" />
