@@ -191,7 +191,7 @@ public partial class MainWindow : Window
 
         if (ContentHost is not null)
         {
-            ContentHost.Margin = full ? new Thickness(8) : new Thickness(18);
+            ContentHost.Margin = full ? new Thickness(28, 18, 28, 14) : new Thickness(18);
         }
     }
 
