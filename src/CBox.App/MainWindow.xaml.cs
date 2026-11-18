@@ -62,7 +62,16 @@ public partial class MainWindow : Window
         AppMode.Load();
         ProModeCheckBox.IsChecked = AppMode.IsProfessional;
 
-        Loaded += (_, _) => LogLayoutMetrics();
+        Loaded += (_, _) =>
+        {
+            UpdateContentWidth();
+            LogLayoutMetrics();
+        };
+        SizeChanged += (_, _) =>
+        {
+            UpdateContentWidth();
+            LogLayoutMetrics();
+        };
 
         HideTestOnlyControls();
 #if CBTEST
@@ -166,6 +175,38 @@ public partial class MainWindow : Window
     /// </summary>
     private void MainWindow_StateChanged(object sender, EventArgs e) => ApplyChromeState();
 
+    /// <summary>
+    /// 内容宽度按窗口宽度的比例走，而不是写死像素——
+    /// 这样在 1080p、4K、带鱼屏上占屏比例一致，不会一边撑满一边只剩中间一条。
+    ///
+    /// 比例的上下限：
+    ///   下限 880 —— 窗口很小时也不至于把输入框压得太窄
+    ///   上限 2200 —— 超宽屏上不再无限拉长（一行文字太长反而难读）
+    /// </summary>
+    private void UpdateContentWidth()
+    {
+        if (ContentHost is null || RootGrid is null)
+        {
+            return;
+        }
+
+        // 去掉 ContentHost 自己的左右 Margin
+        double available = RootGrid.ActualWidth - ContentHost.Margin.Left - ContentHost.Margin.Right;
+
+        if (available <= 0)
+        {
+            return;
+        }
+
+        const double Ratio = 0.72;
+        const double MinWidth = 880;
+        const double MaxWidth = 2200;
+
+        double target = Math.Clamp(available * Ratio, MinWidth, MaxWidth);
+        ContentHost.Width = target;
+
+        CbxLog.Info($"布局：窗口可用 {available:F0}，内容宽度 {target:F0}（比例 {Ratio:P0}）");
+    }
     /// <summary>诊断：记录窗口与内容区的实际尺寸，用来确认布局约束。</summary>
     private void LogLayoutMetrics()
     {
