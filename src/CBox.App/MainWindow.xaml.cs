@@ -198,7 +198,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        const double Ratio = 0.72;
+        const double Ratio = 0.70;
         const double MinWidth = 880;
         const double MaxWidth = 2200;
 

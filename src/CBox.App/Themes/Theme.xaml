@@ -386,7 +386,7 @@
                             <TabPanel IsItemsHost="True" />
                         </Border>
                         <Border Grid.Row="1" Margin="0,8,0,0" Background="{StaticResource BrushSurface}"
-                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="4">
+                                BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6" Padding="20,16">
                             <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
                         </Border>
                     </Grid>
