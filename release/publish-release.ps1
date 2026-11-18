@@ -20,6 +20,11 @@
         docs\格式说明.md
 #>
 
+
+param(
+    # 显式指定发布版本号（三段）。不传就从 Directory.Build.props 取前三段。
+    [string]$ProductVersion
+)
 $ErrorActionPreference = 'Stop'
 
 $releaseRoot = $PSScriptRoot
@@ -27,12 +32,20 @@ $repoRoot = Split-Path -Parent $releaseRoot
 $appProject = Join-Path $repoRoot 'src\CBox.App\CBox.App.csproj'
 
 # 版本号从 Directory.Build.props 读，避免两处不一致。
-# 约定：测试版四段（2.0.0.7），发布版三段（2.0.0）——发布时必须由脚本转成三段。
+# 约定：测试版四段（2.0.1.7），发布版三段（2.0.1）——发布时自动转成三段。
+# 特殊情况（比如测试版已经跑到 2.0.3.1、但发布版仍是 2.0.3）可以显式指定：
+#   publish-release.ps1 -ProductVersion 2.0.3
 $props = Get-Content (Join-Path $repoRoot 'Directory.Build.props') -Raw -Encoding UTF8
 $buildVersion = ([regex]::Match($props, '<Version>(.+?)</Version>')).Groups[1].Value
 
-# 四段 → 三段：2.0.0.7 → 2.0.0
-$version = ($buildVersion -split '\.' | Select-Object -First 3) -join '.'
+if ($ProductVersion) {
+    # 显式指定时直接用，不碰 props——这样测试版的版本号不会被打乱
+    $version = $ProductVersion
+} else {
+    # 四段 → 三段：2.0.1.7 → 2.0.1
+    $version = ($buildVersion -split '\.' | Select-Object -First 3) -join '.'
+}
+
 $parts = $version -split '\.'
 $assemblyVersion = '{0}.{1}.{2}.0' -f $parts[0], $parts[1], $parts[2]
 

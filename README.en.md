@@ -5,7 +5,7 @@ English | [简体中文](README.md)
 > A fully offline file encryption tool for Windows. It packs files — or an entire folder — into a `.cbx` container, and unlocks it whenever you need it.
 > No network code, no uploads, no external dependencies. Plaintext never touches the disk, not even while viewing or editing.
 
-Current version **2.0.2** (work in progress, **not audited by any third party** — do not use it for high-value production data).
+Current version **2.0.3** (work in progress, **not audited by any third party** — do not use it for high-value production data).
 
 ---
 
@@ -219,7 +219,7 @@ Files downloaded from the internet are tagged by Windows, so the first double-cl
 If you want to be sure the file is intact, verify it first:
 
 ```powershell
-Get-FileHash CipherBox-v2.0.2-Setup.exe -Algorithm SHA256
+Get-FileHash CipherBox-v2.0.3-Setup.exe -Algorithm SHA256
 ```
 
 Compare the output with the SHA256 listed on the Releases page. If they match, the file has not been tampered with.

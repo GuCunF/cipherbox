@@ -5,7 +5,7 @@
 > 完全离线的 Windows 文件加密工具：把文件（或整个文件夹）加密成 `.cbx`，需要时再解开。
 > 不用联网、不上传、不依赖任何外部程序，明文在查看和编辑时也不落盘。
 
-当前版本 **2.0.2**（开发中，**未经第三方安全审计**，请勿用于生产环境的敏感数据）。
+当前版本 **2.0.3**（开发中，**未经第三方安全审计**，请勿用于生产环境的敏感数据）。
 
 ---
 
@@ -223,7 +223,7 @@ Windows 发布包计划通过 **[SignPath Foundation](https://signpath.org/)**�
 如果你不放心，可以先用命令行核对文件：
 
 ```powershell
-Get-FileHash CipherBox-v2.0.2-Setup.exe -Algorithm SHA256
+Get-FileHash CipherBox-v2.0.3-Setup.exe -Algorithm SHA256
 ```
 
 把结果和 Release 页面列出的 SHA256 对比，一致就说明文件没被篡改。
