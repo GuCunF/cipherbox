@@ -39,6 +39,9 @@ public partial class App : Application
         // ---- 单实例判定 ----
         _instanceMutex = new Mutex(initiallyOwned: true, InstanceMutexName, out _primaryInstance);
 
+        // 诊断：把单实例判定结果记下来，方便排查「为什么开了两个窗口」
+        CbxLog.Info($"单实例判定：{( _primaryInstance ? "主实例" : "副实例")}，参数 {StartupPath ?? "(无)"}");
+
         if (!_primaryInstance)
         {
             // 已经有一个在跑了：把路径递过去，然后立刻退出。

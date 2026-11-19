@@ -206,7 +206,9 @@ public partial class MainWindow : Window
         const double MinWidth = 880;
         const double MaxWidth = 2200;
 
-        double target = Math.Clamp(available * Ratio, MinWidth, MaxWidth);
+        // 下限不能超过可用宽度：窗口被拖得很窄时，880 会比可用宽度还大，
+        // 居中对齐就会把内容推到左边之外（表现为标题的 ``C`` 被裁掉）。
+        double target = Math.Min(available, Math.Clamp(available * Ratio, MinWidth, MaxWidth));
         ContentHost.Width = target;
 
         CbxLog.Info($"布局：窗口可用 {available:F0}，内容宽度 {target:F0}（比例 {Ratio:P0}）");
