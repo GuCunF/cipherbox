@@ -371,6 +371,7 @@
 
     <!-- 标签页：胶囊页签 + 白色内容区 -->
     <Style TargetType="TabItem">
+        <Setter Property="Foreground" Value="{DynamicResource BrushText}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -394,6 +395,8 @@
     </Style>
 
     <Style TargetType="TabControl">
+        <!-- TabControl 的 Foreground 默认是黑色，会作为继承源盖过窗口设置，必须显式给出 -->
+        <Setter Property="Foreground" Value="{DynamicResource BrushText}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
