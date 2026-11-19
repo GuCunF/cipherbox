@@ -636,7 +636,6 @@ public partial class MainWindow : Window
             EncProgress.Value = 100;
             EncProgressText.Text = "100%";
         EncProgressText.Foreground = System.Windows.Media.Brushes.White;
-        if (EncProgress is not null) { EncProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
 
             if (!SoundFeedback.PlaySuccess(report.Elapsed))
             {
@@ -764,7 +763,6 @@ public partial class MainWindow : Window
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
         DecProgressText.Foreground = System.Windows.Media.Brushes.White;
-        if (DecProgress is not null) { DecProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
 
             if (!SoundFeedback.PlaySuccess(report.Elapsed))
             {
@@ -1738,7 +1736,6 @@ public partial class MainWindow : Window
         }
 
         var original = StatusText.Foreground;
-        StatusText.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess");
 
         await Task.Delay(600);
 
@@ -1986,7 +1983,6 @@ public partial class MainWindow : Window
             EncProgress.Value = 100;
             EncProgressText.Text = "100%";
         EncProgressText.Foreground = System.Windows.Media.Brushes.White;
-        if (EncProgress is not null) { EncProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
             ScrubPassword(EncPassword);
             ScrubPassword(EncPassword2);
 
@@ -2118,7 +2114,6 @@ public partial class MainWindow : Window
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
         DecProgressText.Foreground = System.Windows.Media.Brushes.White;
-        if (DecProgress is not null) { DecProgress.Foreground = (System.Windows.Media.Brush)FindResource("BrushSuccess"); }
             ScrubPassword(DecPassword);
 
             string summary = UiText.Get("folder.done", report.Succeeded, report.Skipped, report.Failed)
@@ -2494,8 +2489,6 @@ public partial class MainWindow : Window
         PwdStrengthText.Text = UiText.Get($"pwd.level.{key}") + "　·　" + UiText.Get($"pwd.hint.{key}");
         PwdStrengthText.Foreground = level switch
         {
-            PasswordLevel.Strong => (System.Windows.Media.Brush)FindResource("BrushSuccess"),
-            PasswordLevel.Medium => (System.Windows.Media.Brush)FindResource("BrushWarning"),
             _ => (System.Windows.Media.Brush)FindResource("BrushDanger"),
         };
     }
@@ -2551,7 +2544,6 @@ public partial class MainWindow : Window
         }
 
         StatusText.Text = message;
-        StatusText.Foreground = (System.Windows.Media.Brush)FindResource(error ? "BrushDanger" : "BrushText");
         _statusError = error;
 
         if (error)
