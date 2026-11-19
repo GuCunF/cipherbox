@@ -67,6 +67,9 @@ public partial class MainWindow : Window
         {
             UpdateContentWidth();
             LogLayoutMetrics();
+
+            // 从外部带进来的文件（拖到 exe 图标、右键菜单、双击关联文件）
+            ApplyExternalPaths(App.TakeStartupPath(), App.TakePendingPaths());
         };
         SizeChanged += (_, _) =>
         {
@@ -857,6 +860,70 @@ public partial class MainWindow : Window
     }
 
     // ---------------- 辅助 ----------------
+
+    /// <summary>
+    /// 处理从外部带进来的路径（拖到 exe 图标、右键菜单、双击关联文件、第二个实例转发）。
+    ///
+    /// 规则：
+    ///   .cbx 文件 → 切到解密页并填好
+    ///   其他文件 → 切到加密页并填好
+    ///   文件夹   → 暂不支持（提示一下，别让人以为程序没反应）
+    /// </summary>
+    private void ApplyExternalPaths(string? startupPath, string[] pending)
+    {
+        if (!string.IsNullOrEmpty(startupPath))
+        {
+            OpenExternalPath(startupPath!);
+        }
+
+        foreach (string path in pending)
+        {
+            OpenExternalPath(path);
+        }
+    }
+
+    /// <summary>供 App 调用（第二个实例把路径递过来时）。</summary>
+    public void OpenExternalPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        if (!File.Exists(path) && !Directory.Exists(path))
+        {
+            SetStatus(UiText.Get("error.file.missing"), error: true);
+            return;
+        }
+
+        if (Directory.Exists(path))
+        {
+            // 文件夹加密走界面上那套「整个文件夹」流程，这里先给个明确提示
+            SetStatus(UiText.Get("error.drop.folder"), error: true);
+            return;
+        }
+
+        bool looksEncrypted = path.EndsWith(".cbx", StringComparison.OrdinalIgnoreCase);
+
+        if (looksEncrypted)
+        {
+            Tabs.SelectedIndex = 1;
+            ApplyDecryptInput(path);
+        }
+        else
+        {
+            Tabs.SelectedIndex = 0;
+            ApplyEncryptInput(path);
+        }
+
+        // 窗口可能在后台，切到前台提醒用户「已经填好了」
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        Activate();
+    }
 
     private void ApplyEncryptInput(string path)
     {
