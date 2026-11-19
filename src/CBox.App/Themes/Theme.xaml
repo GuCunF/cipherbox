@@ -43,12 +43,27 @@
     <!-- 圆角 -->
     <CornerRadius x:Key="RadiusControl">6</CornerRadius>
     <CornerRadius x:Key="RadiusPill">16</CornerRadius>
-
-    <!-- 文字默认色：不写 Foreground 的 TextBlock 也跟随主题，深色下不会「黑字黑底」 -->
-    <Style TargetType="TextBlock">
+    <!-- 悬浮提示：系统默认是白底黑字，深色主题下会刺眼；浅色主题下配浅灰字也不清楚 -->
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource BrushSurface}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="MaxWidth" Value="420" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
-
     <!-- 输入框：白底、细边框、聚焦变蓝 -->
     <Style x:Key="ThemedTextBox" TargetType="TextBox">
         <Setter Property="Height" Value="36" />
