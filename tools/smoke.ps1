@@ -221,6 +221,37 @@ Check '默认拒绝覆盖已有密文' ($LASTEXITCODE -ne 0) "退出码 $LASTEXI
 & $enc $dupSrc -p $pass -f *> $null
 Check '加 -f 允许覆盖' ($LASTEXITCODE -eq 0) "退出码 $LASTEXITCODE"
 
+# ---- 15. 文件夹归档：加密成一个 .cbx，解出结构与内容一致 ----
+$arcSrc = Join-Path $work '归档源'
+New-Item -ItemType Directory -Force (Join-Path $arcSrc '子目录') | Out-Null
+Set-Content (Join-Path $arcSrc 'a.txt') -Value '归档 A' -Encoding UTF8
+Set-Content (Join-Path $arcSrc '子目录\b.txt') -Value '归档 B' -Encoding UTF8
+$arcCbx = Join-Path $work '归档.cbx'
+& $enc --folder $arcSrc $arcCbx -p $pass *> $null
+Check '归档加密成功' ($LASTEXITCODE -eq 0 -and (Test-Path $arcCbx)) "退出码 $LASTEXITCODE"
+
+$arcOut = Join-Path $work '归档解出'
+& $dec --folder $arcCbx $arcOut -p $pass *> $null
+$arcA = Get-Content (Join-Path $arcOut 'a.txt') -Raw -ErrorAction SilentlyContinue
+$arcB = Get-Content (Join-Path $arcOut '子目录\b.txt') -Raw -ErrorAction SilentlyContinue
+Check '归档解出根目录文件' ($LASTEXITCODE -eq 0 -and $arcA -match '归档 A') "退出码 $LASTEXITCODE"
+Check '归档解出子目录结构' ($null -ne $arcB) ' '
+
+# ---- 16. 文件夹批量：每个文件一个 .cbx ----
+$batchOut = Join-Path $work '批量输出'
+& $enc --folder $arcSrc $batchOut -p $pass --batch *> $null
+$batchFiles = @(Get-ChildItem $batchOut -Filter *.cbx -Recurse -ErrorAction SilentlyContinue)
+Check '批量加密生成多个密文' ($LASTEXITCODE -eq 0 -and $batchFiles.Count -ge 2) "生成 $($batchFiles.Count) 个"
+
+$batchBack = Join-Path $work '批量解出'
+& $dec --folder $batchOut $batchBack -p $pass --batch *> $null
+$batchA = Get-Content (Join-Path $batchBack 'a.txt') -Raw -ErrorAction SilentlyContinue
+Check '批量解密还原文件' ($LASTEXITCODE -eq 0 -and $batchA -match '归档 A') "退出码 $LASTEXITCODE"
+
+# ---- 17. 归档预览清单可读 ----
+$arcInfo = & $dec $arcCbx --info 2>&1 | Out-String
+Check '归档头可读' ($LASTEXITCODE -eq 0 -and $arcInfo -match '归档|目录|archive') ' '
+
 # ---- 报告 ----
 $results | Format-Table -AutoSize | Out-String | Write-Host
 $failed = @($results | Where-Object { $_.结果 -eq 'FAIL' })

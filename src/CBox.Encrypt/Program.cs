@@ -26,6 +26,8 @@ static int Run(string[] args)
     bool skipTypeCheck = false;
     bool fullEncryption = false;
     bool compatV1 = false;
+    bool folderMode = false;
+    bool batchMode = false;
     string? displayName = null;
 
     var positional = new List<string>();
@@ -64,6 +66,14 @@ static int Run(string[] args)
 
             case "-s" or "--strength":
                 iterations = ParseStrength(NextValue(args, ref i));
+                break;
+
+            case "--folder":
+                folderMode = true;
+                break;
+
+            case "--batch":
+                batchMode = true;
                 break;
 
             case "--full-encryption":
@@ -112,11 +122,78 @@ static int Run(string[] args)
         outputPath = positional[1];
     }
 
+    // ---- 文件夹模式 ----
+    //   归档（默认）：整个目录合成一个 .cbx，名字是「目录名.cbx」
+    //   批量（--batch）：每个文件各出一个 .cbx，输出是个目录
+    if (folderMode || Directory.Exists(inputPath))
+    {
+        if (!Directory.Exists(inputPath))
+        {
+            throw new CbxException($"找不到要加密的文件夹：{inputPath}");
+        }
+
+        string folderOutput = positional.Count > 1
+            ? positional[1]
+            : Path.GetFullPath(inputPath).TrimEnd(Path.DirectorySeparatorChar) + ".cbx";
+
+        // CbxProfile 是普通类（不是 record），逐项复制而不是 with
+        CbxProfile baseProfile = CbxProfile.Standard;
+        var folderProfile = new CbxProfile
+        {
+            Name = baseProfile.Name,
+            AlgorithmId = algId,
+            KdfId = kdfId,
+            Iterations = iterations ?? baseProfile.Iterations,
+            ChunkSize = chunkSize,
+            SkipTypeCheck = skipTypeCheck,
+            EncryptName = fullEncryption,
+            HideCategory = fullEncryption,
+            WriteCategory = !compatV1,
+        };
+
+        ConsoleUi.Banner($"CipherBox 加密端  v{CbxVersion.Current}");
+        Console.WriteLine($"输入文件夹 : {Path.GetFullPath(inputPath)}");
+        Console.WriteLine($"输出       : {folderOutput}");
+        Console.WriteLine($"模式       : {(batchMode ? "批量（每个文件一个 .cbx）" : "归档（合成一个 .cbx）")}");
+        Console.WriteLine();
+
+        password ??= ConsoleUi.ReadNewPassword();
+        if (password.Length == 0)
+        {
+            throw new CbxException(UiText.Get("error.password.empty"));
+        }
+
+        byte[] folderPassword = System.Text.Encoding.UTF8.GetBytes(password);
+
+        if (batchMode)
+        {
+            var batchReport = CbxBatch.Encrypt(
+                inputPath, folderOutput, folderPassword, folderProfile);
+
+            ConsoleUi.Info($"成功 {batchReport.Succeeded}，跳过 {batchReport.Skipped}，失败 {batchReport.Failed}");
+            Console.WriteLine(UiText.Get("cli.out.path", batchReport.OutputDirectory));
+            return batchReport.Failed > 0 ? 1 : 0;
+        }
+
+        var archiveReport = CbxArchive.Create(
+            inputPath, folderOutput, folderPassword, folderProfile, previewable: true);
+
+        ConsoleUi.Info(UiText.Get("cli.done.encrypt"));
+        Console.WriteLine(UiText.Get("cli.out.path", folderOutput));
+        if (archiveReport is not null)
+        {
+            Console.WriteLine(UiText.Get("cli.out.plain", archiveReport.PlainSize));
+            Console.WriteLine(UiText.Get("cli.out.cipher", archiveReport.CipherSize));
+            Console.WriteLine(UiText.Get("cli.out.chunks", archiveReport.ChunkCount));
+        }
+
+        return 0;
+    }
+
     if (!File.Exists(inputPath))
     {
         throw new CbxException($"找不到要加密的文件：{inputPath}");
     }
-
     outputPath ??= inputPath + ".cbx";
 
     string fullInput = Path.GetFullPath(inputPath);

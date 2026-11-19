@@ -20,6 +20,8 @@ static int Run(string[] args)
     string? overrideName = null;
     bool infoOnly = false;
     bool viewMode = false;
+    bool folderMode = false;
+    bool batchMode = false;
     int viewLimit = 64 * 1024;
     var positional = new List<string>();
 
@@ -34,6 +36,14 @@ static int Run(string[] args)
             case "-v" or "--version":
                 Console.WriteLine(CbxVersion.Display);
                 return 0;
+
+            case "--folder":
+                folderMode = true;
+                break;
+
+            case "--batch":
+                batchMode = true;
+                break;
 
             case "--info":
                 infoOnly = true;
@@ -75,11 +85,63 @@ static int Run(string[] args)
     string inputPath = positional[0];
     string? outputDirectory = positional.Count > 1 ? positional[1] : null;
 
+    // ---- 文件夹模式 ----
+    //   归档（默认）：一个 .cbx 整包解到目录
+    //   批量（--batch）：目录里每个 .cbx 各解一次
+    if (folderMode || batchMode)
+    {
+        string folderInput = Path.GetFullPath(inputPath);
+        string folderOutput = Path.GetFullPath(outputDirectory
+            ?? (batchMode ? folderInput : Path.GetDirectoryName(folderInput) ?? "."));
+
+        if (!batchMode && !File.Exists(folderInput))
+        {
+            throw new CbxException($"找不到要解密的归档：{folderInput}");
+        }
+
+        if (batchMode && !Directory.Exists(folderInput))
+        {
+            throw new CbxException($"找不到要解密的文件夹：{folderInput}");
+        }
+
+        ConsoleUi.Banner($"CipherBox 解密端  v{CbxVersion.Current}");
+        Console.WriteLine(UiText.Get("cli.out.input", folderInput));
+        Console.WriteLine(UiText.Get("cli.out.outputdir", folderOutput));
+        Console.WriteLine($"模式       : {(batchMode ? "批量（每个 .cbx 各解一次）" : "归档（整包解开）")}");
+        Console.WriteLine();
+
+        password ??= ConsoleUi.ReadPassword("请输入口令：");
+        if (password.Length == 0)
+        {
+            throw new CbxException(UiText.Get("error.password.empty"));
+        }
+
+        byte[] folderPassword = Encoding.UTF8.GetBytes(password);
+
+        if (batchMode)
+        {
+            var batchReport = CbxFolder.DecryptFolder(
+                folderInput, folderOutput, folderPassword);
+
+            ConsoleUi.Info($"成功 {batchReport.Succeeded}，跳过 {batchReport.Skipped}，失败 {batchReport.Failed}");
+            if (batchReport.Conflicted > 0)
+            {
+                Console.WriteLine($"同名冲突 {batchReport.Conflicted} 个：{batchReport.ConflictSamples}");
+            }
+
+            return batchReport.Failed > 0 ? 1 : 0;
+        }
+
+        int count = CbxArchive.ExtractAll(folderInput, folderOutput, folderPassword);
+        ConsoleUi.Info($"解出 {count} 个文件。");
+        Console.WriteLine(UiText.Get("cli.out.outputdir", folderOutput));
+        return 0;
+    }
+
     if (!File.Exists(inputPath))
     {
         throw new CbxException($"找不到要解密的文件：{inputPath}");
     }
-
     string fullInput = Path.GetFullPath(inputPath);
 
     if (infoOnly)

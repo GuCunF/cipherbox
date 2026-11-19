@@ -1,4 +1,4 @@
-namespace CBox.Core;
+﻿namespace CBox.Core;
 
 /// <summary>文件夹加密的三种方案，对应界面上三个挡位。</summary>
 public enum FolderMode
