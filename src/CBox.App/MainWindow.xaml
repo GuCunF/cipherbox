@@ -86,10 +86,15 @@
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
                 <!-- 专业模式开关放在选项里：放标题旁边容易被误点，也不该天天看见 -->
-                <CheckBox x:Name="DarkModeCheckBox" Content="{ui:Tr opt.dark}"
-                          VerticalAlignment="Center" Margin="0,0,16,6"
-                          Checked="DarkMode_Changed" Unchecked="DarkMode_Changed"
-                          ToolTip="{ui:Tr opt.dark.tip}" />
+                <!-- 配色三态：浅色 / 深色 / 跟随系统 -->
+                <ComboBox x:Name="ThemeCombo" Width="120" Height="26" Margin="0,0,16,6"
+                          VerticalAlignment="Center" VerticalContentAlignment="Center"
+                          SelectionChanged="ThemeCombo_Changed"
+                          ToolTip="{ui:Tr opt.theme.tip}">
+                    <ComboBoxItem Content="{ui:Tr opt.theme.system}" Tag="system" />
+                    <ComboBoxItem Content="{ui:Tr opt.theme.light}" Tag="light" />
+                    <ComboBoxItem Content="{ui:Tr opt.theme.dark}" Tag="dark" />
+                </ComboBox>
                 <CheckBox x:Name="ProModeCheckBox" Content="{ui:Tr opt.pro}" IsChecked="False"
                           VerticalAlignment="Center" Margin="0,0,16,6"
                           Checked="ProMode_Changed" Unchecked="ProMode_Changed"

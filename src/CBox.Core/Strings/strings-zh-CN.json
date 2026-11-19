@@ -354,5 +354,11 @@
   "guide.simple": "一般模式",
   "opt.dark": "深色模式",
   "opt.dark.tip": "切换深色/浅色配色。改完需要重启程序才生效。",
-  "opt.dark.restart": "设置已保存，重启程序后生效。"
+  "opt.dark.restart": "设置已保存，重启程序后生效。",
+  "opt.theme.system": "跟随系统",
+  "opt.theme.light": "浅色",
+  "opt.theme.dark": "深色",
+  "opt.theme.tip": "选择界面配色。改完需要重启程序才生效。",
+  "opt.theme.title": "界面配色",
+  "opt.theme.restart": "设置已保存，重启程序后生效。"
 }

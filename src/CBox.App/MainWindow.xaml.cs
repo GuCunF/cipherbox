@@ -89,7 +89,7 @@ public partial class MainWindow : Window
         TestFailEncCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
         TestFailDecCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
 #endif
-        if (DarkModeCheckBox is not null) { DarkModeCheckBox.IsChecked = AppTheme.IsDark; }
+        InitializeThemeCombo();
         RefreshStrengthLabels();
         InitializeAlgCombo();
         InitializeSoundPreset();
@@ -111,6 +111,26 @@ public partial class MainWindow : Window
         }
 
         RunEnvironmentCheck();
+    }
+
+    /// <summary>按当前设置选中对应项（还没选过就是「跟随系统」）。</summary>
+    private void InitializeThemeCombo()
+    {
+        if (ThemeCombo is null)
+        {
+            return;
+        }
+
+        string choice = AppTheme.Choice;
+
+        foreach (object entry in ThemeCombo.Items)
+        {
+            if (entry is ComboBoxItem item && item.Tag as string == choice)
+            {
+                ThemeCombo.SelectedItem = item;
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -1320,27 +1340,6 @@ public partial class MainWindow : Window
     }
 
     /// <summary>一般/专业模式切换（当前只影响文案措辞与专业选项的可见性）。</summary>
-    /// <summary>
-    /// 深色模式开关：保存设置并提示重启。
-    /// 界面里全是 StaticResource，运行中换字典不会让已渲染的控件变色，所以只能重启生效。
-    /// </summary>
-    private void DarkMode_Changed(object sender, RoutedEventArgs e)
-    {
-        bool dark = DarkModeCheckBox?.IsChecked == true;
-
-        if (dark == AppTheme.IsDark)
-        {
-            return;
-        }
-
-        AppTheme.IsDark = dark;
-
-        AppDialog.Info(
-            UiText.Get("opt.dark"),
-            UiText.Get("opt.dark.restart"),
-            this);
-    }
-
     private void ProMode_Changed(object sender, RoutedEventArgs e)
     {
         AppMode.IsProfessional = (sender as CheckBox)?.IsChecked == true;
@@ -1424,6 +1423,32 @@ public partial class MainWindow : Window
 #endif
         CbxLog.Info($"界面模式：{(AppMode.IsProfessional ? "专业" : "一般")}");
     }
+
+
+    /// <summary>
+    /// 配色三态切换：保存选择并提示重启。
+    /// 界面里用的是 StaticResource，运行中换字典不会让已渲染控件变色。
+    /// </summary>
+    private void ThemeCombo_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (ThemeCombo?.SelectedItem is not ComboBoxItem item || item.Tag is not string choice)
+        {
+            return;
+        }
+
+        if (choice == AppTheme.Choice)
+        {
+            return;
+        }
+
+        AppTheme.Choice = choice;
+
+        AppDialog.Info(
+            UiText.Get("opt.theme.title"),
+            UiText.Get("opt.theme.restart"),
+            this);
+    }
+
 
     /// <summary>语言切换：先双语确认，再保存设置并重启。</summary>
     private void Language_Changed(object sender, SelectionChangedEventArgs e)
@@ -2559,5 +2584,8 @@ public partial class MainWindow : Window
         }
     }
 }
+
+
+
 
 
