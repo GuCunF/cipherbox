@@ -169,11 +169,16 @@ public partial class MainWindow : Window
     private void RestoreForDrag(System.Windows.Input.MouseButtonEventArgs e)
     {
         System.Windows.Point inWindow = e.GetPosition(this);
-        System.Windows.Point onScreen = PointToScreen(inWindow);
 
         // 鼠标在标题栏里的横向比例：还原后要落到同样的位置，光标才不会"跳"
         double ratio = ActualWidth > 0 ? inWindow.X / ActualWidth : 0.5;
         ratio = Math.Clamp(ratio, 0, 1);
+
+        // 关键：PointToScreen 给的是**物理像素**（受系统缩放影响），
+        // 而 Left/Top 用的是**逻辑像素**。150% 缩放下直接相减会差 1.5 倍，
+        // 表现就是「窗口一拖就跑到左上角」。这里先换算成逻辑坐标。
+        System.Windows.Point physical = PointToScreen(inWindow);
+        System.Windows.Point dip = ToLogical(physical);
 
         Left = _restoreLeft;
         Top = _restoreTop;
@@ -182,16 +187,31 @@ public partial class MainWindow : Window
         _pseudoMaximized = false;
         ApplyChromeState();
 
-        // 让光标仍在标题栏上（纵向保持 20px 左右），横向按比例对齐
-        Left = onScreen.X - _restoreWidth * ratio;
-        Top = onScreen.Y - Math.Min(inWindow.Y, 20);
+        // 让光标落在新窗口标题栏的同一相对位置
+        Left = dip.X - _restoreWidth * ratio;
+        Top = dip.Y - Math.Min(inWindow.Y, 20);
 
         // 别让窗口被拖到屏幕外找不回来
         Rect work = SystemParameters.WorkArea;
         Left = Math.Clamp(Left, work.Left - Width + 120, work.Right - 120);
         Top = Math.Clamp(Top, work.Top, work.Bottom - 80);
+
+        // 尺寸改完先让布局跑一次，否则 DragMove 会按旧尺寸算偏移
+        UpdateLayout();
     }
 
+    /// <summary>把物理像素换算成 WPF 的逻辑像素（跟随系统缩放）。</summary>
+    private System.Windows.Point ToLogical(System.Windows.Point physical)
+    {
+        PresentationSource? source = PresentationSource.FromVisual(this);
+
+        if (source?.CompositionTarget is null)
+        {
+            return physical;
+        }
+
+        return source.CompositionTarget.TransformFromDevice.Transform(physical);
+    }
     private void MinButton_Click(object sender, RoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
 
     private void MaxButton_Click(object sender, RoutedEventArgs e) => ToggleMaximize();
