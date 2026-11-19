@@ -87,6 +87,8 @@
             <WrapPanel>
                 <!-- 专业模式开关放在选项里：放标题旁边容易被误点，也不该天天看见 -->
                 <!-- 配色三态：浅色 / 深色 / 跟随系统 -->
+                <TextBlock Text="{ui:Tr opt.theme.label}" VerticalAlignment="Center" Margin="0,0,8,6"
+                           Foreground="{DynamicResource BrushTextMuted}" />
                 <ComboBox x:Name="ThemeCombo" Width="120" Height="26" Margin="0,0,16,6"
                           VerticalAlignment="Center" VerticalContentAlignment="Center"
                           SelectionChanged="ThemeCombo_Changed"

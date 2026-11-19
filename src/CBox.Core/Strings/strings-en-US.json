@@ -372,5 +372,6 @@
   "opt.theme.dark": "Dark",
   "opt.theme.tip": "Choose the color scheme. Restart needed after changing.",
   "opt.theme.title": "Color scheme",
-  "opt.theme.restart": "Saved. Restart the program to apply."
+  "opt.theme.restart": "Saved. Restart the program to apply.",
+  "opt.theme.label": "Color scheme"
 }
