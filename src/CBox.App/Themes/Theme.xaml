@@ -453,11 +453,11 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
 
-    <Style TargetType="TextBox">
+    <Style TargetType="TextBox" BasedOn="{StaticResource ThemedTextBox}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
 
-    <Style TargetType="PasswordBox">
+    <Style TargetType="PasswordBox" BasedOn="{StaticResource ThemedPasswordBox}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
 

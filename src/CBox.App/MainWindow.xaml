@@ -275,7 +275,7 @@
                                         Visibility="Collapsed" Margin="0,6,0,0">
                                 <TextBlock Text="{ui:Tr enc.displayname}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
-                                <TextBox x:Name="DisplayNameBox" Width="200" Height="24"
+<TextBox x:Name="DisplayNameBox" Style="{StaticResource InputTextBox}" Width="200" Height="24"
                                          VerticalContentAlignment="Center"
                                          TextChanged="DisplayName_Changed"
                                          ToolTip="{ui:Tr enc.displayname.tip}" />
