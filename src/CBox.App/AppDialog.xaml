@@ -77,10 +77,12 @@
 
             <!-- 按钮区 -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button x:Name="PrimaryButton" Style="{StaticResource PrimaryButton}"
-                        MinWidth="92" Margin="0,0,10,0" Click="Primary_Click" />
+                <!-- 次要按钮在左、主按钮在右：主操作靠右是现代界面的惯例，
+                     而且「推荐项」放在最后一眼扫到的位置更容易被选中 -->
                 <Button x:Name="SecondaryButton" Style="{StaticResource SecondaryButton}"
-                        MinWidth="92" Click="Secondary_Click" />
+                        MinWidth="92" Margin="0,0,10,0" Click="Secondary_Click" />
+                <Button x:Name="PrimaryButton" Style="{StaticResource PrimaryButton}"
+                        MinWidth="92" Click="Primary_Click" />
             </StackPanel>
         </Grid>
     </Grid>

@@ -1225,12 +1225,16 @@ public partial class MainWindow : Window
             return;
         }
 
-        bool familiar = AppDialog.Confirm(
+        // 主按钮（醒目、在右）给「一般模式」——多数人该用这个；
+        // 次按钮给「专业模式」。Confirm 返回 true 表示点了主按钮，即选了简单模式。
+        bool simpleMode = AppDialog.Confirm(
             UiText.Get("guide.title"),
             UiText.Get("guide.text") + Environment.NewLine + Environment.NewLine + UiText.Get("guide.hint"),
-            UiText.Get("guide.familiar"),
             UiText.Get("guide.simple"),
+            UiText.Get("guide.familiar"),
             this);
+
+        bool familiar = !simpleMode;
 
         // 直接改复选框状态：Checked/Unchecked 事件会把可见性、文案一次性刷好，
         // 比在这里重复一遍"哪些控件该藏"可靠
