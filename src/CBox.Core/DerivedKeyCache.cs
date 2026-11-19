@@ -10,10 +10,10 @@ namespace CBox.Core;
 /// 盐值和迭代次数通常是相同的（同一批加密出来的）。
 ///
 /// 做法：用「口令的哈希 + 盐 + 迭代次数 + 长度」做键，命中就复用。
-/// 注意：
-///   1. 只缓存推导结果，不缓存口令本身——口令仍然以 byte[] 传入，用完不留
-///   2. 条目数有上限（默认 8），超了就整体清空，避免无限增长
-///   3. 批量操作结束后由调用方调 <see cref="Clear"/>，不让密钥长期驻留内存
+///
+/// **进出都必须是副本**：调用方（加密的 finally、解密器的 Dispose）用完会把密钥
+/// 涂零。如果这里直接返回缓存里的那个数组，人家一涂缓存就变全零，下一个文件
+/// 用全零密钥去解密必然失败——「第一个文件成功、后面全失败」就是这个坑。
 /// </summary>
 public static class DerivedKeyCache
 {
@@ -39,6 +39,7 @@ public static class DerivedKeyCache
 
     /// <summary>
     /// 取密钥：命中就复用，否则真的跑一遍 PBKDF2。
+    /// 返回值永远是调用方独占的副本，可以随意涂零。
     /// </summary>
     internal static byte[] Derive(byte[] password, byte[] salt, uint iterations, int keyLength)
     {
@@ -53,7 +54,7 @@ public static class DerivedKeyCache
         {
             if (Entries.TryGetValue(key, out byte[]? hit))
             {
-                return hit;
+                return (byte[])hit.Clone();
             }
         }
 
@@ -63,10 +64,16 @@ public static class DerivedKeyCache
         {
             if (Entries.Count >= MaxEntries)
             {
+                // 先涂零再丢，别让整批旧密钥在内存里等着被 GC
+                foreach (byte[] value in Entries.Values)
+                {
+                    Array.Clear(value);
+                }
+
                 Entries.Clear();
             }
 
-            Entries[key] = derived;
+            Entries[key] = (byte[])derived.Clone();
         }
 
         return derived;

@@ -248,7 +248,25 @@ $batchBack = Join-Path $work '批量解出'
 $batchA = Get-Content (Join-Path $batchBack 'a.txt') -Raw -ErrorAction SilentlyContinue
 Check '批量解密还原文件' ($LASTEXITCODE -eq 0 -and $batchA -match '归档 A') "退出码 $LASTEXITCODE"
 
-# ---- 17. 归档预览清单可读 ----
+# ---- 16b. 同进程往返（密钥缓存回归）----
+#   跨进程的批量测试测不出缓存被涂零的问题，必须同一个进程里加密再解密。
+#   用预编译 dll 而不是 dotnet run：后者的编译输出会污染判定。
+$rtProj = Join-Path $root 'tools\RoundTripTest\bt.csproj'
+$rtDll = Join-Path $root 'tools\RoundTripTest\bin\Release\net10.0\bt.dll'
+$rtDir = Join-Path $work '同进程往返'
+
+if (-not (Test-Path $rtDll))
+{
+    & dotnet build $rtProj -c Release -v q --nologo *> $null
+}
+
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$rtOut = & dotnet $rtDll $rtDir 2>&1 | Out-String
+$rtCode = $LASTEXITCODE
+$ErrorActionPreference = $prevEap
+
+Check '同进程批量往返（缓存回归）' ($rtCode -eq 0 -and $rtOut -match '结果：通过') "退出码 $rtCode"
 $arcInfo = & $dec $arcCbx --info 2>&1 | Out-String
 Check '归档头可读' ($LASTEXITCODE -eq 0 -and $arcInfo -match '归档|目录|archive') ' '
 
