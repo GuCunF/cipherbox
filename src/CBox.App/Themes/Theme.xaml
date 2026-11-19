@@ -44,6 +44,11 @@
     <CornerRadius x:Key="RadiusControl">6</CornerRadius>
     <CornerRadius x:Key="RadiusPill">16</CornerRadius>
 
+    <!-- 文字默认色：不写 Foreground 的 TextBlock 也跟随主题，深色下不会「黑字黑底」 -->
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BrushText}" />
+    </Style>
+
     <!-- 输入框：白底、细边框、聚焦变蓝 -->
     <Style x:Key="ThemedTextBox" TargetType="TextBox">
         <Setter Property="Height" Value="36" />

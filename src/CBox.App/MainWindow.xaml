@@ -6,7 +6,7 @@
         MinHeight="520" MinWidth="720"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged">
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged" Foreground="{DynamicResource BrushText}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
@@ -185,7 +185,7 @@
                     <Border x:Name="FolderHintBox" Visibility="Collapsed"
                             Background="{DynamicResource BrushSurface}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="8"
                             Padding="10,8" Margin="0,0,0,12">
-                        <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="#444444" />
+                        <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="{DynamicResource BrushTextMuted}" />
                     </Border>
 
                 <Grid>

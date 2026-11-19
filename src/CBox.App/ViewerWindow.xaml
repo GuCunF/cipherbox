@@ -5,7 +5,7 @@
         Title="{ui:Tr app.title}" Height="660" Width="920"
         MinHeight="420" MinWidth="620"
         WindowStartupLocation="CenterOwner"
-        Loaded="Window_Loaded" Closed="Window_Closed" Icon="Assets/CipherBox.ico" WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize">
+        Loaded="Window_Loaded" Closed="Window_Closed" Icon="Assets/CipherBox.ico" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Foreground="{DynamicResource BrushText}" ResizeMode="NoResize">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="4" GlassFrameThickness="0"
                       CornerRadius="0" UseAeroCaptionButtons="False" />
