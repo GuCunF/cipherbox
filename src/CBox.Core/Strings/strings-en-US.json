@@ -355,5 +355,8 @@
   "opt.assoc.title": "File association",
   "opt.assoc.failed": "Could not update the registry — permissions may be restricted. Try another account, or associate .cbx manually.",
   "opt.assoc.on.done": "Associated: double-clicking a .cbx will now open CipherBox.",
-  "opt.assoc.off.done": "Association removed."
+  "opt.assoc.off.done": "Association removed.",
+  "enc.strength.quick.short": "Quick",
+  "enc.strength.standard.short": "Standard (recommended)",
+  "enc.strength.strong.short": "Strong"
 }

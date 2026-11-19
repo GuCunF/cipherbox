@@ -81,9 +81,12 @@ public partial class MainWindow : Window
 
         HideTestOnlyControls();
 #if CBTEST
-        TestFailEncCheckBox.Visibility = Visibility.Visible;
-        TestFailDecCheckBox.Visibility = Visibility.Visible;
+        // 测试控件只在专业模式露出：一般用户看到「失败测试」会懵
+        bool testMode = AppMode.IsProfessional;
+        TestFailEncCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
+        TestFailDecCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
 #endif
+        RefreshStrengthLabels();
         InitializeAlgCombo();
         InitializeSoundPreset();
         InitializeLanguageCombo();
@@ -1201,6 +1204,37 @@ public partial class MainWindow : Window
         UpdateArchiveLevelVisibility();
     }
 
+    /// <summary>
+    /// 强度下拉的选项文案分两套：
+    ///   一般模式 → 「标准（推荐）」，不摆迭代次数；用户只关心「该选哪个」
+    ///   专业模式 → 「标准（迭代 60 万次，推荐）」，把参数摆明白
+    /// 切换模式时刷新，避免一般模式下还挂着一串技术细节。
+    /// </summary>
+    private void RefreshStrengthLabels()
+    {
+        if (EncStrengthCombo is null || EncStrengthCombo.Items.Count < 3)
+        {
+            return;
+        }
+
+        string suffix = AppMode.IsProfessional ? string.Empty : ".short";
+
+        if (EncStrengthCombo.Items[0] is ComboBoxItem quick)
+        {
+            quick.Content = UiText.Get("enc.strength.quick" + suffix);
+        }
+
+        if (EncStrengthCombo.Items[1] is ComboBoxItem standard)
+        {
+            standard.Content = UiText.Get("enc.strength.standard" + suffix);
+        }
+
+        if (EncStrengthCombo.Items[2] is ComboBoxItem strong)
+        {
+            strong.Content = UiText.Get("enc.strength.strong" + suffix);
+        }
+    }
+
     private void UpdateStrengthHint()
     {
         if (EncStrengthHint is null)
@@ -1321,6 +1355,13 @@ public partial class MainWindow : Window
             SubtitleText.Text = UiText.Get("app.subtitle");
         }
 
+        RefreshStrengthLabels();
+
+        // 测试控件跟着模式走
+#if CBTEST
+        if (TestFailEncCheckBox is not null) { TestFailEncCheckBox.Visibility = pro ? Visibility.Visible : Visibility.Collapsed; }
+        if (TestFailDecCheckBox is not null) { TestFailDecCheckBox.Visibility = pro ? Visibility.Visible : Visibility.Collapsed; }
+#endif
         CbxLog.Info($"界面模式：{(AppMode.IsProfessional ? "专业" : "一般")}");
     }
 
@@ -2464,3 +2505,4 @@ public partial class MainWindow : Window
         }
     }
 }
+

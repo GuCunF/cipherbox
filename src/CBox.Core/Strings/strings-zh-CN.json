@@ -345,5 +345,8 @@
   "opt.assoc.title": "文件关联",
   "opt.assoc.failed": "改注册表时出错，可能是权限被限制。可以换个账户登录后再试，或手动关联 .cbx 文件。",
   "opt.assoc.on.done": "已关联：现在双击 .cbx 就会用本程序打开。",
-  "opt.assoc.off.done": "已取消关联。"
+  "opt.assoc.off.done": "已取消关联。",
+  "enc.strength.quick.short": "快速",
+  "enc.strength.standard.short": "标准（推荐）",
+  "enc.strength.strong.short": "高强度"
 }
