@@ -74,10 +74,11 @@ public partial class MainWindow : Window
 
             MaybeShowFirstRunGuide();
         };
-        SizeChanged += (_, _) =>
+        SizeChanged += (sender, e) =>
         {
             UpdateContentWidth();
             LogLayoutMetrics();
+            MainWindow_SizeChanged_ChromeCheck(sender, e);
         };
 
         RefreshAssocButton();
@@ -206,6 +207,29 @@ public partial class MainWindow : Window
     /// 无边框窗口最大化会溢出屏幕几个像素，用 Margin 补偿；
     /// 顺便切换最大化/还原的图标。
     /// </summary>
+
+    /// <summary>
+    /// 用户手动拖边改大小时，如果原本是伪最大化状态，就退出该状态——
+    /// 否则图标、圆角、ResizeMode 都会停在"最大化"的样子，和实际窗口不符。
+    /// </summary>
+    private void MainWindow_SizeChanged_ChromeCheck(object sender, SizeChangedEventArgs e)
+    {
+        if (!_pseudoMaximized)
+        {
+            return;
+        }
+
+        Rect work = SystemParameters.WorkArea;
+
+        // 差 2px 以内视为「还是铺满」，超过就是用户自己拉过
+        bool stillFull = Math.Abs(Width - work.Width) < 2 && Math.Abs(Height - work.Height) < 2;
+
+        if (!stillFull)
+        {
+            _pseudoMaximized = false;
+            ApplyChromeState();
+        }
+    }
     private void MainWindow_StateChanged(object sender, EventArgs e) => ApplyChromeState();
 
     /// <summary>
@@ -282,6 +306,10 @@ public partial class MainWindow : Window
             CaptionBar.CornerRadius = full ? new CornerRadius(0) : new CornerRadius(10, 10, 0, 0);
         }
 
+
+        // 伪最大化时禁止拖边改大小：这时窗口只是"铺满工作区"，
+        // 但 ResizeMode 仍是 CanResize，鼠标移到边缘还能拉，拉完状态又对不上。
+        ResizeMode = full ? ResizeMode.NoResize : ResizeMode.CanResize;
         if (MaxGlyph is not null)
         {
             MaxGlyph.Data = Geometry.Parse(full
@@ -2584,6 +2612,7 @@ public partial class MainWindow : Window
         }
     }
 }
+
 
 
 
