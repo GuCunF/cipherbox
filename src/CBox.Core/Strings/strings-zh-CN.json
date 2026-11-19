@@ -67,9 +67,9 @@
   "error.encrypt.title": "加密失败",
   "error.decrypt.title": "解密失败",
 
-  "strength.hint.quick": "只适合临时文件或不太重要的内容",
-  "strength.hint.standard": "日常使用选这个就好",
-  "strength.hint.strong": "重要资料用这个，加解密会慢一点",
+  "strength.hint.quick": "仅用于临时文件或不重要的内容",
+  "strength.hint.standard": "适用于多数文件的常规保护",
+  "strength.hint.strong": "用于重要资料，加解密耗时更长",
   "strength.hint.quick.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（最省时间，但抗爆破能力最弱）",
   "strength.hint.standard.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（耗时取决于电脑性能）",
   "strength.hint.strong.pro": "PBKDF2-SHA256 · {0:N0} 次迭代（约为标准的 17 倍，打开会明显变慢）",

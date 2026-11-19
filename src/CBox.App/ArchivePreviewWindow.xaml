@@ -1,4 +1,4 @@
-<Window x:Class="CBox.App.ArchivePreviewWindow"
+﻿<Window x:Class="CBox.App.ArchivePreviewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:CBox.App"
@@ -10,7 +10,7 @@
     </WindowChrome.WindowChrome>
 
     <!-- 圆角外框 + 阴影：AllowsTransparency 打开后由这层负责外观 -->
-    <Border x:Name="ChromeBorder" CornerRadius="10" BorderBrush="{StaticResource BrushBorderStrong}" BorderThickness="1" Background="{StaticResource BrushSurface}" Margin="8">
+    <Border x:Name="ChromeBorder" CornerRadius="10" BorderBrush="{DynamicResource BrushBorderStrong}" BorderThickness="1" Background="{DynamicResource BrushSurface}" Margin="8">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <!-- 自绘标题栏：拖动由 WindowChrome 的 CaptionHeight 负责，这里只画外观 -->
-        <Border x:Name="CaptionBar" Grid.Row="0" Background="{StaticResource BrushPrimary}" CornerRadius="10,10,0,0">
+        <Border x:Name="CaptionBar" Grid.Row="0" Background="{DynamicResource BrushPrimary}" CornerRadius="10,10,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -44,10 +44,10 @@
 
         <TextBlock x:Name="HeadingText" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
 
-        <TextBlock Grid.Row="1" x:Name="NoteText" Foreground="{StaticResource BrushTextMuted}"
+        <TextBlock Grid.Row="1" x:Name="NoteText" Foreground="{DynamicResource BrushTextMuted}"
                    Margin="0,6,0,10" TextWrapping="Wrap" Text="{ui:Tr preview.note}" />
 
-        <Border Grid.Row="2" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="4">
+        <Border Grid.Row="2" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="4">
             <TreeView x:Name="EntryTree" BorderThickness="0" Padding="6"
                       VirtualizingStackPanel.IsVirtualizing="False" />
         </Border>
@@ -57,7 +57,7 @@
                     Click="SelectAll_Click" />
             <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr preview.selectnone}" Width="110" Height="30" Margin="0,0,20,0"
                     Click="SelectNone_Click" />
-            <TextBlock x:Name="SelectionText" VerticalAlignment="Center" Foreground="{StaticResource BrushTextMuted}" />
+            <TextBlock x:Name="SelectionText" VerticalAlignment="Center" Foreground="{DynamicResource BrushTextMuted}" />
             <Button Style="{StaticResource PrimaryButton}" Content="{ui:Tr preview.extract}" Width="130" Height="30" Margin="20,0,8,0"
                     Click="Extract_Click" IsDefault="True" />
             <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.close}" Width="90" Height="30" Click="Close_Click" IsCancel="True" />

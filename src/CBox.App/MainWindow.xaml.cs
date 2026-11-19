@@ -71,6 +71,7 @@ public partial class MainWindow : Window
             // 从外部带进来的文件（拖到 exe 图标、右键菜单、双击关联文件）
             ApplyExternalPaths(App.TakeStartupPath(), App.TakePendingPaths());
             // 第一次打开：先问一句"你熟悉加密参数吗"
+
             MaybeShowFirstRunGuide();
         };
         SizeChanged += (_, _) =>

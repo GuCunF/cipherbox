@@ -14,7 +14,7 @@
     </WindowChrome.WindowChrome>
 
     <!-- 圆角外框 + 阴影：AllowsTransparency 打开后由这层负责外观 -->
-    <Border x:Name="ChromeBorder" CornerRadius="10" BorderBrush="{StaticResource BrushBorderStrong}" BorderThickness="1" Background="{StaticResource BrushWindowBackground}" Margin="8">
+    <Border x:Name="ChromeBorder" CornerRadius="10" BorderBrush="{DynamicResource BrushBorderStrong}" BorderThickness="1" Background="{DynamicResource BrushWindowBackground}" Margin="8">
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <!-- 自绘标题栏：深蓝底，与图标同色系 -->
-        <Border x:Name="CaptionBar" Grid.Row="0" Height="40" Background="{StaticResource BrushPrimary}" CornerRadius="10,10,0,0"
+        <Border x:Name="CaptionBar" Grid.Row="0" Height="40" Background="{DynamicResource BrushPrimary}" CornerRadius="10,10,0,0"
                 MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -70,7 +70,7 @@
                 <TextBlock x:Name="AppTitle" Text="CipherBox" FontSize="{StaticResource FontTitle}" FontWeight="SemiBold"
                            TextTrimming="CharacterEllipsis" />
                 <TextBlock x:Name="SubtitleText" Text="{ui:Tr app.subtitle}"
-                           Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                           Foreground="{DynamicResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -82,7 +82,7 @@
 
         <!-- 选项默认收起：标题旁边塞一排控件既挤又容易和标题重叠 -->
         <Border Grid.Row="1" x:Name="OptionsPanel" Visibility="Collapsed"
-                Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8"
+                Background="{DynamicResource BrushSurface}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="8"
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
                 <!-- 专业模式开关放在选项里：放标题旁边容易被误点，也不该天天看见 -->
@@ -183,7 +183,7 @@
                     </StackPanel>
 
                     <Border x:Name="FolderHintBox" Visibility="Collapsed"
-                            Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8"
+                            Background="{DynamicResource BrushSurface}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="8"
                             Padding="10,8" Margin="0,0,0,12">
                         <TextBlock x:Name="FolderHintText" TextWrapping="Wrap" Foreground="#444444" />
                     </Border>
@@ -243,7 +243,7 @@
                         <PasswordBox x:Name="EncPassword2" Style="{StaticResource InputPasswordBox}" Grid.Column="1"
                                      PasswordChanged="EncPassword_Changed" />
                         <TextBlock x:Name="PwdStrengthText" Grid.Column="1" Grid.Row="1"
-                                   Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                   Foreground="{DynamicResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" Margin="0,4,0,0" TextWrapping="Wrap" />
                     </Grid>
                     <Grid Grid.Row="4" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -259,7 +259,7 @@
                             <ComboBoxItem Content="{ui:Tr enc.strength.strong}" />
                         </ComboBox>
                         <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,0,0,0">
-                            <TextBlock x:Name="EncStrengthHint" Foreground="{StaticResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" TextWrapping="Wrap" />
+                            <TextBlock x:Name="EncStrengthHint" Foreground="{DynamicResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" TextWrapping="Wrap" />
                             <CheckBox x:Name="SkipTypeCheckBox" Content="{ui:Tr enc.skipcheck}"
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
                                       ToolTip="{ui:Tr enc.skipcheck.tip}" />
@@ -267,19 +267,19 @@
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
                                       ToolTip="{ui:Tr enc.full.tip}" />
                             <StackPanel x:Name="AlgPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,6,0,0">
-                                <TextBlock Text="{ui:Tr enc.alg}" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{ui:Tr enc.alg}" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox x:Name="AlgCombo" Width="190" Height="26" VerticalAlignment="Center"
                                           ToolTip="{ui:Tr enc.alg.tip}" />
                             </StackPanel>
                             <StackPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
                                         Visibility="Collapsed" Margin="0,6,0,0">
-                                <TextBlock Text="{ui:Tr enc.displayname}" Foreground="{StaticResource BrushTextMuted}"
+                                <TextBlock Text="{ui:Tr enc.displayname}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBox x:Name="DisplayNameBox" Width="200" Height="24"
                                          VerticalContentAlignment="Center"
                                          TextChanged="DisplayName_Changed"
                                          ToolTip="{ui:Tr enc.displayname.tip}" />
-                                <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="{StaticResource BrushTextMuted}"
+                                <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="6,0,0,0" />
                             </StackPanel>
                         </StackPanel>
@@ -290,7 +290,7 @@
                                      Minimum="0" Maximum="100" Value="0" />
                         <TextBlock x:Name="EncProgressText" Text=""
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
+                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{DynamicResource BrushText}" />
                     </Grid>
 
                     <StackPanel x:Name="EncButtonRow" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Top">
@@ -302,7 +302,7 @@
                                   Checked="TestFailEnc_Changed" Unchecked="TestFailEnc_Changed"
                                   ToolTip="{ui:Tr fault.arm.tip}" />
                         <TextBlock x:Name="EncHint" Margin="12,0,0,0" VerticalAlignment="Center"
-                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr enc.drop.hint}" />
+                                   Foreground="{DynamicResource BrushTextMuted}" Text="{ui:Tr enc.drop.hint}" />
                     </StackPanel>
                 </Grid>
                 </StackPanel>
@@ -366,7 +366,7 @@
                         <TextBox x:Name="DecNameBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
                                  TextChanged="DecName_Changed" ToolTip="{ui:Tr dec.savename.tip}" />
                         <TextBlock x:Name="DecNameHint" Grid.Column="2" VerticalAlignment="Center"
-                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr dec.savename.hint}" />
+                                   Foreground="{DynamicResource BrushTextMuted}" Text="{ui:Tr dec.savename.hint}" />
                     </Grid>
 
                     <Grid Grid.Row="3" Margin="0,0,0,10">
@@ -383,7 +383,7 @@
                                      Minimum="0" Maximum="100" Value="0" />
                         <TextBlock x:Name="DecProgressText" Text=""
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
+                                   FontSize="{StaticResource FontBody}" FontWeight="SemiBold" Foreground="{DynamicResource BrushText}" />
                     </Grid>
 
                     <StackPanel x:Name="DecButtonRow" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top">
@@ -401,7 +401,7 @@
                                 Click="DecView_Click" Visibility="Collapsed"
                                 ToolTip="{ui:Tr dec.view.tip}" />
                         <TextBlock x:Name="DecHint" Margin="12,0,0,0" VerticalAlignment="Center"
-                                   Foreground="{StaticResource BrushTextMuted}" Text="{ui:Tr dec.output.hint}" />
+                                   Foreground="{DynamicResource BrushTextMuted}" Text="{ui:Tr dec.output.hint}" />
                     </StackPanel>
                 </Grid>
                 </StackPanel>
@@ -410,8 +410,8 @@
 
         </TabControl>
 
-        <Border Grid.Row="3" Margin="0,8,0,0" Padding="12,6" Background="{StaticResource BrushSurfaceAlt}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="6">
-            <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="{StaticResource BrushText}" FontSize="{StaticResource FontBody}" />
+        <Border Grid.Row="3" Margin="0,8,0,0" Padding="12,6" Background="{DynamicResource BrushSurfaceAlt}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="6">
+            <TextBlock x:Name="StatusText" Text="{ui:Tr status.ready}" TextWrapping="Wrap" Foreground="{DynamicResource BrushText}" FontSize="{StaticResource FontBody}" />
         </Border>
         </Grid>
     </Grid>
