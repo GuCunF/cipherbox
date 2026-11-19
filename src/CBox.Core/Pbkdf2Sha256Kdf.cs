@@ -19,7 +19,7 @@ public sealed class Pbkdf2Sha256Kdf : IKdf
             throw new CbxException("迭代次数过低（至少 10000），拒绝使用弱参数。");
         }
 
-        return Rfc2898DeriveBytes.Pbkdf2(
-            password, salt, (int)iterations, HashAlgorithmName.SHA256, keyLength);
+        // 走缓存：批量解密同一批文件时，盐和迭代次数相同就不用重复跑 60 万次
+        return DerivedKeyCache.Derive(password, salt, iterations, keyLength);
     }
 }

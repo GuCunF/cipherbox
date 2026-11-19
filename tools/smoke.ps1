@@ -155,6 +155,72 @@ New-Item -ItemType Directory -Force $algOut | Out-Null
 $h1 = (Get-FileHash $algSrc -Algorithm SHA256).Hash
 $h2 = (Get-FileHash (Join-Path $algOut 'alg2.bin') -Algorithm SHA256).Hash
 Check 'ChaCha20 往返一致' ($LASTEXITCODE -eq 0 -and $h1 -eq $h2) "退出码 $LASTEXITCODE"
+# ---- 9. 边界：空文件 ----
+$emptySrc = Join-Path $work 'empty.bin'
+[System.IO.File]::WriteAllBytes($emptySrc, @())
+& $enc $emptySrc -p $pass *> $null
+$emptyCbx = "$emptySrc.cbx"
+$emptyOut = Join-Path $work 'empty-out'
+New-Item -ItemType Directory -Force $emptyOut | Out-Null
+& $dec $emptyCbx -p $pass $emptyOut *> $null
+$emptySize = (Get-Item (Join-Path $emptyOut 'empty.bin') -ErrorAction SilentlyContinue).Length
+Check '空文件往返' ($LASTEXITCODE -eq 0 -and $emptySize -eq 0) "大小 $emptySize"
+
+# ---- 10. 边界：单字节文件 ----
+$oneSrc = Join-Path $work 'one.bin'
+[System.IO.File]::WriteAllBytes($oneSrc, [byte[]](0x5A))
+& $enc $oneSrc -p $pass *> $null
+$oneOut = Join-Path $work 'one-out'
+New-Item -ItemType Directory -Force $oneOut | Out-Null
+& $dec "$oneSrc.cbx" -p $pass $oneOut *> $null
+$oneBytes = [System.IO.File]::ReadAllBytes((Join-Path $oneOut 'one.bin'))
+Check '单字节文件往返' ($LASTEXITCODE -eq 0 -and $oneBytes.Length -eq 1 -and $oneBytes[0] -eq 0x5A) "长度 $($oneBytes.Length)"
+
+# ---- 11. 中文与特殊字符文件名 ----
+$cnSrc = Join-Path $work '中文 名称（含括号）.txt'
+Set-Content -Path $cnSrc -Value '中文文件名测试' -Encoding UTF8
+& $enc $cnSrc -p $pass *> $null
+$cnOut = Join-Path $work 'cn-out'
+New-Item -ItemType Directory -Force $cnOut | Out-Null
+& $dec "$cnSrc.cbx" -p $pass $cnOut *> $null
+$cnRestored = Test-Path (Join-Path $cnOut '中文 名称（含括号）.txt')
+Check '中文文件名往返' ($LASTEXITCODE -eq 0 -and $cnRestored) "退出码 $LASTEXITCODE"
+
+# ---- 12. 跨块大文件（3 MB，多于 1 块）----
+$bigSrc = Join-Path $work 'big.bin'
+$bigBytes = New-Object byte[] 3145728
+(New-Object Random 7).NextBytes($bigBytes)
+[System.IO.File]::WriteAllBytes($bigSrc, $bigBytes)
+& $enc $bigSrc -p $pass *> $null
+$bigInfo = & $dec "$bigSrc.cbx" --info 2>&1 | Out-String
+$bigOut = Join-Path $work 'big-out'
+New-Item -ItemType Directory -Force $bigOut | Out-Null
+& $dec "$bigSrc.cbx" -p $pass $bigOut *> $null
+$bigHashA = (Get-FileHash $bigSrc -Algorithm SHA256).Hash
+$bigHashB = (Get-FileHash (Join-Path $bigOut 'big.bin') -Algorithm SHA256).Hash
+Check '跨块大文件往返' ($LASTEXITCODE -eq 0 -and $bigHashA -eq $bigHashB) "3 MiB"
+Check '大文件分块数正确' ($bigInfo -match '块数量\s*:\s*3') ' ';
+
+# ---- 13. 快速档（迭代 10 万次）----
+$quickSrc = Join-Path $work 'quick.txt'
+Set-Content -Path $quickSrc -Value '快速档测试' -Encoding UTF8
+& $enc $quickSrc -p $pass --strength quick *> $null
+$quickInfo = & $dec "$quickSrc.cbx" --info 2>&1 | Out-String
+Check '快速档迭代次数记录' ($quickInfo -match '100,000|100000') ' '
+$quickOut = Join-Path $work 'quick-out'
+New-Item -ItemType Directory -Force $quickOut | Out-Null
+& $dec "$quickSrc.cbx" -p $pass $quickOut *> $null
+Check '快速档可解密' ($LASTEXITCODE -eq 0) "退出码 $LASTEXITCODE"
+
+# ---- 14. 输出已存在时默认拒绝覆盖 ----
+$dupSrc = Join-Path $work 'dup.txt'
+Set-Content -Path $dupSrc -Value '覆盖保护测试' -Encoding UTF8
+& $enc $dupSrc -p $pass *> $null
+& $enc $dupSrc -p $pass *> $null
+Check '默认拒绝覆盖已有密文' ($LASTEXITCODE -ne 0) "退出码 $LASTEXITCODE"
+& $enc $dupSrc -p $pass -f *> $null
+Check '加 -f 允许覆盖' ($LASTEXITCODE -eq 0) "退出码 $LASTEXITCODE"
+
 # ---- 报告 ----
 $results | Format-Table -AutoSize | Out-String | Write-Host
 $failed = @($results | Where-Object { $_.结果 -eq 'FAIL' })

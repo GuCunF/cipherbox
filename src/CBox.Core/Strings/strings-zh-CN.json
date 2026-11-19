@@ -331,5 +331,10 @@
   "dialog.confirm.title": "请确认",
   "dialog.yes": "是",
   "dialog.no": "否",
-  "progress.failed": "失败"
+  "progress.failed": "失败",
+  "error.denied": "没有权限访问这个位置。换一个文件夹试试；如果文件正被其他程序打开，先关掉它。",
+  "error.path.long": "路径太长，Windows 默认最多 260 个字符。把文件挪到浅一点的目录再试。",
+  "error.dir.missing": "找不到这个文件夹，可能已经被移动或删除了。",
+  "error.file.missing": "找不到这个文件，可能已经被移动或删除了。",
+  "error.disk.full": "磁盘空间不足，腾出一些空间再试。"
 }

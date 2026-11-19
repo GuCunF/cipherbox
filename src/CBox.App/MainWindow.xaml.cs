@@ -648,7 +648,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
+            string text = DescribeError(ex);
             SetStatus(text, error: true);
             SetProgressFailed(EncProgress, EncProgressText);
             ShowErrorDialog(UiText.Get("error.encrypt.title"), text);
@@ -774,7 +774,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            string text = UiText.Get("error.generic", ex.GetType().Name, ex.Message);
+            string text = DescribeError(ex);
             SetStatus(text, error: true);
             SetProgressFailed(DecProgress, DecProgressText);
             ShowErrorDialog(UiText.Get("error.decrypt.title"), text);
@@ -1425,18 +1425,59 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 把异常翻成给人看的文字。
-    /// 数据块出错时补一行块号——比笼统的"文件已损坏"有用得多。
+    /// 把异常翻译成用户能懂的话。
+    ///
+    /// 原则：
+    ///   1. 不把 IOException / UnauthorizedAccessException 这类类型名直接糊到脸上
+    ///   2. 先说「发生了什么」，再说「可以怎么办」
+    ///   3. 技术细节（原始异常消息）附在第二行，便于反馈问题时对照日志
     /// </summary>
-    private string DescribeError(CbxException ex)
+    private string DescribeError(Exception ex)
     {
-        if (ex.ChunkIndex is int index)
+        // 分块错误最具体：哪一块坏了要明确告诉用户
+        if (ex is CbxException chunkError && chunkError.ChunkIndex is int index)
         {
             return UiText.Get("error.chunk", index + 1) + Environment.NewLine + ex.Message;
         }
 
+        // 系统级异常 → 翻译成人话
+        string? friendly = ex switch
+        {
+            UnauthorizedAccessException => UiText.Get("error.denied"),
+            PathTooLongException => UiText.Get("error.path.long"),
+            DirectoryNotFoundException => UiText.Get("error.dir.missing"),
+            FileNotFoundException => UiText.Get("error.file.missing"),
+            System.Security.SecurityException => UiText.Get("error.denied"),
+            _ => null,
+        };
+
+        // 磁盘写满会包在 IOException 里，单独判一下
+        if (friendly is null && ex is IOException ioError)
+        {
+            const int DiskFull = unchecked((int)0x80070070);
+            const int HandleDiskFull = unchecked((int)0x80070027);
+
+            if (ioError.HResult is DiskFull or HandleDiskFull)
+            {
+                friendly = UiText.Get("error.disk.full");
+            }
+        }
+
+        if (friendly is not null)
+        {
+            return friendly + Environment.NewLine + ex.Message;
+        }
+
+        // CbxException 的消息本来就是写给用户看的，直接用
+        if (ex is CbxException)
+        {
+            return ex.Message;
+        }
+
+        // 兜底：不再带类型名，只给原始消息
         return ex.Message;
     }
+
 
     /// <summary>专业模式：是否把完整路径写进日志（敏感项，不持久化）。</summary>
     private void LogPaths_Changed(object sender, RoutedEventArgs e)

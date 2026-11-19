@@ -343,5 +343,10 @@
   "dialog.confirm.title": "Please confirm",
   "dialog.yes": "Yes",
   "dialog.no": "No",
-  "progress.failed": "Failed"
+  "progress.failed": "Failed",
+  "error.denied": "No permission to access this location. Try another folder, or close the program that is using the file.",
+  "error.path.long": "The path is too long — Windows allows 260 characters by default. Move the file to a shallower folder.",
+  "error.dir.missing": "The folder could not be found; it may have been moved or deleted.",
+  "error.file.missing": "The file could not be found; it may have been moved or deleted.",
+  "error.disk.full": "Not enough disk space. Free up some space and try again."
 }
