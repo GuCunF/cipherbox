@@ -1,7 +1,8 @@
-<Application x:Class="CBox.App.App"
+﻿<Application x:Class="CBox.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow.xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 故意不写 StartupUri：主窗口由 App.OnStartup 手动创建一次。
+         如果这里也写，每个实例就会开出两个窗口（这个坑真实踩过）。 -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

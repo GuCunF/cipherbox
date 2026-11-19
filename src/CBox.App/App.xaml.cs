@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Windows;
@@ -30,17 +31,58 @@ public partial class App : Application
     private Mutex? _instanceMutex;
     private bool _primaryInstance;
 
+    /// <summary>
+    /// 数一数还有几个同名进程在跑（不含自己）。
+    /// 不能用 Mutex 一个判据：不同启动方式、不同版本混用时都靠得住才行。
+    /// </summary>
+    private static int CountOtherInstances()
+    {
+        try
+        {
+            string name = Path.GetFileNameWithoutExtension(Environment.ProcessPath ?? "CipherBox");
+            return Process.GetProcessesByName(name)
+                .Count(p => p.Id != Environment.ProcessId);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// 单实例问题的诊断记录：独立文件，不走日志系统，确保最早期也能留下证据。
+    /// 排查完可以删掉这个方法。
+    /// </summary>
+    private static void Diag(string message)
+    {
+        try
+        {
+            string path = Path.Combine(Path.GetTempPath(), "CipherBox-single-instance.log");
+            File.AppendAllText(
+                path,
+                $"{DateTime.Now:HH:mm:ss.fff} pid={Environment.ProcessId} {message}{Environment.NewLine}");
+        }
+        catch
+        {
+            // 诊断失败不能影响启动
+        }
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         // 第一个非选项参数当成「要打开的文件」。
         // 拖到 exe 图标、右键菜单、双击关联文件都会走到这里。
         StartupPath = e.Args.FirstOrDefault(a => !a.StartsWith('-') && !string.IsNullOrWhiteSpace(a));
 
+        Diag($"启动，参数=[{StartupPath}]，共 {e.Args.Length} 个参数");
+
         // ---- 单实例判定 ----
         _instanceMutex = new Mutex(initiallyOwned: true, InstanceMutexName, out _primaryInstance);
 
         // 诊断：把单实例判定结果记下来，方便排查「为什么开了两个窗口」
         CbxLog.Info($"单实例判定：{( _primaryInstance ? "主实例" : "副实例")}，参数 {StartupPath ?? "(无)"}");
+
+        Diag($"互斥体判定：{(_primaryInstance ? "主实例" : "已有实例")}");
 
         if (!_primaryInstance)
         {
@@ -52,6 +94,7 @@ public partial class App : Application
                 ForwardToRunningInstance(StartupPath!);
             }
 
+            Diag("已转发，准备退出");
             Environment.Exit(0);
         }
 
@@ -67,6 +110,8 @@ public partial class App : Application
 
         // 开着管道等后续实例递文件进来
         StartPipeServer();
+
+        Diag("创建主窗口");
 
         // 主窗口手动创建（App.xaml 里已去掉 StartupUri）
         var window = new MainWindow();
