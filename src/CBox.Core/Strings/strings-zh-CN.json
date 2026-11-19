@@ -336,5 +336,12 @@
   "error.path.long": "路径太长，Windows 默认最多 260 个字符。把文件挪到浅一点的目录再试。",
   "error.dir.missing": "找不到这个文件夹，可能已经被移动或删除了。",
   "error.file.missing": "找不到这个文件，可能已经被移动或删除了。",
-  "error.disk.full": "磁盘空间不足，腾出一些空间再试。"
+  "error.disk.full": "磁盘空间不足，腾出一些空间再试。",
+  "opt.assoc.on": "关联 .cbx",
+  "opt.assoc.off": "取消关联",
+  "opt.assoc.tip": "让 .cbx 文件双击就能用本程序打开，右键也会多出「解密」「查看」两项。只改当前用户的设置，不需要管理员权限。",
+  "opt.assoc.title": "文件关联",
+  "opt.assoc.failed": "改注册表时出错，可能是权限被限制。可以换个账户登录后再试，或手动关联 .cbx 文件。",
+  "opt.assoc.on.done": "已关联：现在双击 .cbx 就会用本程序打开。",
+  "opt.assoc.off.done": "已取消关联。"
 }

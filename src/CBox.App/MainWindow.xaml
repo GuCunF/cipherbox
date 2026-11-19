@@ -1,4 +1,4 @@
-<Window x:Class="CBox.App.MainWindow"
+﻿<Window x:Class="CBox.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:CBox.App"
@@ -139,6 +139,11 @@
                 <Button Style="{StaticResource SecondaryButton}" x:Name="EnvButton" Content="{ui:Tr opt.envissue}" Height="26" Padding="10,0"
                         Margin="0,0,0,6" Visibility="Collapsed" Click="EnvButton_Click"
                         ToolTip="{ui:Tr opt.envissue.tip}" />
+
+            <Button Style="{StaticResource SecondaryButton}" x:Name="AssocButton"
+                    Content="{ui:Tr opt.assoc.on}" Height="26" Padding="10,0" Margin="0,0,10,6"
+                    Click="AssocButton_Click"
+                    ToolTip="{ui:Tr opt.assoc.tip}" />
             </WrapPanel>
         </Border>
 

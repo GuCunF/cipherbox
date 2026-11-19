@@ -348,5 +348,12 @@
   "error.path.long": "The path is too long — Windows allows 260 characters by default. Move the file to a shallower folder.",
   "error.dir.missing": "The folder could not be found; it may have been moved or deleted.",
   "error.file.missing": "The file could not be found; it may have been moved or deleted.",
-  "error.disk.full": "Not enough disk space. Free up some space and try again."
+  "error.disk.full": "Not enough disk space. Free up some space and try again.",
+  "opt.assoc.on": "Associate .cbx",
+  "opt.assoc.off": "Remove association",
+  "opt.assoc.tip": "Makes .cbx files open with CipherBox on double-click, and adds Decrypt / View to the right-click menu. Current user only, no admin rights needed.",
+  "opt.assoc.title": "File association",
+  "opt.assoc.failed": "Could not update the registry — permissions may be restricted. Try another account, or associate .cbx manually.",
+  "opt.assoc.on.done": "Associated: double-clicking a .cbx will now open CipherBox.",
+  "opt.assoc.off.done": "Association removed."
 }

@@ -77,6 +77,8 @@ public partial class MainWindow : Window
             LogLayoutMetrics();
         };
 
+        RefreshAssocButton();
+
         HideTestOnlyControls();
 #if CBTEST
         TestFailEncCheckBox.Visibility = Visibility.Visible;
@@ -1427,6 +1429,38 @@ public partial class MainWindow : Window
     }
 
     /// <summary>展开/收起选项区。默认收起，避免和标题挤在一起。</summary>
+    /// <summary>
+    /// 「关联 .cbx」按钮：已经关联就取消，没关联就关联。
+    /// 只写 HKCU，不需要管理员权限。
+    /// </summary>
+    private void AssocButton_Click(object sender, RoutedEventArgs e)
+    {
+        bool wasOn = FileAssociation.IsRegistered();
+
+        bool ok = wasOn ? FileAssociation.Unregister() : FileAssociation.Register();
+
+        if (!ok)
+        {
+            AppDialog.Warn(UiText.Get("opt.assoc.title"), UiText.Get("opt.assoc.failed"), this);
+            return;
+        }
+
+        RefreshAssocButton();
+
+        SetStatus(UiText.Get(wasOn ? "opt.assoc.off.done" : "opt.assoc.on.done"));
+    }
+
+    /// <summary>按钮文字跟着当前关联状态走，别让人猜现在是开还是关。</summary>
+    private void RefreshAssocButton()
+    {
+        if (AssocButton is null)
+        {
+            return;
+        }
+
+        AssocButton.Content = UiText.Get(FileAssociation.IsRegistered() ? "opt.assoc.off" : "opt.assoc.on");
+    }
+
     private void OptionsToggle_Click(object sender, RoutedEventArgs e)
     {
         bool show = OptionsPanel.Visibility != Visibility.Visible;
