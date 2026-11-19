@@ -138,7 +138,7 @@
                             <Setter TargetName="Root" Property="Opacity" Value="0.85" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Root" Property="Background" Value="#B9C4D2" />
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource BrushBorderStrong}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

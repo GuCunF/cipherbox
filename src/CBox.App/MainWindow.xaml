@@ -86,6 +86,10 @@
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
                 <!-- 专业模式开关放在选项里：放标题旁边容易被误点，也不该天天看见 -->
+                <CheckBox x:Name="DarkModeCheckBox" Content="{ui:Tr opt.dark}"
+                          VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="DarkMode_Changed" Unchecked="DarkMode_Changed"
+                          ToolTip="{ui:Tr opt.dark.tip}" />
                 <CheckBox x:Name="ProModeCheckBox" Content="{ui:Tr opt.pro}" IsChecked="False"
                           VerticalAlignment="Center" Margin="0,0,16,6"
                           Checked="ProMode_Changed" Unchecked="ProMode_Changed"

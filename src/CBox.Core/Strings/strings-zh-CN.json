@@ -351,5 +351,8 @@
   "guide.text": "你熟悉加密参数吗？",
   "guide.hint": "选「不熟悉」只有最必要的选项；以后想调参数，可以在「选项」里切到专业模式。",
   "guide.familiar": "熟悉",
-  "guide.simple": "不熟悉，给我简单点"
+  "guide.simple": "不熟悉，给我简单点",
+  "opt.dark": "深色模式",
+  "opt.dark.tip": "切换深色/浅色配色。改完需要重启程序才生效。",
+  "opt.dark.restart": "设置已保存，重启程序后生效。"
 }

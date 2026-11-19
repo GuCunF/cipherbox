@@ -88,6 +88,7 @@ public partial class MainWindow : Window
         TestFailEncCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
         TestFailDecCheckBox.Visibility = testMode ? Visibility.Visible : Visibility.Collapsed;
 #endif
+        if (DarkModeCheckBox is not null) { DarkModeCheckBox.IsChecked = AppTheme.IsDark; }
         RefreshStrengthLabels();
         InitializeAlgCombo();
         InitializeSoundPreset();
@@ -1316,6 +1317,27 @@ public partial class MainWindow : Window
     }
 
     /// <summary>一般/专业模式切换（当前只影响文案措辞与专业选项的可见性）。</summary>
+    /// <summary>
+    /// 深色模式开关：保存设置并提示重启。
+    /// 界面里全是 StaticResource，运行中换字典不会让已渲染的控件变色，所以只能重启生效。
+    /// </summary>
+    private void DarkMode_Changed(object sender, RoutedEventArgs e)
+    {
+        bool dark = DarkModeCheckBox?.IsChecked == true;
+
+        if (dark == AppTheme.IsDark)
+        {
+            return;
+        }
+
+        AppTheme.IsDark = dark;
+
+        AppDialog.Info(
+            UiText.Get("opt.dark"),
+            UiText.Get("opt.dark.restart"),
+            this);
+    }
+
     private void ProMode_Changed(object sender, RoutedEventArgs e)
     {
         AppMode.IsProfessional = (sender as CheckBox)?.IsChecked == true;

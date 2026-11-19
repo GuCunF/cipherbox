@@ -363,5 +363,8 @@
   "guide.text": "Are you comfortable with encryption parameters?",
   "guide.hint": "Choose \"Not really\" to see only the essentials. You can switch to Pro mode later under Options.",
   "guide.familiar": "Yes, I am",
-  "guide.simple": "Not really — keep it simple"
+  "guide.simple": "Not really — keep it simple",
+  "opt.dark": "Dark mode",
+  "opt.dark.tip": "Switch between dark and light colors. Restart needed after changing.",
+  "opt.dark.restart": "Saved. Restart the program to apply."
 }

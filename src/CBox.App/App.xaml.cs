@@ -111,6 +111,9 @@ public partial class App : Application
         // 开着管道等后续实例递文件进来
         StartPipeServer();
 
+        // 深色主题：把覆盖字典追加在 Theme.xaml 后面，同名颜色以后者为准
+        ApplyTheme();
+
         Diag("创建主窗口");
 
         // 主窗口手动创建（App.xaml 里已去掉 StartupUri）
@@ -174,6 +177,35 @@ public partial class App : Application
     }
 
     // ---------------- 第一个实例：接收路径 ----------------
+
+    /// <summary>
+    /// 按设置加载深色覆盖字典。
+    /// 必须在创建任何窗口之前调用——窗口一构造就把 StaticResource 解析进去了，之后再换没用。
+    /// </summary>
+    private void ApplyTheme()
+    {
+        if (!AppTheme.IsDark)
+        {
+            return;
+        }
+
+        try
+        {
+            var dark = new ResourceDictionary
+            {
+                Source = new Uri("Themes/ColorsDark.xaml", UriKind.Relative),
+            };
+
+            Resources.MergedDictionaries.Add(dark);
+            CbxLog.Info($"已加载深色配色（合并字典 {Resources.MergedDictionaries.Count} 个）");
+        }
+        catch (Exception ex)
+        {
+            // 深色配色加载失败就保持浅色，不影响使用
+            CbxLog.Warn($"深色配色加载失败：{ex.Message}");
+        }
+    }
+
 
     private void StartPipeServer()
     {
@@ -252,3 +284,4 @@ public partial class App : Application
         e.SetObserved();
     }
 }
+
