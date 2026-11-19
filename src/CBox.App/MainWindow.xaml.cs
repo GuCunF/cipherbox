@@ -148,10 +148,48 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
+        if (e.ButtonState != System.Windows.Input.MouseButtonState.Pressed)
         {
-            DragMove();
+            return;
         }
+
+        // 最大化时拖标题栏：先恢复成原来的大小，再让窗口跟着鼠标走。
+        // 这是 Windows 的原生行为——否则只能拖着一个铺满屏幕的大窗口平移。
+        if (_pseudoMaximized)
+        {
+            RestoreForDrag(e);
+        }
+
+        DragMove();
+    }
+
+    /// <summary>
+    /// 把窗口从伪最大化还原成原尺寸，并让鼠标仍落在标题栏的同一相对位置。
+    /// </summary>
+    private void RestoreForDrag(System.Windows.Input.MouseButtonEventArgs e)
+    {
+        System.Windows.Point inWindow = e.GetPosition(this);
+        System.Windows.Point onScreen = PointToScreen(inWindow);
+
+        // 鼠标在标题栏里的横向比例：还原后要落到同样的位置，光标才不会"跳"
+        double ratio = ActualWidth > 0 ? inWindow.X / ActualWidth : 0.5;
+        ratio = Math.Clamp(ratio, 0, 1);
+
+        Left = _restoreLeft;
+        Top = _restoreTop;
+        Width = _restoreWidth;
+        Height = _restoreHeight;
+        _pseudoMaximized = false;
+        ApplyChromeState();
+
+        // 让光标仍在标题栏上（纵向保持 20px 左右），横向按比例对齐
+        Left = onScreen.X - _restoreWidth * ratio;
+        Top = onScreen.Y - Math.Min(inWindow.Y, 20);
+
+        // 别让窗口被拖到屏幕外找不回来
+        Rect work = SystemParameters.WorkArea;
+        Left = Math.Clamp(Left, work.Left - Width + 120, work.Right - 120);
+        Top = Math.Clamp(Top, work.Top, work.Bottom - 80);
     }
 
     private void MinButton_Click(object sender, RoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
