@@ -1,4 +1,4 @@
-﻿# 构建产物
+# 构建产物
 bin/
 obj/
 dist/
@@ -40,3 +40,6 @@ deploy-and-run.cmd
 
 # 双槽源码备份（本地）
 _snap/
+
+# 回归测试运行产生的临时文件
+tools/RoundTripTest/data/
