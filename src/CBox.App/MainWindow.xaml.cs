@@ -70,6 +70,8 @@ public partial class MainWindow : Window
 
             // 从外部带进来的文件（拖到 exe 图标、右键菜单、双击关联文件）
             ApplyExternalPaths(App.TakeStartupPath(), App.TakePendingPaths());
+            // 第一次打开：先问一句"你熟悉加密参数吗"
+            MaybeShowFirstRunGuide();
         };
         SizeChanged += (_, _) =>
         {
@@ -1210,6 +1212,39 @@ public partial class MainWindow : Window
     ///   专业模式 → 「标准（迭代 60 万次，推荐）」，把参数摆明白
     /// 切换模式时刷新，避免一般模式下还挂着一串技术细节。
     /// </summary>
+    /// <summary>
+    /// 首次运行问一句：熟悉加密参数吗？
+    /// 选「不熟悉」保持一般模式（默认就是），选「熟悉」切到专业模式。
+    /// 只问一次——选过之后 HasChosen 为真，以后不再打扰。
+    /// </summary>
+    private void MaybeShowFirstRunGuide()
+    {
+        CbxLog.Info($"首次运行检查：HasChosen={AppMode.HasChosen}，专业模式={AppMode.IsProfessional}");
+        if (AppMode.HasChosen)
+        {
+            return;
+        }
+
+        bool familiar = AppDialog.Confirm(
+            UiText.Get("guide.title"),
+            UiText.Get("guide.text") + Environment.NewLine + Environment.NewLine + UiText.Get("guide.hint"),
+            UiText.Get("guide.familiar"),
+            UiText.Get("guide.simple"),
+            this);
+
+        // 直接改复选框状态：Checked/Unchecked 事件会把可见性、文案一次性刷好，
+        // 比在这里重复一遍"哪些控件该藏"可靠
+        if (ProModeCheckBox is not null && ProModeCheckBox.IsChecked != familiar)
+        {
+            ProModeCheckBox.IsChecked = familiar;   // 触发 ProMode_Changed
+        }
+        else
+        {
+            AppMode.IsProfessional = familiar;
+            AppMode.Save();
+        }
+    }
+
     private void RefreshStrengthLabels()
     {
         if (EncStrengthCombo is null || EncStrengthCombo.Items.Count < 3)
@@ -2505,4 +2540,5 @@ public partial class MainWindow : Window
         }
     }
 }
+
 

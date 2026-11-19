@@ -358,5 +358,10 @@
   "opt.assoc.off.done": "Association removed.",
   "enc.strength.quick.short": "Quick",
   "enc.strength.standard.short": "Standard (recommended)",
-  "enc.strength.strong.short": "Strong"
+  "enc.strength.strong.short": "Strong",
+  "guide.title": "One quick question",
+  "guide.text": "Are you comfortable with encryption parameters?",
+  "guide.hint": "Choose \"Not really\" to see only the essentials. You can switch to Pro mode later under Options.",
+  "guide.familiar": "Yes, I am",
+  "guide.simple": "Not really — keep it simple"
 }

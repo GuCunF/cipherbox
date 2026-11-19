@@ -17,6 +17,12 @@ public static class AppMode
     public static bool IsProfessional { get; set; }
 
     /// <summary>
+    /// 用户是否已经明确选过模式。
+    /// 用来判断"要不要弹首次引导"——没选过就先问一句，别一上来就摆一堆参数。
+    /// </summary>
+    public static bool HasChosen { get; private set; }
+
+    /// <summary>
     /// 测试版与发布版各用各的设置文件。
     /// 共用一份会出现"测试版开了专业模式，发布版也跟着开"——发布版默认必须是关的。
     /// </summary>
@@ -46,6 +52,7 @@ public static class AppMode
             if (File.Exists(path))
             {
                 IsProfessional = File.ReadAllText(path).Trim() == "professional";
+                HasChosen = true;
             }
         }
         catch
@@ -61,6 +68,7 @@ public static class AppMode
             string path = SettingsPath;
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, IsProfessional ? "professional" : "standard");
+            HasChosen = true;
         }
         catch
         {

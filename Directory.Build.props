@@ -12,9 +12,9 @@
     （完整 1.x 规划见项目内部文档，不随仓库发布）
   -->
   <PropertyGroup>
-    <Version>2.1.0.9</Version>
-    <FileVersion>2.1.0.9</FileVersion>
-    <AssemblyVersion>2.1.0.9</AssemblyVersion>
+    <Version>2.1.0.10</Version>
+    <FileVersion>2.1.0.10</FileVersion>
+    <AssemblyVersion>2.1.0.10</AssemblyVersion>
     <Product>CipherBox</Product>
     <Company>CipherBox</Company>
 

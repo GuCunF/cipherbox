@@ -70,6 +70,7 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        CBox.Core.Localization.Initialize();
         // 第一个非选项参数当成「要打开的文件」。
         // 拖到 exe 图标、右键菜单、双击关联文件都会走到这里。
         StartupPath = e.Args.FirstOrDefault(a => !a.StartsWith('-') && !string.IsNullOrWhiteSpace(a));
@@ -101,7 +102,6 @@ public partial class App : Application
         base.OnStartup(e);
 
         // 语言必须在任何界面文字被解析之前加载——XAML 里的 {ui:Tr} 会在窗口构造时取值
-        CBox.Core.Localization.Initialize();
 
         // 未处理异常一律留底，崩溃日志默认开启（不含任何文件内容）
         DispatcherUnhandledException += OnDispatcherUnhandledException;

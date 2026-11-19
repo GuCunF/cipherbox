@@ -74,10 +74,6 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <CheckBox x:Name="ProModeCheckBox" Content="{ui:Tr opt.pro}" IsChecked="False"
-                          VerticalAlignment="Center" Margin="0,0,12,0"
-                          Checked="ProMode_Changed" Unchecked="ProMode_Changed"
-                          ToolTip="{ui:Tr opt.pro.tip}" />
                 <Button Style="{StaticResource SecondaryButton}" x:Name="OptionsToggle" Content="{ui:Tr opt.show}"
                         VerticalAlignment="Center" Padding="12,4" Click="OptionsToggle_Click"
                         ToolTip="{ui:Tr opt.show.tip}" />
@@ -89,6 +85,11 @@
                 Background="{StaticResource BrushSurface}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8"
                 Padding="12,8,12,4" Margin="0,0,0,10">
             <WrapPanel>
+                <!-- 专业模式开关放在选项里：放标题旁边容易被误点，也不该天天看见 -->
+                <CheckBox x:Name="ProModeCheckBox" Content="{ui:Tr opt.pro}" IsChecked="False"
+                          VerticalAlignment="Center" Margin="0,0,16,6"
+                          Checked="ProMode_Changed" Unchecked="ProMode_Changed"
+                          ToolTip="{ui:Tr opt.pro.tip}" />
                 <CheckBox x:Name="LogCheckBox" Content="{ui:Tr opt.log}" IsChecked="True"
                           VerticalAlignment="Center" Margin="0,0,16,6"
                           ToolTip="{ui:Tr opt.log.tip}" />
