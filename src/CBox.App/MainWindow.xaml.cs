@@ -327,7 +327,7 @@ public partial class MainWindow : Window
 
         const double WidthRatio = 0.86;
         const double HeightRatio = 0.90;
-        const double ComfortableWidth = 1440;   // 再宽也没必要，表单太宽反而不好看
+        const double ComfortableWidth = 1180;   // 内容区上限 1100 + 边距，窗口再宽只会多出空白
         const double ComfortableHeight = 940;
         const double EdgeGap = 24;              // 四周留一点，方便抓边框
 
@@ -359,7 +359,7 @@ public partial class MainWindow : Window
         // 宽度策略：优先把内容铺满窗口，只在超宽屏上封顶。
         // 之前的 70% 比例会让窗口越宽、两侧空白越大，用户拖宽后反而更空。
         const double MinWidth = 880;
-        const double MaxWidth = 2200;
+        const double MaxWidth = 1100;   // 表单整体不宜太宽：超过这个值两侧留白，避免输入框拉成一条
         const double SideGap = 32;    // 左右各留一点，不让内容贴边
 
         double target = Math.Clamp(available - SideGap, MinWidth, MaxWidth);
