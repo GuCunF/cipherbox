@@ -395,5 +395,12 @@
   "keyfile.tip": "Pro mode: pick a file as a second key. Both the password and this file are required to decrypt. The .cbx only records that a key file was used, never its contents. If you lose the file, the data cannot be recovered.",
   "keyfile.pick": "Choose key file",
   "keyfile.filter": "All files|*.*",
-  "keyfile.clear": "Clear"
+  "keyfile.clear": "Clear",
+  "status.multi.selected": "{0} files selected (will be encrypted into the same folder)",
+  "batch.samepass.title": "Same password warning",
+  "batch.samepass.body": "This batch of {0} files will be protected by the same password.\n\nIf that password ever leaks, all of them lose protection at once. There is no separation between them.\n\nIf they are meant for different people or purposes, encrypt them separately with different passwords.\n\nContinue?",
+  "batch.samepass.ok": "Encrypt all",
+  "batch.samepass.cancelled": "Batch encryption cancelled.",
+  "batch.running": "Encrypting {0}/{1}: {2}",
+  "batch.done": "Batch finished: {0} succeeded, {1} skipped, {2} failed"
 }

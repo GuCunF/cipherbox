@@ -525,6 +525,47 @@ public partial class MainWindow : Window
 
     // ---------------- 浏览 ----------------
 
+    /// <summary>
+    /// 窗口级快捷键：
+    ///   Ctrl+O          当前标签页选输入文件
+    ///   Ctrl+Enter      开始当前操作（等价于点主按钮）
+    /// </summary>
+    private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) == 0)
+        {
+            return;
+        }
+
+        if (e.Key == System.Windows.Input.Key.O)
+        {
+            if (Tabs?.SelectedIndex == 1)
+            if (Tabs?.SelectedIndex == 1)
+            {
+                DecInputBrowse_Click(sender, e);
+            }
+            else
+            {
+                EncInputBrowse_Click(sender, e);
+            }
+
+            e.Handled = true;
+        }
+        else if (e.Key == System.Windows.Input.Key.Enter)
+        {
+            if (Tabs?.SelectedIndex == 1)
+            {
+                DecStart_Click(sender, e);
+            }
+            else
+            {
+                EncStart_Click(sender, e);
+            }
+
+            e.Handled = true;
+        }
+    }
+
     private void EncInputBrowse_Click(object sender, RoutedEventArgs e)
     {
         if (EncModeFolder?.IsChecked == true)
@@ -548,11 +589,12 @@ public partial class MainWindow : Window
         {
             Title = UiText.Get("enc.browse"),
             Filter = SafeFilter(UiText.Get("enc.filter")),
+            Multiselect = true,   // 支持一次选多个文件批量加密
         };
 
         if (dialog.ShowDialog(this) == true)
         {
-            ApplyEncryptInput(dialog.FileName);
+            ApplyEncryptInputs(dialog.FileNames);
         }
     }
 
@@ -661,6 +703,15 @@ public partial class MainWindow : Window
         if (EncModeFolder?.IsChecked == true)
         {
             await StartFolderEncrypt();
+            return;
+        }
+
+        // 多文件批量：输入框里有 | 分隔的多个路径
+        string[] inputPaths = ParseInputPaths(EncInputBox.Text);
+
+        if (inputPaths.Length > 1)
+        {
+            await StartMultiFileEncrypt(inputPaths);
             return;
         }
 
@@ -777,6 +828,120 @@ public partial class MainWindow : Window
         finally
         {
             End();
+        }
+    }
+
+    /// <summary>
+    /// 多文件批量加密：输出到同一目录，每个文件各出一个 .cbx。
+    /// 进入循环之前必须先过「口令相同」这道确认——这是硬要求。
+    /// </summary>
+    private async Task StartMultiFileEncrypt(string[] rawPaths)
+    {
+        string[] sources = BatchEncrypt.Normalize(rawPaths);
+
+        if (sources.Length == 0)
+        {
+            SetStatus(UiText.Get("error.pick.input"), error: true);
+            return;
+        }
+
+        string outputDirectory = EncOutputBox.Text.Trim();
+
+        if (outputDirectory.Length == 0)
+        {
+            SetStatus(UiText.Get("error.pick.output"), error: true);
+            return;
+        }
+
+        if (!Directory.Exists(outputDirectory))
+        {
+            SetStatus(UiText.Get("error.output.missing", outputDirectory), error: true);
+            return;
+        }
+
+        string password = EncPassword.Password;
+        string confirm = EncPassword2.Password;
+
+        if (password.Length == 0)
+        {
+            SetStatus(UiText.Get("error.password.empty"), error: true);
+            return;
+        }
+
+        if (password != confirm)
+        {
+            SetStatus(UiText.Get("error.password.mismatch"), error: true);
+            return;
+        }
+
+        // ---- 口令相同提醒（必须）----
+        bool proceed = AppDialog.Confirm(
+            UiText.Get("batch.samepass.title"),
+            UiText.Get("batch.samepass.body", sources.Length),
+            UiText.Get("batch.samepass.ok"),
+            UiText.Get("common.cancel"),
+            this);
+
+        if (!proceed)
+        {
+            SetStatus(UiText.Get("batch.samepass.cancelled"));
+            return;
+        }
+
+        var profile = BuildEncryptProfile();
+        string[] targets = BatchEncrypt.PlanTargets(sources, outputDirectory);
+        byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+
+        _busy = true;
+        EncStartButton.IsEnabled = false;
+
+        int succeeded = 0;
+        int skipped = 0;
+        int failed = 0;
+
+        try
+        {
+            for (int i = 0; i < sources.Length; i++)
+            {
+                string source = sources[i];
+                string target = targets[i];
+
+                EncProgress.Value = sources.Length == 0 ? 0 : i * 100.0 / sources.Length;
+                EncProgressText.Text = $"{i + 1}/{sources.Length}";
+                SetStatus(UiText.Get("batch.running", i + 1, sources.Length, Path.GetFileName(source)));
+
+                if (File.Exists(target))
+                {
+                    skipped++;
+                    continue;
+                }
+
+                try
+                {
+                    await Task.Run(() => Cbx.EncryptFile(source, target, passwordBytes, profile));
+                    succeeded++;
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    CbxLog.Warn($"批量加密失败：{CbxLog.SafePath(source)} - {ex.Message}");
+                }
+            }
+
+            EncProgress.Value = 100;
+            EncProgressText.Text = "100%";
+
+            SetStatus(UiText.Get("batch.done", succeeded, skipped, failed));
+
+            if (!SoundFeedback.PlaySuccess(TimeSpan.FromSeconds(1)))
+            {
+                FlashStatusBar();
+            }
+        }
+        finally
+        {
+            _busy = false;
+            EncStartButton.IsEnabled = true;
         }
     }
 
@@ -1043,6 +1208,39 @@ public partial class MainWindow : Window
         }
 
         Activate();
+    }
+
+    /// <summary>批量加密时输入框里多个路径的分隔符。</summary>
+    private const char InputSeparator = '|';
+
+    /// <summary>把输入框里的文本拆成路径数组（单文件时只有一个）。</summary>
+    private static string[] ParseInputPaths(string text)
+    {
+        return text.Split(InputSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    /// <summary>
+    /// 浏览选完后填界面：一个文件走原来的单文件逻辑，多个文件进入批量模式。
+    /// </summary>
+    private void ApplyEncryptInputs(string[] paths)
+    {
+        if (paths.Length == 0)
+        {
+            return;
+        }
+
+        if (paths.Length == 1)
+        {
+            ApplyEncryptInput(paths[0]);
+            return;
+        }
+
+        // 多个文件：输入框用 | 连接，输出框当作「输出目录」
+        EncInputBox.Text = string.Join(InputSeparator.ToString(), paths);
+        EncOutputBox.Text = Path.GetDirectoryName(paths[0]) ?? ".";
+
+        CbxLog.Info($"批量加密：已选 {paths.Length} 个文件");
+        SetStatus(UiText.Get("status.multi.selected", paths.Length));
     }
 
     private void ApplyEncryptInput(string path)

@@ -6,8 +6,7 @@
         MinHeight="520" MinWidth="720"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged" Foreground="{DynamicResource BrushText}">
-
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged" Foreground="{DynamicResource BrushText}" PreviewKeyDown="Window_PreviewKeyDown">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
                       CornerRadius="0" UseAeroCaptionButtons="False" />

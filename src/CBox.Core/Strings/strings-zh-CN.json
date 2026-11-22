@@ -383,5 +383,12 @@
   "keyfile.tip": "专业模式：选一个文件作为第二把钥匙。它和口令一起才能解密；文件里只记「用了密钥文件」这个标志，不存它的内容。丢失后无法恢复。",
   "keyfile.pick": "选择密钥文件",
   "keyfile.filter": "所有文件|*.*",
-  "keyfile.clear": "清除"
+  "keyfile.clear": "清除",
+  "status.multi.selected": "已选 {0} 个文件（将批量加密到同一目录）",
+  "batch.samepass.title": "口令相同提醒",
+  "batch.samepass.body": "本批 {0} 个文件将使用同一个口令保护。\n\n一旦这个口令泄露，这些文件会同时失去保护——它们之间没有任何隔离。\n\n如果是给不同的人或场景使用，建议分开加密，各用各的口令。\n\n确定继续吗？",
+  "batch.samepass.ok": "继续批量加密",
+  "batch.samepass.cancelled": "已取消批量加密。",
+  "batch.running": "批量加密 {0}/{1}：{2}",
+  "batch.done": "批量加密完成：成功 {0}，跳过 {1}，失败 {2}"
 }
