@@ -213,9 +213,13 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="EncInputLabel" Text="{ui:Tr enc.input}" Style="{StaticResource FieldLabel}" />
                         <TextBox x:Name="EncInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
-                        <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
-                    </Grid>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
+                            <Button Style="{StaticResource SecondaryButton}" Content="▾" Width="28" Margin="4,0,0,0"
+                                    ToolTip="{ui:Tr recent.tip}" Click="EncRecent_Click" />
+                        </StackPanel>
 
+                    </Grid>
                     <Grid x:Name="EncOutputRow" Grid.Row="1" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
@@ -366,6 +370,8 @@
                         <TextBox x:Name="DecInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0"
                                  TextChanged="DecInput_TextChanged" />
                         <Button Style="{StaticResource SecondaryButton}" Grid.Column="2" Content="{ui:Tr common.browse}" Click="DecInputBrowse_Click" />
+                        <Button Style="{StaticResource SecondaryButton}" Content="▾" Width="28" Margin="4,0,0,0"
+                                ToolTip="{ui:Tr recent.tip}" Click="DecRecent_Click" />
                     </Grid>
 
                     <Grid x:Name="DecOutputRow" Grid.Row="1" Margin="0,0,0,10">

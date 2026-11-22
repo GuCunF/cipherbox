@@ -391,5 +391,7 @@
   "batch.samepass.cancelled": "已取消批量加密。",
   "batch.running": "批量加密 {0}/{1}：{2}",
   "batch.done": "批量加密完成：成功 {0}，跳过 {1}，失败 {2}",
-  "assoc.encrypt.menu": "用 CipherBox 加密"
+  "assoc.encrypt.menu": "用 CipherBox 加密",
+  "recent.tip": "最近打开过的文件",
+  "recent.empty": "（还没有记录）"
 }

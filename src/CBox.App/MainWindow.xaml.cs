@@ -566,6 +566,56 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// 弹出「最近打开」菜单。只列小下拉里的那几项，不占界面位置。
+    /// </summary>
+    private void EncRecent_Click(object sender, RoutedEventArgs e)
+    {
+        ShowRecentMenu(sender as Button, path => ApplyEncryptInput(path));
+    }
+
+    /// <summary>解密页的最近打开。</summary>
+    private void DecRecent_Click(object sender, RoutedEventArgs e)
+    {
+        ShowRecentMenu(sender as Button, path => ApplyDecryptInput(path));
+    }
+
+    /// <summary>把最近记录拼成菜单并弹出。</summary>
+    private void ShowRecentMenu(Button? anchor, Action<string> onPick)
+    {
+        if (anchor is null)
+        {
+            return;
+        }
+
+        var menu = new ContextMenu();
+        List<string> recent = RecentFiles.Load();
+
+        if (recent.Count == 0)
+        {
+            menu.Items.Add(new MenuItem { Header = UiText.Get("recent.empty"), IsEnabled = false });
+        }
+        else
+        {
+            foreach (string path in recent)
+            {
+                var item = new MenuItem
+                {
+                    Header = Path.GetFileName(path),
+                    ToolTip = path,
+                };
+
+                string captured = path;
+                item.Click += (_, _) => onPick(captured);
+                menu.Items.Add(item);
+            }
+        }
+
+        menu.PlacementTarget = anchor;
+        menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+        menu.IsOpen = true;
+    }
+
     private void EncInputBrowse_Click(object sender, RoutedEventArgs e)
     {
         if (EncModeFolder?.IsChecked == true)
@@ -1245,6 +1295,7 @@ public partial class MainWindow : Window
 
     private void ApplyEncryptInput(string path)
     {
+        RecentFiles.Touch(path);
         EncInputBox.Text = path;
         EncOutputBox.Text = Path.Combine(
             Path.GetDirectoryName(path) ?? ".",
@@ -1261,6 +1312,7 @@ public partial class MainWindow : Window
 
     private void ApplyDecryptInput(string path)
     {
+        RecentFiles.Touch(path);
         DecInputBox.Text = path;
         DecOutputBox.Text = Path.GetDirectoryName(path) ?? ".";
 

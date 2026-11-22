@@ -403,5 +403,7 @@
   "batch.samepass.cancelled": "Batch encryption cancelled.",
   "batch.running": "Encrypting {0}/{1}: {2}",
   "batch.done": "Batch finished: {0} succeeded, {1} skipped, {2} failed",
-  "assoc.encrypt.menu": "Encrypt with CipherBox"
+  "assoc.encrypt.menu": "Encrypt with CipherBox",
+  "recent.tip": "Recently opened files",
+  "recent.empty": "(nothing yet)"
 }
