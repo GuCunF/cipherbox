@@ -36,7 +36,7 @@ public static class Cbx
     ///
     /// 注意：口令是否正确，要等第一块解出来才知道（AEAD 的固有特性）。
     /// </summary>
-    public static CbxDecryptReader OpenReader(string path, byte[] password)
+    public static CbxDecryptReader OpenReader(string path, byte[] password, byte[]? keyFileFingerprint = null)
     {
         var stream = new FileStream(
             path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -49,7 +49,17 @@ public static class Cbx
             var kdf = KdfRegistry.Get(header.KdfId);
             header.Validate(cipher);
 
-            var key = kdf.Derive(password, header.Salt, header.KdfIterations, cipher.KeySize);
+            // 文件说要密钥文件却没给 → 明确报错，别让用户以为口令错了
+            if (header.RequiresKeyFile && (keyFileFingerprint is null || keyFileFingerprint.Length == 0))
+            {
+                throw new CbxException("这个文件需要密钥文件才能解密：请同时提供加密时用的那个文件。");
+            }
+
+            // 文件不需要却多给了 → 忽略，保持与旧文件一致的行为
+            byte[]? fingerprint = header.RequiresKeyFile ? keyFileFingerprint : null;
+
+            byte[] effectivePassword = KeyFile.Combine(password, fingerprint);
+            var key = kdf.Derive(effectivePassword, header.Salt, header.KdfIterations, cipher.KeySize);
             return new CbxDecryptReader(stream, header, cipher, key);
         }
         catch
@@ -91,7 +101,8 @@ public static class Cbx
             allowPathInName,
             profile.Kind,
             profile.BatchId,
-            profile.ArchiveFlags);
+            profile.ArchiveFlags,
+            profile.KeyFileFingerprint);
     }
 
     public static EncryptReport EncryptFile(
@@ -111,7 +122,8 @@ public static class Cbx
         bool allowPathInName = false,
         byte kind = CbxFormat.KindSingle,
         byte[]? batchId = null,
-        byte archiveFlags = 0)
+        byte archiveFlags = 0,
+        byte[]? keyFileFingerprint = null)
     {
         using var source = new FileStream(
             sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -121,8 +133,9 @@ public static class Cbx
             source, source.Length, Path.GetFileName(sourcePath), outputPath, password,
             algId, kdfId, iterations, chunkSize, progress,
             skipTypeCheck, encryptName, hideCategory, writeCategory, displayName, allowPathInName,
-            kind, batchId, archiveFlags);
+            kind, batchId, archiveFlags, keyFileFingerprint);
     }
+
 
     /// <summary>
     /// 从任意只读流加密（归档用）。
@@ -142,7 +155,7 @@ public static class Cbx
             profile.AlgorithmId, profile.KdfId, profile.Iterations, profile.ChunkSize, progress,
             profile.SkipTypeCheck, profile.EncryptName, profile.HideCategory, profile.WriteCategory,
             profile.DisplayName, false,
-            profile.Kind, profile.BatchId, profile.ArchiveFlags);
+            profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint);
     }
 
     /// <summary>
@@ -163,7 +176,7 @@ public static class Cbx
             source, plaintext.LongLength, originalName ?? "未命名.txt", outputPath, password,
             profile.AlgorithmId, profile.KdfId, profile.Iterations, profile.ChunkSize, progress,
             profile.SkipTypeCheck, profile.EncryptName, profile.HideCategory, profile.WriteCategory,
-            profile.DisplayName);
+            profile.DisplayName, false, profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint);
     }
 
     /// <summary>
@@ -338,7 +351,8 @@ public static class Cbx
         bool allowPathInName = false,
         byte kind = CbxFormat.KindSingle,
         byte[]? batchId = null,
-        byte archiveFlags = 0)
+        byte archiveFlags = 0,
+        byte[]? keyFileFingerprint = null)
     {
         // 先把"目标位置到底哪里不行"判清楚，避免笼统报成权限问题
         EnsureTargetUsable(outputPath);
@@ -365,7 +379,9 @@ public static class Cbx
 
         var salt = RandomNumberGenerator.GetBytes(CbxFormat.SaltSize);
         var baseNonce = RandomNumberGenerator.GetBytes(cipher.NonceSize);
-        var key = kdf.Derive(password, salt, kdfIterations, cipher.KeySize);
+        // 有密钥文件时，口令后面拼上它的指纹再交给 KDF
+        byte[] effectivePassword = KeyFile.Combine(password, keyFileFingerprint);
+        var key = kdf.Derive(effectivePassword, salt, kdfIterations, cipher.KeySize);
 
         // 先看一眼明文开头，把"能不能预览"的类别记进头部——
         // 这样即使将来文件名也被加密，输口令之前仍然能决定要不要显示「只读查看」。
@@ -427,6 +443,11 @@ public static class Cbx
         header.Kind = kind;
         header.ArchiveFlags = archiveFlags;
 
+        // 标记需要密钥文件：只写标志，绝不写密钥文件内容
+        if (keyFileFingerprint is { Length: > 0 })
+        {
+            header.Flags |= CbxFormat.FlagRequiresKeyFile;
+        }
         if (batchId is { Length: > 0 })
         {
             header.BatchId = batchId;
@@ -543,9 +564,10 @@ public static class Cbx
         string outputDirectory,
         byte[] password,
         string? overrideFileName = null,
-        IProgress<double>? progress = null)
+        IProgress<double>? progress = null,
+        byte[]? keyFileFingerprint = null)
     {
-        using var reader = OpenReader(sourcePath, password);
+        using var reader = OpenReader(sourcePath, password, keyFileFingerprint);
         var header = reader.Header;
 
         string fileName = overrideFileName

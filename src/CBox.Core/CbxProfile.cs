@@ -55,6 +55,12 @@ public sealed class CbxProfile
     public bool WriteCategory { get; init; } = true;
 
     /// <summary>
+    /// 密钥文件内容的指纹（32 字节）。为空表示不用密钥文件。
+    /// 它只在内存里参与密钥派生，**绝不写进文件头**——文件头只记一个标志位。
+    /// </summary>
+    public byte[]? KeyFileFingerprint { get; init; }
+
+    /// <summary>
     /// 存进文件头的显示名。为空则用真实文件名。
     /// 作用是让"文件里记录的名字"和"磁盘上的名字"解耦——
     /// 例如加密 a.txt 但让对方看到「会议纪要.txt」。

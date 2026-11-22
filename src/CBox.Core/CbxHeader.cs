@@ -53,6 +53,9 @@ public sealed class CbxHeader
     /// <summary>该文件是否声明「不做后缀名检查」（加密时由专业模式写入）。</summary>
     public bool SkipTypeCheck => (Flags & CbxFormat.FlagSkipTypeCheck) != 0;
 
+    /// <summary>是否需要密钥文件（口令之外的第二把钥匙）。</summary>
+    public bool RequiresKeyFile => (Flags & CbxFormat.FlagRequiresKeyFile) != 0;
+
     /// <summary>头部是否记录了内容类别。</summary>
     public bool HasCategory => (Flags & CbxFormat.FlagHasCategory) != 0;
 

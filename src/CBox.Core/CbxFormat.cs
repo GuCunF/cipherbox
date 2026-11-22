@@ -78,4 +78,10 @@ public static class CbxFormat
 
     /// <summary>头部带批次 ID（v2 起有效）。</summary>
     public const byte FlagHasBatch = 0x40;
+
+    /// <summary>
+    /// 需要密钥文件（口令之外的第二把钥匙）。
+    /// 文件里只存这个标志位，绝不存密钥文件内容；缺了它就无法解密。
+    /// </summary>
+    public const byte FlagRequiresKeyFile = 0x80;
 }
