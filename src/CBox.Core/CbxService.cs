@@ -384,6 +384,9 @@ public static class Cbx
             throw new CbxException("文件过大，超出当前格式支持范围。");
         }
 
+        // 计时从密钥派生之前开始：KDF 才是 Argon2 的主要成本，漏掉它会让报告时间骗人
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
         var salt = RandomNumberGenerator.GetBytes(CbxFormat.SaltSize);
         var baseNonce = RandomNumberGenerator.GetBytes(cipher.NonceSize);
         // 有密钥文件时，口令后面拼上它的指纹再交给 KDF
@@ -466,7 +469,6 @@ public static class Cbx
         var aadBase = SHA256.HashData(headerBytes);
 
         string tempPath = BuildTempPath(outputPath);
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         CbxLog.Info("================ 加密开始 ================");
         CbxLog.Info($"参数：算法={cipher.DisplayName}({algId}) KDF={kdf.DisplayName}({kdfId}) " +
@@ -574,6 +576,9 @@ public static class Cbx
         IProgress<double>? progress = null,
         byte[]? keyFileFingerprint = null)
     {
+        // 同加密：KDF（含 Argon2 的内存填充）在 OpenReader 里，必须算进耗时
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
         using var reader = OpenReader(sourcePath, password, keyFileFingerprint);
         var header = reader.Header;
 
@@ -587,7 +592,6 @@ public static class Cbx
         // 目标定下来之后再判：只读 / 上级目录 / 真的没权限，各给各的说法
         EnsureTargetUsable(outputPath);
         string tempPath = BuildTempPath(outputPath);
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         CbxLog.Info("================ 解密开始 ================");
         CbxLog.Info($"参数：算法={CipherRegistry.Get(header.AlgId).DisplayName}({header.AlgId}) " +

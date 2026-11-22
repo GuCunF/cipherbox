@@ -40,8 +40,85 @@ internal static class FileAssociation
     }
 
     /// <summary>注册关联。返回是否成功。</summary>
+    /// <summary>
+    /// 用户是否主动关掉了右键菜单（记住这个选择，别每次启动又加回去）。
+    /// </summary>
+    private static string ContextMenuOffPath => System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "CipherBox",
+#if CBTEST
+        "no-context-menu.test.txt"
+#else
+        "no-context-menu.txt"
+#endif
+    );
+
+    /// <summary>
+    /// 确保「用 CipherBox 加密」右键菜单存在。
+    /// 幂等：已存在就覆写同样的值；用户主动关过就跳过。
+    /// 只动这一项，不碰 .cbx 文件关联。
+    /// </summary>
+    public static void EnsureContextMenu()
+    {
+        try
+        {
+            if (System.IO.File.Exists(ContextMenuOffPath))
+            {
+                return;
+            }
+
+            string? exe = Environment.ProcessPath;
+
+            if (string.IsNullOrEmpty(exe))
+            {
+                return;
+            }
+
+            string label = CBox.Core.Localization.GetRaw("assoc.encrypt.menu") ?? "Encrypt with CipherBox";
+
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey($@"{ClassesRoot}\*\shell\{EncryptVerb}"))
+            {
+                key.SetValue(null, label);
+                key.SetValue("Icon", $"\"{exe}\"");
+            }
+
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey($@"{ClassesRoot}\*\shell\{EncryptVerb}\command"))
+            {
+                key.SetValue(null, $"\"{exe}\" \"%1\"");
+            }
+
+            NotifyShell();
+            CBox.Core.CbxLog.Info("右键菜单已确保存在");
+        }
+        catch (Exception ex)
+        {
+            CBox.Core.CbxLog.Warn($"注册右键菜单失败：{ex.Message}");
+        }
+    }
+
+    /// <summary>记住「用户不要右键菜单」，并把它删掉。</summary>
+    private static void RememberContextMenuOff()
+    {
+        try
+        {
+            string path = ContextMenuOffPath;
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path)!);
+            System.IO.File.WriteAllText(path, "off");
+        }
+        catch
+        {
+            // 记不住就算了，下次启动会再加回来
+        }
+    }
+
     public static bool Register()
     {
+        try
+        {
+            System.IO.File.Delete(ContextMenuOffPath);
+        }
+        catch { }
+
         try
         {
             string? exe = Environment.ProcessPath;

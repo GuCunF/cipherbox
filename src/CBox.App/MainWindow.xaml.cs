@@ -77,6 +77,9 @@ public partial class MainWindow : Window
             // 这里再算一次，确保窗口一打开就是按当前屏幕算好的大小。
             FitWindowToWorkArea();
 
+
+            // 右键菜单是独立功能，不需要用户先点「关联 .cbx」
+            FileAssociation.EnsureContextMenu();
             LogLayoutMetrics();
             UpdateContentWidth();
             // 从外部带进来的文件（拖到 exe 图标、右键菜单、双击关联文件）
@@ -590,7 +593,6 @@ public partial class MainWindow : Window
 
         if (e.Key == System.Windows.Input.Key.O)
         {
-            if (Tabs?.SelectedIndex == 1)
             if (Tabs?.SelectedIndex == 1)
             {
                 DecInputBrowse_Click(sender, e);
@@ -1297,7 +1299,7 @@ public partial class MainWindow : Window
         }
 
         // 多个文件：输入框用 | 连接，输出框当作「输出目录」
-        EncInputBox.Text = string.Join(InputSeparator.ToString(), paths);
+        EncInputBox.Text = string.Join("  |  ", paths);   // 带空格，长路径挤在一起很难分辨
         EncOutputBox.Text = Path.GetDirectoryName(paths[0]) ?? ".";
 
         CbxLog.Info($"批量加密：已选 {paths.Length} 个文件");
@@ -2279,6 +2281,10 @@ public partial class MainWindow : Window
         if (KdfCombo?.SelectedItem is ComboBoxItem item && item.Tag is byte kdfId)
         {
             KdfPreference.Selected = kdfId;
+
+            // 换 KDF 后强度档位归位到「标准」：
+            // PBKDF2 的高强度是 1000 万次迭代，从 Argon2 的高强度切过来会突然变慢很多。
+            EncStrengthCombo.SelectedIndex = 1;
 
             UpdateArgonMemVisibility();
             RefreshStrengthLabels();
