@@ -59,7 +59,7 @@ Windows 7 / 8.1 are not supported — the .NET 10 runtime no longer runs there.
 | Aspect | Approach |
 |---|---|
 | Symmetric cipher | AES-256-GCM / ChaCha20-Poly1305, AEAD, every chunk authenticated separately |
-| Key derivation | PBKDF2-HMAC-SHA256, 600,000 iterations by default (100k fast / 10M high) |
+| Key derivation | **Argon2id** by default (RFC 9106, 3 passes · 64 MiB); PBKDF2-HMAC-SHA256 (600k iterations) selectable in pro mode |
 | Chunking | 1 MiB chunks, so large files do not fill memory |
 | Integrity | Flipping any byte, reordering chunks or truncating the file makes decryption fail and reports which chunk |
 | No plaintext on disk | Viewing and editing happen entirely in memory |
@@ -173,7 +173,7 @@ All of them should pass before publishing:
 
 | Script | What it checks |
 |---|---|
-| `tools/smoke.ps1` | 16 end-to-end smoke cases |
+| `tools/smoke.ps1` | 32 end-to-end smoke cases |
 | `tools/check-privacy.ps1` | local paths, user names, credentials, traces of other projects |
 | `tools/check-i18n-pairs.ps1` | Chinese/English key parity and placeholder consistency |
 | `tools/check-strings.ps1` | every key used in code exists in the tables |

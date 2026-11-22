@@ -60,7 +60,7 @@
 | 项 | 做法 |
 |---|---|
 | 对称加密 | AES-256-GCM / ChaCha20-Poly1305，AEAD，每块独立认证 |
-| 口令派生 | PBKDF2-HMAC-SHA256，默认 60 万次迭代（快速 10 万 / 高强度 1000 万） |
+| 口令派生 | 默认 **Argon2id**（RFC 9106，3 轮 · 64 MiB）；专业模式可选 PBKDF2-HMAC-SHA256（60 万次迭代） |
 | 分块 | 1 MiB 一块，大文件不占内存 |
 | 完整性 | 改任一字节、重排块、截断文件，解密都会失败并指出哪一块 |
 | 明文不落盘 | 查看与编辑都在内存里完成 |
@@ -174,7 +174,7 @@ powershell -ExecutionPolicy Bypass -File .\release\publish-release.ps1
 
 | 脚本 | 检查内容 |
 |---|---|
-| `tools/smoke.ps1` | 16 项端到端冒烟测试 |
+| `tools/smoke.ps1` | 32 项端到端冒烟测试 |
 | `tools/check-privacy.ps1` | 本机路径、用户名、凭据、其他项目痕迹 |
 | `tools/check-i18n-pairs.ps1` | 中英词条一一对应、占位符一致 |
 | `tools/check-strings.ps1` | 代码用到的词条是否都在表里 |
