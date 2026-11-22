@@ -1,4 +1,4 @@
-﻿namespace CBox.Core;
+namespace CBox.Core;
 
 /// <summary>文件夹加密的三种方案，对应界面上三个挡位。</summary>
 public enum FolderMode
@@ -429,6 +429,7 @@ public static class CbxBatch
             EncryptName = profile.EncryptName,
             HideCategory = profile.HideCategory,
             WriteCategory = profile.WriteCategory,
+            KeyFileFingerprint = profile.KeyFileFingerprint,   // 批量成员同样要带钥匙
             Kind = CbxFormat.KindBatch,
             BatchId = batchId,
         };

@@ -89,6 +89,7 @@ public static class CbxArchive
 
             HideCategory = true,          // 归档整体不对应某种内容类型
             WriteCategory = false,
+            KeyFileFingerprint = profile.KeyFileFingerprint,   // 归档也要带钥匙，不然加密时选的钥匙白费
             Kind = CbxFormat.KindArchive,
             ArchiveFlags = previewable ? CbxFormat.ArchiveFlagPreviewable : (byte)0,
         };

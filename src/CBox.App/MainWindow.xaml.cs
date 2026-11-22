@@ -2304,23 +2304,27 @@ public partial class MainWindow : Window
         }
 
         bool fullEncryption = FullEncryptBox?.IsChecked == true;
+        // 钥匙文件先读出来：它不属于「加密参数」，但必须一起带进 profile
+        byte[]? keyFp = ReadEncryptKeyFileFingerprint();
+
         bool skipTypeCheck = SkipTypeCheckBox?.IsChecked == true;
 
         byte selectedAlg = AlgCombo?.SelectedItem is ComboBoxItem algItem && algItem.Tag is byte alg
             ? alg
             : profile.AlgorithmId;
 
-        if (!fullEncryption && !skipTypeCheck && selectedAlg == profile.AlgorithmId)
+        // 注意：即使其他参数没动，只要选了密钥文件就必须重建 profile——
+        // 否则提前返回会把这个字段丢掉，等于钥匙白选。
+        if (!fullEncryption && !skipTypeCheck && selectedAlg == profile.AlgorithmId && keyFp is null)
         {
             return profile;
         }
-
         return new CbxProfile
         {
             Name = profile.Name,
             AlgorithmId = selectedAlg,
             KdfId = profile.KdfId,   // 已由 SelectedProfile 按 KDF 选择算好
-            KeyFileFingerprint = ReadEncryptKeyFileFingerprint(),
+            KeyFileFingerprint = keyFp,
             Iterations = profile.Iterations,
             ChunkSize = profile.ChunkSize,
             SkipTypeCheck = skipTypeCheck,
