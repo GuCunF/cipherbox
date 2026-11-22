@@ -208,7 +208,7 @@
                     <Grid Grid.Row="0" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="110" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="EncInputLabel" Text="{ui:Tr enc.input}" Style="{StaticResource FieldLabel}" />
@@ -221,7 +221,7 @@
                     <Grid x:Name="EncOutputRow" Grid.Row="1" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr enc.output}" Style="{StaticResource FieldLabel}" />
@@ -232,7 +232,7 @@
                     <Grid Grid.Row="2" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr common.password}" Style="{StaticResource FieldLabel}" />
                         <PasswordBox x:Name="EncPassword" Style="{StaticResource InputPasswordBox}" Grid.Column="1" />
@@ -241,7 +241,7 @@
                     <Grid Grid.Row="3" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -308,7 +308,7 @@
                             <Grid x:Name="EncKeyFilePanel" Visibility="Collapsed" Margin="0,6,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" MaxWidth="760" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
@@ -377,7 +377,7 @@
                     <Grid Grid.Row="0" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="110" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock x:Name="DecInputLabel" Text="{ui:Tr dec.input}" Style="{StaticResource FieldLabel}" />
@@ -391,7 +391,7 @@
                     <Grid x:Name="DecOutputRow" Grid.Row="1" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr dec.output}" Style="{StaticResource FieldLabel}" />
@@ -402,7 +402,7 @@
                     <Grid x:Name="DecNameRow" Grid.Row="2" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr dec.savename}" Style="{StaticResource FieldLabel}" />
@@ -433,7 +433,7 @@
                     <Grid Grid.Row="3" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr common.password}" Style="{StaticResource FieldLabel}" />
                         <PasswordBox x:Name="DecPassword" Style="{StaticResource InputPasswordBox}" Grid.Column="1" />
@@ -444,7 +444,7 @@
                     <Grid x:Name="DecKeyFileRow" Grid.Row="4" Margin="0,0,0,10" Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="96" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MaxWidth="760" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr keyfile.label}" Style="{StaticResource FieldLabel}" />
