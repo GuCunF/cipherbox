@@ -28,11 +28,18 @@ public static class KeyFile
     /// 把口令和密钥文件指纹拼成实际交给 KDF 的口令。
     /// 没有密钥文件时直接返回口令本身（保持与旧文件完全兼容）。
     /// </summary>
+    /// <remarks>
+    /// 永远返回**新分配**的数组，即使没有密钥文件也拷一份。
+    ///
+    /// 这样做是为了让调用方能安全地把它涂零而不会破坏入参——
+    /// 之前没有钥匙时直接返回原数组，谁要是涂零了就把调用方的口令擦掉，
+    /// 同一个口令第二次用就会失败。
+    /// </remarks>
     public static byte[] Combine(byte[] password, byte[]? keyFileFingerprint)
     {
         if (keyFileFingerprint is null || keyFileFingerprint.Length == 0)
         {
-            return password;
+            return (byte[])password.Clone();
         }
 
         var combined = new byte[password.Length + keyFileFingerprint.Length];

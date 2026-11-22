@@ -60,6 +60,7 @@ public static class Cbx
 
             byte[] effectivePassword = KeyFile.Combine(password, fingerprint);
             var key = kdf.Derive(effectivePassword, header.Salt, header.KdfIterations, cipher.KeySize);
+            CryptographicOperations.ZeroMemory(effectivePassword);
             return new CbxDecryptReader(stream, header, cipher, key);
         }
         catch
@@ -393,6 +394,9 @@ public static class Cbx
         byte[] effectivePassword = KeyFile.Combine(password, keyFileFingerprint);
         var key = kdf.Derive(effectivePassword, salt, kdfIterations, cipher.KeySize);
 
+
+        // 派生完就把拼接口令擦掉：它包含明文口令，不该在内存里多留一秒
+        CryptographicOperations.ZeroMemory(effectivePassword);
         // 先看一眼明文开头，把"能不能预览"的类别记进头部——
         // 这样即使将来文件名也被加密，输口令之前仍然能决定要不要显示「只读查看」。
         // 全加密时故意写成假值「其他」，让所有全加密文件看起来一模一样

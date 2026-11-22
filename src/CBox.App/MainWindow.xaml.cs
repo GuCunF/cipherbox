@@ -2446,6 +2446,39 @@ public partial class MainWindow : Window
     }
 
     /// <summary>加密页：选密钥文件。</summary>
+    /// <summary>
+    /// 选完密钥文件立刻验一遍，不合格就当场拒绝并说明原因。
+    /// 返回 false 时 problem 里是给用户看的说明。
+    /// </summary>
+    private static bool TryAcceptKeyFile(string path, out string? problem)
+    {
+        problem = null;
+
+        try
+        {
+            var info = new FileInfo(path);
+
+            if (!info.Exists)
+            {
+                problem = UiText.Get("error.file.missing", path);
+                return false;
+            }
+
+            if (info.Length == 0)
+            {
+                problem = UiText.Get("error.keyfile.empty", path);
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            problem = UiText.Get("error.keyfile.unreadable", path, ex.Message);
+            return false;
+        }
+    }
+
     private void EncKeyFile_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
@@ -2457,7 +2490,17 @@ public partial class MainWindow : Window
 
         if (dialog.ShowDialog(this) == true)
         {
-            EncKeyFileBox.Text = dialog.FileName;
+            // 选完立刻验一下：空文件当钥匙等于没有第二重保护
+            if (TryAcceptKeyFile(dialog.FileName, out string? problem))
+            {
+                EncKeyFileBox.Text = dialog.FileName;
+            }
+            else
+            {
+                EncKeyFileBox.Text = string.Empty;
+                SetStatus(problem!, error: true);
+                ShowErrorDialog(UiText.Get("error.encrypt.title"), problem!);
+            }
         }
     }
 
@@ -2500,7 +2543,17 @@ public partial class MainWindow : Window
 
         if (dialog.ShowDialog(this) == true)
         {
-            DecKeyFileBox.Text = dialog.FileName;
+            // 选完立刻验一下：空文件当钥匙等于没有第二重保护
+            if (TryAcceptKeyFile(dialog.FileName, out string? problem))
+            {
+                DecKeyFileBox.Text = dialog.FileName;
+            }
+            else
+            {
+                DecKeyFileBox.Text = string.Empty;
+                SetStatus(problem!, error: true);
+                ShowErrorDialog(UiText.Get("error.decrypt.title"), problem!);
+            }
         }
     }
 
