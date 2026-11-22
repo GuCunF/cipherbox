@@ -314,7 +314,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="{ui:Tr keyfile.label}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
-                                <TextBox x:Name="EncKeyFileBox" Grid.Column="1" Style="{StaticResource InputTextBox}"
+                                <TextBox x:Name="EncKeyFileBox" Grid.Column="1" Style="{StaticResource InputTextBox}" MaxWidth="700" HorizontalAlignment="Left"
                                          Height="26" IsReadOnly="True" ToolTip="{ui:Tr keyfile.tip}" />
                                 <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
                                         Content="{ui:Tr common.browse}" Height="26" Click="EncKeyFile_Click" />
@@ -448,7 +448,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{ui:Tr keyfile.label}" Style="{StaticResource FieldLabel}" />
-                        <TextBox x:Name="DecKeyFileBox" Grid.Column="1" Style="{StaticResource InputTextBox}"
+                        <TextBox x:Name="DecKeyFileBox" Grid.Column="1" Style="{StaticResource InputTextBox}" MaxWidth="700" HorizontalAlignment="Left"
                                  IsReadOnly="True" ToolTip="{ui:Tr keyfile.tip}" />
                         <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.browse}" Margin="8,0,0,0" Height="36"
                                 Click="DecKeyFile_Click" />
