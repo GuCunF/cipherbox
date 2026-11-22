@@ -274,7 +274,8 @@
                             <CheckBox x:Name="FullEncryptBox" Content="{ui:Tr enc.full}"
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
                                       ToolTip="{ui:Tr enc.full.tip}" />
-                            <StackPanel x:Name="AlgPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,6,0,0">
+                            <!-- 三个下拉横排太宽会溢出，用 WrapPanel 让它们在窄窗口下自动换行 -->
+                            <WrapPanel x:Name="AlgPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,6,0,0">
                                 <TextBlock Text="{ui:Tr enc.alg}" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <ComboBox x:Name="AlgCombo" Width="190" Height="26" VerticalAlignment="Center"
                                           ToolTip="{ui:Tr enc.alg.tip}" />
@@ -290,8 +291,8 @@
                                     <ComboBoxItem Content="64 MiB" Tag="64" IsSelected="True" />
                                     <ComboBoxItem Content="128 MiB" Tag="128" />
                                 </ComboBox>
-                            </StackPanel>
-                            <StackPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
+                            </WrapPanel>
+                            <WrapPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
                                         Visibility="Collapsed" Margin="0,6,0,0">
                                 <TextBlock Text="{ui:Tr enc.displayname}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
@@ -301,7 +302,7 @@
                                          ToolTip="{ui:Tr enc.displayname.tip}" />
                                 <TextBlock Text="{ui:Tr enc.displayname.hint}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="6,0,0,0" />
-                            </StackPanel>
+                            </WrapPanel>
 
                             <!-- 密钥文件（专业模式）：口令之外的第二把钥匙 -->
                             <Grid x:Name="EncKeyFilePanel" Visibility="Collapsed" Margin="0,6,0,0">
