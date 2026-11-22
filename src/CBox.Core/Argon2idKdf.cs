@@ -17,8 +17,25 @@ namespace CBox.Core;
 /// </summary>
 public sealed class Argon2idKdf : IKdf
 {
-    /// <summary>Argon2 内存块数：64 MiB。</summary>
-    public const int MemoryKiB = 64 * 1024;
+    /// <summary>默认内存：64 MiB（OWASP 2024 推荐）。</summary>
+    public const int DefaultMemoryMiB = 64;
+
+    /// <summary>
+    /// 文件头里 KdfIterations 的编码方式：(内存 MiB &lt;&lt; 8) | 轮数。
+    ///
+    /// 这样只用一个 32 位字段就能同时记住两个参数。
+    /// 旧文件里存的是裸轮数（小于 256），解密时按 64 MiB 解释，保证向后兼容。
+    /// </summary>
+    public static uint Encode(uint rounds, int memoryMiB) => ((uint)memoryMiB << 8) | (rounds & 0xFF);
+
+    /// <summary>解码出 (轮数, 内存 MiB)。</summary>
+    public static (uint Rounds, int MemoryMiB) Decode(uint stored)
+    {
+        // 小于 256 说明是旧格式：只有轮数，内存按默认值
+        return stored < 256
+            ? (stored, DefaultMemoryMiB)
+            : (stored & 0xFF, (int)(stored >> 8));
+    }
 
     /// <summary>并行度固定为 1。</summary>
     public const uint Lanes = 1;
@@ -31,16 +48,23 @@ public sealed class Argon2idKdf : IKdf
 
     public byte[] Derive(byte[] password, byte[] salt, uint iterations, int keyLength)
     {
-        if (iterations is < 1 or > 100)
+        var (rounds, memoryMiB) = Decode(iterations);
+
+        if (rounds is < 1 or > 100)
         {
-            throw new CbxException("Argon2id 的迭代次数应在 1 到 100 之间。");
+            throw new CbxException("Argon2id 的轮数应在 1 到 100 之间。");
+        }
+
+        if (memoryMiB is < 8 or > 1024)
+        {
+            throw new CbxException("Argon2id 的内存应在 8 到 1024 MiB 之间。");
         }
 
         return Argon2Core.Derive(
             password,
             salt,
-            iterations,
-            MemoryKiB,
+            rounds,
+            memoryMiB * 1024,
             keyLength,
             Lanes);
     }

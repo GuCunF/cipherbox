@@ -60,6 +60,9 @@ public sealed class CbxProfile
     /// </summary>
     public byte[]? KeyFileFingerprint { get; init; }
 
+    /// <summary>Argon2id 的内存占用（MiB）。只在 KdfId=2 时生效，默认 64。</summary>
+    public int Argon2MemoryMiB { get; init; } = Argon2idKdf.DefaultMemoryMiB;
+
     /// <summary>
     /// 存进文件头的显示名。为空则用真实文件名。
     /// 作用是让"文件里记录的名字"和"磁盘上的名字"解耦——

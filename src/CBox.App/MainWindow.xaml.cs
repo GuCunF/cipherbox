@@ -98,6 +98,7 @@ public partial class MainWindow : Window
         RefreshStrengthLabels();
         InitializeAlgCombo();
         InitializeKdfCombo();
+        UpdateArgonMemVisibility();
         InitializeSoundPreset();
         InitializeLanguageCombo();
         UpdateStrengthHint();
@@ -570,55 +571,6 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>
-    /// 弹出「最近打开」菜单。只列小下拉里的那几项，不占界面位置。
-    /// </summary>
-    private void EncRecent_Click(object sender, RoutedEventArgs e)
-    {
-        ShowRecentMenu(sender as Button, path => ApplyEncryptInput(path));
-    }
-
-    /// <summary>解密页的最近打开。</summary>
-    private void DecRecent_Click(object sender, RoutedEventArgs e)
-    {
-        ShowRecentMenu(sender as Button, path => ApplyDecryptInput(path));
-    }
-
-    /// <summary>把最近记录拼成菜单并弹出。</summary>
-    private void ShowRecentMenu(Button? anchor, Action<string> onPick)
-    {
-        if (anchor is null)
-        {
-            return;
-        }
-
-        var menu = new ContextMenu();
-        List<string> recent = RecentFiles.Load();
-
-        if (recent.Count == 0)
-        {
-            menu.Items.Add(new MenuItem { Header = UiText.Get("recent.empty"), IsEnabled = false });
-        }
-        else
-        {
-            foreach (string path in recent)
-            {
-                var item = new MenuItem
-                {
-                    Header = Path.GetFileName(path),
-                    ToolTip = path,
-                };
-
-                string captured = path;
-                item.Click += (_, _) => onPick(captured);
-                menu.Items.Add(item);
-            }
-        }
-
-        menu.PlacementTarget = anchor;
-        menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-        menu.IsOpen = true;
-    }
 
     private void EncInputBrowse_Click(object sender, RoutedEventArgs e)
     {
@@ -1299,7 +1251,6 @@ public partial class MainWindow : Window
 
     private void ApplyEncryptInput(string path)
     {
-        RecentFiles.Touch(path);
         EncInputBox.Text = path;
         EncOutputBox.Text = Path.Combine(
             Path.GetDirectoryName(path) ?? ".",
@@ -1316,7 +1267,13 @@ public partial class MainWindow : Window
 
     private void ApplyDecryptInput(string path)
     {
-        RecentFiles.Touch(path);
+        // 选错类型的文件时立刻说清楚，别等点「开始解密」才报「文件头不匹配」
+        if (!path.EndsWith(".cbx", StringComparison.OrdinalIgnoreCase))
+        {
+            SetStatus(UiText.Get("dec.need.cbx", Path.GetFileName(path)), error: true);
+            return;
+        }
+
         DecInputBox.Text = path;
         DecOutputBox.Text = Path.GetDirectoryName(path) ?? ".";
 
@@ -2206,12 +2163,42 @@ public partial class MainWindow : Window
     /// <summary>
     /// 切换密钥派生：保存选择并刷新强度文案（Argon2 与 PBKDF2 的档位说法不同）。
     /// </summary>
+    /// <summary>当前选中的 Argon2 内存（MiB）。没选或不是 Argon2 时返回默认 64。</summary>
+    private int SelectedArgonMemoryMiB()
+    {
+        if (ArgonMemCombo?.SelectedItem is ComboBoxItem item
+            && int.TryParse(item.Tag?.ToString(), out int mb))
+        {
+            return mb;
+        }
+
+        return Argon2idKdf.DefaultMemoryMiB;
+    }
+
+    /// <summary>内存下拉只在选了 Argon2id 时出现。</summary>
+    private void UpdateArgonMemVisibility()
+    {
+        bool argon = KdfPreference.Effective(AppMode.IsProfessional) == KdfPreference.Argon2id;
+        var visibility = AppMode.IsProfessional && argon ? Visibility.Visible : Visibility.Collapsed;
+
+        if (ArgonMemLabel is not null)
+        {
+            ArgonMemLabel.Visibility = visibility;
+        }
+
+        if (ArgonMemCombo is not null)
+        {
+            ArgonMemCombo.Visibility = visibility;
+        }
+    }
+
     private void Kdf_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (KdfCombo?.SelectedItem is ComboBoxItem item && item.Tag is byte kdfId)
         {
             KdfPreference.Selected = kdfId;
 
+            UpdateArgonMemVisibility();
             RefreshStrengthLabels();
             UpdateStrengthHint();
         }
@@ -2325,6 +2312,7 @@ public partial class MainWindow : Window
             AlgorithmId = selectedAlg,
             KdfId = profile.KdfId,   // 已由 SelectedProfile 按 KDF 选择算好
             KeyFileFingerprint = keyFp,
+            Argon2MemoryMiB = SelectedArgonMemoryMiB(),
             Iterations = profile.Iterations,
             ChunkSize = profile.ChunkSize,
             SkipTypeCheck = skipTypeCheck,

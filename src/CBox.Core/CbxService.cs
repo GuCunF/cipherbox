@@ -102,7 +102,7 @@ public static class Cbx
             profile.Kind,
             profile.BatchId,
             profile.ArchiveFlags,
-            profile.KeyFileFingerprint);
+            profile.KeyFileFingerprint, profile.Argon2MemoryMiB);
     }
 
     public static EncryptReport EncryptFile(
@@ -123,7 +123,8 @@ public static class Cbx
         byte kind = CbxFormat.KindSingle,
         byte[]? batchId = null,
         byte archiveFlags = 0,
-        byte[]? keyFileFingerprint = null)
+        byte[]? keyFileFingerprint = null,
+        int argon2MemoryMiB = 0)
     {
         using var source = new FileStream(
             sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -133,7 +134,7 @@ public static class Cbx
             source, source.Length, Path.GetFileName(sourcePath), outputPath, password,
             algId, kdfId, iterations, chunkSize, progress,
             skipTypeCheck, encryptName, hideCategory, writeCategory, displayName, allowPathInName,
-            kind, batchId, archiveFlags, keyFileFingerprint);
+            kind, batchId, archiveFlags, keyFileFingerprint, argon2MemoryMiB);
     }
 
 
@@ -155,7 +156,7 @@ public static class Cbx
             profile.AlgorithmId, profile.KdfId, profile.Iterations, profile.ChunkSize, progress,
             profile.SkipTypeCheck, profile.EncryptName, profile.HideCategory, profile.WriteCategory,
             profile.DisplayName, false,
-            profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint);
+            profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint, profile.Argon2MemoryMiB);
     }
 
     /// <summary>
@@ -176,7 +177,7 @@ public static class Cbx
             source, plaintext.LongLength, originalName ?? "未命名.txt", outputPath, password,
             profile.AlgorithmId, profile.KdfId, profile.Iterations, profile.ChunkSize, progress,
             profile.SkipTypeCheck, profile.EncryptName, profile.HideCategory, profile.WriteCategory,
-            profile.DisplayName, false, profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint);
+            profile.DisplayName, false, profile.Kind, profile.BatchId, profile.ArchiveFlags, profile.KeyFileFingerprint, profile.Argon2MemoryMiB);
     }
 
     /// <summary>
@@ -352,7 +353,8 @@ public static class Cbx
         byte kind = CbxFormat.KindSingle,
         byte[]? batchId = null,
         byte archiveFlags = 0,
-        byte[]? keyFileFingerprint = null)
+        byte[]? keyFileFingerprint = null,
+        int argon2MemoryMiB = 0)
     {
         // 先把"目标位置到底哪里不行"判清楚，避免笼统报成权限问题
         EnsureTargetUsable(outputPath);
@@ -368,6 +370,11 @@ public static class Cbx
 
         uint kdfIterations = iterations ?? kdf.DefaultIterations;
 
+        // Argon2id 时把「内存 + 轮数」压进同一个字段；PBKDF2 保持原样
+        if (kdfId == 2 && argon2MemoryMiB > 0)
+        {
+            kdfIterations = Argon2idKdf.Encode(kdfIterations, argon2MemoryMiB);
+        }
         uint chunkCount = plainSize == 0
             ? 0u
             : (uint)((plainSize + chunkSize - 1) / chunkSize);

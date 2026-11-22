@@ -404,6 +404,7 @@
   "batch.running": "Encrypting {0}/{1}: {2}",
   "batch.done": "Batch finished: {0} succeeded, {1} skipped, {2} failed",
   "assoc.encrypt.menu": "Encrypt with CipherBox",
-  "recent.tip": "Recently opened files",
-  "recent.empty": "(nothing yet)"
+  "dec.need.cbx": "Please pick a .cbx file (you selected \"{0}\", which is not an encrypted file from this program).",
+  "argon.mem": "Memory:",
+  "argon.mem.tip": "How much memory Argon2id uses per operation. More memory resists GPU cracking better but takes longer: 32 MiB ~0.7s, 64 MiB ~1.2s, 128 MiB ~3.2s. The value is stored in the file header and restored automatically on decryption, so you do not need to remember it."
 }

@@ -162,7 +162,7 @@
 
             <!-- ================= 加密 ================= -->
             <TabItem Header="{ui:Tr tab.encrypt}" Padding="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <RadioButton Style="{StaticResource PillRadio}" x:Name="EncModeFile" Content="{ui:Tr enc.mode.file}" IsChecked="True"
@@ -215,8 +215,6 @@
                         <TextBox x:Name="EncInputBox" Style="{StaticResource InputTextBox}" Grid.Column="1" Margin="0,0,8,0" />
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
                             <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.browse}" Click="EncInputBrowse_Click" />
-                            <Button Style="{StaticResource SecondaryButton}" Content="▾" Width="28" Margin="4,0,0,0"
-                                    ToolTip="{ui:Tr recent.tip}" Click="EncRecent_Click" />
                         </StackPanel>
 
                     </Grid>
@@ -284,6 +282,13 @@
                                 <ComboBox x:Name="KdfCombo" Width="170" Height="26" VerticalAlignment="Center"
                                           SelectionChanged="Kdf_Changed"
                                           ToolTip="{ui:Tr enc.kdf.tip}" />
+                                <TextBlock x:Name="ArgonMemLabel" Text="{ui:Tr argon.mem}" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center" Margin="12,0,6,0" Visibility="Collapsed" />
+                                <ComboBox x:Name="ArgonMemCombo" Width="100" Height="26" VerticalAlignment="Center"
+                                          Visibility="Collapsed" ToolTip="{ui:Tr argon.mem.tip}">
+                                    <ComboBoxItem Content="32 MiB" Tag="32" />
+                                    <ComboBoxItem Content="64 MiB" Tag="64" IsSelected="True" />
+                                    <ComboBoxItem Content="128 MiB" Tag="128" />
+                                </ComboBox>
                             </StackPanel>
                             <StackPanel x:Name="DisplayNamePanel" Orientation="Horizontal"
                                         Visibility="Collapsed" Margin="0,6,0,0">
@@ -298,17 +303,22 @@
                             </StackPanel>
 
                             <!-- 密钥文件（专业模式）：口令之外的第二把钥匙 -->
-                            <StackPanel x:Name="EncKeyFilePanel" Orientation="Horizontal"
-                                        Visibility="Collapsed" Margin="0,6,0,0">
+                            <Grid x:Name="EncKeyFilePanel" Visibility="Collapsed" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
                                 <TextBlock Text="{ui:Tr keyfile.label}" Foreground="{DynamicResource BrushTextMuted}"
                                            VerticalAlignment="Center" Margin="0,0,6,0" />
-                                <TextBox x:Name="EncKeyFileBox" Style="{StaticResource InputTextBox}" Width="240" Height="26"
-                                         IsReadOnly="True" ToolTip="{ui:Tr keyfile.tip}" />
-                                <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.browse}" Margin="8,0,0,0" Height="26"
-                                        Click="EncKeyFile_Click" />
-                                <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr keyfile.clear}" Margin="8,0,0,0" Height="26"
-                                        Click="EncKeyFileClear_Click" />
-                            </StackPanel>
+                                <TextBox x:Name="EncKeyFileBox" Grid.Column="1" Style="{StaticResource InputTextBox}"
+                                         Height="26" IsReadOnly="True" ToolTip="{ui:Tr keyfile.tip}" />
+                                <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                                        Content="{ui:Tr common.browse}" Height="26" Click="EncKeyFile_Click" />
+                                <Button Grid.Column="3" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                                        Content="{ui:Tr keyfile.clear}" Height="26" Click="EncKeyFileClear_Click" />
+                            </Grid>
                         </StackPanel>
                     </Grid>
 
@@ -338,7 +348,7 @@
 
             <!-- ================= 解密 ================= -->
             <TabItem Header="{ui:Tr tab.decrypt}" Padding="16">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <RadioButton Style="{StaticResource PillRadio}" x:Name="DecModeFile" Content="{ui:Tr dec.mode.file}" IsChecked="True"
@@ -373,8 +383,6 @@
                                  TextChanged="DecInput_TextChanged" />
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
                             <Button Style="{StaticResource SecondaryButton}" Content="{ui:Tr common.browse}" Click="DecInputBrowse_Click" />
-                            <Button Style="{StaticResource SecondaryButton}" Content="▾" Width="28" Margin="4,0,0,0"
-                                    ToolTip="{ui:Tr recent.tip}" Click="DecRecent_Click" />
                         </StackPanel>
                     </Grid>
 
