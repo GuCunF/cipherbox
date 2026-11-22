@@ -5,7 +5,7 @@ English | [简体中文](README.md)
 > A fully offline file encryption tool for Windows. It packs files — or an entire folder — into a `.cbx` container, and unlocks it whenever you need it.
 > No network code, no uploads, no external dependencies. Plaintext never touches the disk, not even while viewing or editing.
 
-Current version **2.0.3** (work in progress, **not audited by any third party** — do not use it for high-value production data).
+Current version **2.2.0** (work in progress, **not audited by any third party** — do not use it for high-value production data).
 
 ---
 
@@ -14,7 +14,7 @@ Current version **2.0.3** (work in progress, **not audited by any third party** 
 The need is plain: **I want to keep a file on my disk or send it to someone, without it being casually opened — but I still want to open it myself whenever I like.**
 
 - **Fully offline** — no networking code at all: no uploads, no telemetry, no license checks
-- **Zero external dependencies** — self-contained build; the target machine needs no .NET runtime, just copy the folder and run
+- **Zero external dependencies** — pure .NET, no third-party libraries; the installer bundles the .NET runtime, while the portable zip needs the .NET 10 Desktop Runtime
 - **Plaintext stays off disk** — read-only viewing creates no plaintext file; editing happens in memory and writes the ciphertext back
 - **Three shapes** — single file, batch (N independent containers in one folder), and archive (a whole folder as one container)
 
@@ -34,10 +34,13 @@ Windows 7 / 8.1 are not supported — the .NET 10 runtime no longer runs there.
 | Read-only viewer | Shows text and images without producing plaintext files |
 | Edit and write back | Re-encrypts over the original after editing; the passphrase is required again |
 | Passphrase strength hint | Rates the passphrase as weak / medium / strong while you type it |
-| Strength profiles | Fast / Standard / High — only the PBKDF2 iteration count changes; the format stays the same |
+| Strength profiles | Fast / Standard / High; switching KDF resets it to Standard |
 | Selectable cipher | AES-256-GCM (hardware accelerated) or ChaCha20-Poly1305 (faster where AES instructions are missing) |
-| Bilingual UI | Chinese and English, switchable at runtime |
-| Professional mode | Off by default; reveals cipher selection, full encryption and skip-extension-check options |
+| **Argon2id** | RFC 9106 implementation, orders of magnitude stronger against GPU cracking; memory selectable at 32 / 64 / 128 MiB |
+| **Key file** | Requires a second file besides the passphrase; missing or wrong file cannot decrypt. The header stores only a flag, never the contents |
+| **Multi-file batch** | Pick several files and encrypt them into one folder; you must confirm the whole batch shares one passphrase |
+| Professional mode | Off by default; reveals cipher, **key derivation and memory**, key file, full encryption and skip-extension-check |
+| Shortcuts / context menu | `Ctrl+O` pick file, `Ctrl+Enter` start; right-click any file for "Encrypt with CipherBox" |
 
 ### The two archive levels
 
@@ -187,7 +190,8 @@ powershell -ExecutionPolicy Bypass -File .\tools\check-privacy.ps1
 
 Done, 1.1 → 2.0: container format v1/v2, console encrypt/decrypt programs, GUI, read-only viewer, edit-and-write-back, localization, strength profiles, log levels, dual build system, folder / archive / batch encryption, archive preview, passphrase strength hint, application icon, installer.
 
-Planned: Argon2id, public-key mode (P-256 + ML-KEM), the 2.0 public release.
+Done in 2.1 → 2.2: dark theme, encrypted file names, **Argon2id key derivation**, **key-file two-factor**, **multi-file batch**, shortcuts and context menu, live timing.
+Planned: public-key mode (P-256 + ML-KEM).
 
 ---
 
@@ -197,8 +201,8 @@ Installers and portable archives are on the [Releases page](https://github.com/G
 
 | File | Notes |
 |---|---|
-| `CipherBox-v2.0.0-Setup.exe` | Installer, self-contained .NET runtime, nothing else to install |
-| `CipherBox-v2.0.0-win-x64.zip` | Portable build, requires the .NET 10 Desktop Runtime |
+| `CipherBox-v2.2.0-Setup.exe` | Installer, self-contained .NET runtime, nothing else to install |
+| `CipherBox-v2.2.0-win-x64.zip` | Portable build, requires the .NET 10 Desktop Runtime |
 
 ## Code signing
 
@@ -219,7 +223,7 @@ Files downloaded from the internet are tagged by Windows, so the first double-cl
 If you want to be sure the file is intact, verify it first:
 
 ```powershell
-Get-FileHash CipherBox-v2.0.3-Setup.exe -Algorithm SHA256
+Get-FileHash CipherBox-v2.2.0-Setup.exe -Algorithm SHA256
 ```
 
 Compare the output with the SHA256 listed on the Releases page. If they match, the file has not been tampered with.
