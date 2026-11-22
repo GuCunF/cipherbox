@@ -56,7 +56,8 @@ public static class CbxFolder
         byte[] password,
         bool recursive = true,
         IProgress<(int Done, int Total, string Current)>? progress = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        byte[]? keyFileFingerprint = null)
     {
         if (!Directory.Exists(sourceDirectory))
         {
@@ -97,7 +98,7 @@ public static class CbxFolder
 
             try
             {
-                string? storedName = ReadStoredName(source, password);
+                string? storedName = ReadStoredName(source, password, keyFileFingerprint);
 
                 // 什么时候相信头里的名字？
                 //   1. 带 "/" → 一定是扁平模式存的相对路径
@@ -139,7 +140,7 @@ public static class CbxFolder
             try
             {
                 Directory.CreateDirectory(targetDirectory);
-                Cbx.DecryptFile(source, targetDirectory, password, targetFile);
+                Cbx.DecryptFile(source, targetDirectory, password, targetFile, null, keyFileFingerprint);
                 succeeded++;
             }
             catch (CbxException ex)
@@ -180,7 +181,7 @@ public static class CbxFolder
     /// 读出文件头里记录的名字（可能带相对路径）。
     /// 名字没加密时直接读头，省掉一次密钥派生；加密了才走需要口令的读取器。
     /// </summary>
-    private static string? ReadStoredName(string cbxPath, byte[] password)
+    private static string? ReadStoredName(string cbxPath, byte[] password, byte[]? keyFileFingerprint = null)
     {
         try
         {
@@ -196,7 +197,7 @@ public static class CbxFolder
             // 落到下面的读取器
         }
 
-        using var reader = Cbx.OpenReader(cbxPath, password);
+        using var reader = Cbx.OpenReader(cbxPath, password, keyFileFingerprint);
         return reader.OriginalName;
     }
 
@@ -483,7 +484,7 @@ public static class CbxBatch
     /// 校验：**先逐个验口令，再看批次是否一致**。
     /// 任何一项不通过都返回失败原因，调用方不应开始解密。
     /// </summary>
-    public static VerifyResult Verify(string directory, byte[] password, bool recursive = true)
+    public static VerifyResult Verify(string directory, byte[] password, bool recursive = true, byte[]? keyFileFingerprint = null)
     {
         var files = Directory.GetFiles(
                 directory,
@@ -501,7 +502,7 @@ public static class CbxBatch
         {
             try
             {
-                using var reader = Cbx.OpenReader(file, password);
+                using var reader = Cbx.OpenReader(file, password, keyFileFingerprint);
                 reader.ReadBlock();
             }
             catch (CbxException ex)
@@ -555,9 +556,10 @@ public static class CbxBatch
         byte[] password,
         bool recursive = true,
         IProgress<(int Done, int Total, string Current)>? progress = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        byte[]? keyFileFingerprint = null)
     {
-        var check = Verify(sourceDirectory, password, recursive);
+        var check = Verify(sourceDirectory, password, recursive, keyFileFingerprint);
 
         if (!check.Ok)
         {
@@ -614,7 +616,7 @@ public static class CbxBatch
             try
             {
                 Directory.CreateDirectory(targetDir);
-                Cbx.DecryptFile(source, targetDir, password, targetFile);
+                Cbx.DecryptFile(source, targetDir, password, targetFile, null, keyFileFingerprint);
                 succeeded++;
             }
             catch (Exception ex)

@@ -970,9 +970,18 @@ public partial class MainWindow : Window
         string output = DecOutputBox.Text.Trim();
         string password = DecPassword.Password;
 
-        if (input.Length == 0 || !File.Exists(input))
+        if (input.Length == 0)
         {
             SetStatus(UiText.Get("error.pick.cbx"), error: true);
+            return;
+        }
+
+        // 文件被删/改名后点解密，光在状态栏提示容易看不见，必须弹窗
+        if (!File.Exists(input))
+        {
+            string missing = UiText.Get("error.file.missing", input);
+            SetStatus(missing, error: true);
+            ShowErrorDialog(UiText.Get("error.decrypt.title"), missing);
             return;
         }
 
@@ -2651,6 +2660,7 @@ public partial class MainWindow : Window
                         throw new CbxException("这个文件不是归档，请用「单个文件」模式解密。");
                     }
 
+                    byte[]? keyFp = ReadDecryptKeyFileFingerprint();
                     ConflictChoice? globalChoice = null;
                     int count = CbxArchive.ExtractAll(source, output, passwordBytes, path =>
                     {
@@ -2687,7 +2697,7 @@ public partial class MainWindow : Window
                         DecProgress.Value = p * 100;
                         DecProgressText.Text = $"{p:P0}";
         DecProgressText.Foreground = System.Windows.Media.Brushes.White;
-                    }));
+                    }), keyFileFingerprint: keyFp);
 
                     return new FolderReport(count, count, 0, 0, output, Formats: $"归档 {count} 个条目");
                 }
@@ -2899,6 +2909,7 @@ public partial class MainWindow : Window
 
         Directory.CreateDirectory(outputDirectory);
 
+        byte[]? keyFp = ReadDecryptKeyFileFingerprint();
         int count = await Task.Run(() => CbxArchive.ExtractAll(archivePath, outputDirectory, passwordBytes, path =>
         {
             return Dispatcher.Invoke(() =>
@@ -2928,7 +2939,7 @@ public partial class MainWindow : Window
 
                 return dialog.Choice == ConflictChoice.Overwrite;
             });
-        }, progress));
+        }, progress, keyFileFingerprint: keyFp));
 
         DecProgress.Value = 100;
         DecProgressText.Text = "100%";
@@ -3027,8 +3038,9 @@ public partial class MainWindow : Window
         {
             Begin(string.Empty);
 
+            byte[]? keyFp = ReadDecryptKeyFileFingerprint();
             int count = await Task.Run(() => CbxArchive.ExtractAll(
-                input, target, passwordBytes, null, null, CancellationToken.None, chosen));
+                input, target, passwordBytes, null, null, CancellationToken.None, chosen, keyFp));
 
             SetStatus(UiText.Get("archive.done", count, target));
         }

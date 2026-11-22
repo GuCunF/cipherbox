@@ -105,9 +105,9 @@ public static class CbxArchive
     /// <summary>
     /// 只解开头几块把清单读出来（一般档的预览用）。
     /// </summary>
-    public static IReadOnlyList<Entry> ReadManifest(string cbxPath, byte[] password)
+    public static IReadOnlyList<Entry> ReadManifest(string cbxPath, byte[] password, byte[]? keyFileFingerprint = null)
     {
-        using var reader = Cbx.OpenReader(cbxPath, password);
+        using var reader = Cbx.OpenReader(cbxPath, password, keyFileFingerprint);
 
         if (!reader.Header.IsArchive)
         {
@@ -152,9 +152,10 @@ public static class CbxArchive
         Func<string, bool>? onConflict = null,
         IProgress<double>? progress = null,
         CancellationToken cancellationToken = default,
-        IReadOnlyCollection<string>? onlyEntries = null)
+        IReadOnlyCollection<string>? onlyEntries = null,
+        byte[]? keyFileFingerprint = null)
     {
-        using var reader = Cbx.OpenReader(cbxPath, password);
+        using var reader = Cbx.OpenReader(cbxPath, password, keyFileFingerprint);
 
         if (!reader.Header.IsArchive)
         {

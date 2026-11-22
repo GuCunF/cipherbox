@@ -406,5 +406,6 @@
   "assoc.encrypt.menu": "Encrypt with CipherBox",
   "dec.need.cbx": "Please pick a .cbx file (you selected \"{0}\", which is not an encrypted file from this program).",
   "argon.mem": "Memory:",
-  "argon.mem.tip": "How much memory Argon2id uses per operation. More memory resists GPU cracking better but takes longer: 32 MiB ~0.7s, 64 MiB ~1.2s, 128 MiB ~3.2s. The value is stored in the file header and restored automatically on decryption, so you do not need to remember it."
+  "argon.mem.tip": "How much memory Argon2id uses per operation. More memory resists GPU cracking better but takes longer: 32 MiB ~0.7s, 64 MiB ~1.2s, 128 MiB ~3.2s. The value is stored in the file header and restored automatically on decryption, so you do not need to remember it.",
+  "error.file.missing": "File not found: {0}\n\nIt may have been moved, renamed, or deleted. Please pick it again."
 }
