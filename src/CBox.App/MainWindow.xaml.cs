@@ -1923,24 +1923,40 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>把可用语言填进下拉框，并选中当前语言。</summary>
     /// <summary>
-    /// 发布构建里没有测试控件：模拟慢速、故障注入只存在于 CBTEST 构建。
+    /// 发布版里把只给测试用的控件藏掉。
+    ///
+    /// 这些控件在 XAML 里默认是可见的（调试构建要用），
+    /// 所以发布版必须显式收起，否则用户会看到「失败测试」「记录完整路径」这类不该出现的东西。
+    /// 其中「日志记录完整路径」尤其重要：它会把用户的真实路径写进日志，属于隐私风险。
     /// </summary>
     private void HideTestOnlyControls()
     {
 #if !CBTEST
-        if (SlowCheckBox is not null)
-        {
-            SlowCheckBox.Visibility = Visibility.Collapsed;
-        }
+        // 故意制造失败，验证错误分支用
+        Hide(TestFailEncCheckBox);
+        Hide(TestFailDecCheckBox);
 
-        if (FaultCombo is not null)
-        {
-            FaultCombo.Visibility = Visibility.Collapsed;
-        }
+        // 模拟慢速 / 故障
+        Hide(SlowCheckBox);
+        Hide(FaultCombo);
+
+        // 日志里的敏感项：路径、环境快照、目录属性
+        Hide(LogPathsCheckBox);
+        Hide(LogSnapshotCheckBox);
+        Hide(LogAclCheckBox);
 #endif
     }
+
+    /// <summary>把控件收起来（为空时跳过，XAML 改名字不会崩）。</summary>
+    private static void Hide(System.Windows.UIElement? element)
+    {
+        if (element is not null)
+        {
+            element.Visibility = Visibility.Collapsed;
+        }
+    }
+
 
     private void InitializeLanguageCombo()
     {
