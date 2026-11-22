@@ -17,6 +17,10 @@ public partial class MainWindow : Window
     private bool _soundReady;
     private bool _statusError;
     private bool _pseudoMaximized;
+
+    /// <summary>加密/解密开始的时间点，用来在进度条上显示已用秒数。</summary>
+    private DateTime _encStartedAt;
+    private DateTime _decStartedAt;
     private DateTime _lastLayoutLog = DateTime.MinValue;
     private double _restoreLeft;
     private double _restoreTop;
@@ -830,9 +834,8 @@ public partial class MainWindow : Window
             var progress = new Progress<double>(p =>
             {
                 EncProgress.Value = p * 100;
-                EncProgressText.Text = $"{p * 100:F0}%";
+                EncProgressText.Text = $"{p * 100:F0}%  ·  {FormatElapsed(DateTime.Now - _encStartedAt)}";
         EncProgressText.Foreground = System.Windows.Media.Brushes.White;
-                SetStatus(UiText.Get("status.encrypting", $"{p * 100:F0}"));
             });
 
             var profile = BuildEncryptProfile();
@@ -943,6 +946,7 @@ public partial class MainWindow : Window
         byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
         _busy = true;
+        _encStartedAt = DateTime.Now;
         EncStartButton.IsEnabled = false;
 
         int succeeded = 0;
@@ -1039,10 +1043,10 @@ public partial class MainWindow : Window
             var progress = new Progress<double>(p =>
             {
                 DecProgress.Value = p * 100;
-                DecProgressText.Text = $"{p * 100:F0}%";
-        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
-                SetStatus(UiText.Get("status.decrypting", $"{p * 100:F0}"));
+                DecProgressText.Text = $"{p * 100:F0}%  ·  {FormatElapsed(DateTime.Now - _decStartedAt)}";
+                DecProgressText.Foreground = System.Windows.Media.Brushes.White;
             });
+
 
             string overrideName = DecNameBox?.Text.Trim() ?? string.Empty;
             string? outputName = overrideName.Length == 0 ? null : Cbx.MakeSafeFileName(overrideName);
@@ -1458,10 +1462,23 @@ public partial class MainWindow : Window
         throw new CbxException("同名文件太多了，无法生成新文件名。");
     }
 
+    /// <summary>把耗时格式化成「1.2 秒」或「1 分 05 秒」。</summary>
+    private static string FormatElapsed(TimeSpan span)
+    {
+        if (span.TotalSeconds < 60)
+        {
+            return $"{span.TotalSeconds:F1} 秒";
+        }
+
+        return $"{(int)span.TotalMinutes} 分 {span.Seconds:D2} 秒";
+    }
+
     private void Begin(string message)
     {
         _busy = true;
         EncStartButton.IsEnabled = false;
+        _encStartedAt = DateTime.Now;
+        _decStartedAt = DateTime.Now;
         DecStartButton.IsEnabled = false;
         EncProgress.Value = 0;
         DecProgress.Value = 0;
@@ -2000,7 +2017,7 @@ public partial class MainWindow : Window
         string raw = DecNameBox.Text.Trim();
         if (raw.Length == 0)
         {
-            DecNameHint.Text = UiText.Get("dec.savename.hint");
+            DecNameHint.Text = string.Empty;   // 空时由输入框内的水印负责提示
             return;
         }
 
