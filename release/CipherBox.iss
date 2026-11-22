@@ -1,4 +1,4 @@
-; CipherBox 安装包脚本（Inno Setup 7）
+﻿; CipherBox 安装包脚本（Inno Setup 7）
 ;
 ; 由 release\publish-release.ps1 调用：
 ;   ISCC.exe /DAppVersion=1.8.2.2 /DSourceDir=<自包含产物目录> CipherBox.iss
@@ -51,11 +51,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#SourceDir}\CipherBox.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\README.en.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs
+; 自包含版是目录形式（不是单文件）——单文件打包在这个项目上启动异常，改用目录分发
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\CipherBox"; Filename: "{app}\CipherBox.exe"
