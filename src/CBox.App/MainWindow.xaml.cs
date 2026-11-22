@@ -32,6 +32,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        // 默认尺寸按专业模式全开（约 1260x860）给，但要受屏幕工作区约束——
+        // 小屏上如果照搬默认值，窗口会超出屏幕，标题栏都抓不到。
+        FitWindowToWorkArea();
+
         Title = CbxVersion.Display;
         AppTitle.Text = CbxVersion.Display;
 
@@ -304,6 +308,35 @@ public partial class MainWindow : Window
     ///   下限 880 —— 窗口很小时也不至于把输入框压得太窄
     ///   上限 2200 —— 超宽屏上不再无限拉长（一行文字太长反而难读）
     /// </summary>
+    /// <summary>
+    /// 把初始窗口尺寸收进屏幕工作区，避免小屏上开出去一半在屏幕外。
+    /// </summary>
+    private void FitWindowToWorkArea()
+    {
+        var work = SystemParameters.WorkArea;
+
+        if (work.Width <= 0 || work.Height <= 0)
+        {
+            return;
+        }
+
+        // 右下留一点余量，方便抓边框
+        double maxW = work.Width - 24;
+        double maxH = work.Height - 24;
+
+        if (Width > maxW)
+        {
+            Width = Math.Max(MinWidth, maxW);
+        }
+
+        if (Height > maxH)
+        {
+            Height = Math.Max(MinHeight, maxH);
+        }
+
+        CbxLog.Info($"窗口初始尺寸：{Width:F0} x {Height:F0}（工作区 {work.Width:F0} x {work.Height:F0}）");
+    }
+
     private void UpdateContentWidth()
     {
         if (ContentHost is null || RootGrid is null)

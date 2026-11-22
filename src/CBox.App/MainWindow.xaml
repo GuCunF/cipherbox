@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:CBox.App"
-        Title="CipherBox" Height="760" Width="920"
-        MinHeight="520" MinWidth="720"
+        Title="CipherBox" Height="860" Width="1260"
+        MinHeight="600" MinWidth="960"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop" Icon="Assets/CipherBox.ico"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize" StateChanged="MainWindow_StateChanged" Foreground="{DynamicResource BrushText}" PreviewKeyDown="Window_PreviewKeyDown">
