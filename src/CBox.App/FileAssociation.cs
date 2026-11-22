@@ -21,6 +21,9 @@ internal static class FileAssociation
     private static string ExtensionKey => $@"{ClassesRoot}\{Extension}";
     private static string ProgIdKey => $@"{ClassesRoot}\{ProgId}";
 
+    /// <summary>右键菜单里「用 CipherBox 加密」那一项的动词名。</summary>
+    private const string EncryptVerb = "CipherBoxEncrypt";
+
     /// <summary>当前是否由我们关联。</summary>
     public static bool IsRegistered()
     {
@@ -87,6 +90,19 @@ internal static class FileAssociation
                 key.SetValue(null, $"\"{exe}\" --view \"%1\"");
             }
 
+            // 4) 任意文件的右键菜单：「用 CipherBox 加密」
+            //    这是 HKCU\Software\Classes\*\shell，只影响当前用户
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey($@"{ClassesRoot}\*\shell\{EncryptVerb}"))
+            {
+                key.SetValue(null, CBox.Core.Localization.GetRaw("assoc.encrypt.menu") ?? "Encrypt with CipherBox");
+                key.SetValue("Icon", $"\"{exe}\"");
+            }
+
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey($@"{ClassesRoot}\*\shell\{EncryptVerb}\command"))
+            {
+                key.SetValue(null, $"\"{exe}\" \"%1\"");
+            }
+
             NotifyShell();
             return true;
         }
@@ -112,6 +128,8 @@ internal static class FileAssociation
                     }
                 }
             }
+
+            Registry.CurrentUser.DeleteSubKeyTree($@"{ClassesRoot}\*\shell\{EncryptVerb}", throwOnMissingSubKey: false);
 
             Registry.CurrentUser.DeleteSubKeyTree(ProgIdKey, throwOnMissingSubKey: false);
 
