@@ -2357,20 +2357,15 @@ public partial class MainWindow : Window
     {
         string path = EncKeyFileBox?.Text ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        if (string.IsNullOrWhiteSpace(path))
         {
-            return null;
+            return null;   // 没选钥匙，普通加密
         }
 
-        try
-        {
-            return CBox.Core.KeyFile.FingerprintFromFile(path);
-        }
-        catch (Exception ex)
-        {
-            CbxLog.Warn($"读取加密密钥文件失败：{ex.Message}");
-            return null;
-        }
+        // 选了就必须读成功：空文件、不存在都要明确报错，
+        // 不能悄悄退化成「不用钥匙加密」——那样用户以为加了锁，其实没加。
+        CbxLog.Info($"读取加密密钥文件：{CbxLog.SafePath(path)}");
+        return CBox.Core.KeyFile.FingerprintFromFile(path);
     }
 
     /// <summary>加密页：选密钥文件。</summary>
@@ -2405,20 +2400,15 @@ public partial class MainWindow : Window
     {
         string path = DecKeyFileBox?.Text ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        if (string.IsNullOrWhiteSpace(path))
         {
-            return null;
+            return null;   // 用户没填，正常情况
         }
 
-        try
-        {
-            return CBox.Core.KeyFile.FingerprintFromFile(path);
-        }
-        catch (Exception ex)
-        {
-            CbxLog.Warn($"读取密钥文件失败：{ex.Message}");
-            return null;
-        }
+        // 填了就一定要读成功：读不到就让异常冒到界面上，
+        // 不能悄悄当成「没提供钥匙」，否则用户会以为程序不认他的钥匙。
+        CbxLog.Info($"读取解密密钥文件：{CbxLog.SafePath(path)}");
+        return CBox.Core.KeyFile.FingerprintFromFile(path);
     }
 
     /// <summary>解密页：选密钥文件。</summary>

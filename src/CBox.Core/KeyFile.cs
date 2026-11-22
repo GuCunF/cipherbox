@@ -42,9 +42,30 @@ public static class KeyFile
         return combined;
     }
 
-    /// <summary>从文件路径读内容并算指纹。</summary>
+    /// <summary>
+    /// 从文件路径读内容并算指纹。
+    ///
+    /// 空文件直接拒绝：任何 0 字节文件算出来的指纹都一样，
+    /// 等于「随便找个空文件就能开门」，第二把钥匙形同虚设。
+    /// </summary>
     public static byte[] FingerprintFromFile(string path)
     {
+        var info = new FileInfo(path);
+
+        if (!info.Exists)
+        {
+            throw new CbxException($"找不到密钥文件：{path}");
+        }
+
+        if (info.Length == 0)
+        {
+            throw new CbxException(
+                $"密钥文件是空的（0 字节）：{path}\n\n" +
+                "空文件不能当钥匙——所有空文件算出来的内容都一样，" +
+                "等于随便找个空文件就能开门，第二重保护就失效了。\n" +
+                "请换一个确实有内容的文件（一张图片、一个文档都行）。");
+        }
+
         using var stream = new FileStream(
             path, FileMode.Open, FileAccess.Read, FileShare.Read,
             bufferSize: 1 << 16, FileOptions.SequentialScan);
