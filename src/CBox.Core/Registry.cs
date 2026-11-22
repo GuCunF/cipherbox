@@ -82,6 +82,7 @@ public static class KdfRegistry
     static KdfRegistry()
     {
         Register(new Pbkdf2Sha256Kdf());
+        Register(new Argon2idKdf());
     }
 
     public static void Register(IKdf kdf)

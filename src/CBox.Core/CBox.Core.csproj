@@ -17,4 +17,9 @@
     <EmbeddedResource Include="Strings\*.json" />
   </ItemGroup>
 
+  <!-- Argon2 的实现细节保持 internal，只对测试项目开放 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="CBox.CryptoTest" />
+  </ItemGroup>
+
 </Project>

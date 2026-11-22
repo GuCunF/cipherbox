@@ -43,3 +43,6 @@ _snap/
 
 # 回归测试运行产生的临时文件
 tools/RoundTripTest/data/
+
+# 测试项目运行产生的临时文件
+tests/*/data/
