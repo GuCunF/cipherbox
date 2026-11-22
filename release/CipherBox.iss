@@ -24,17 +24,21 @@ AppVersion={#AppVersion}
 AppVerName=CipherBox {#AppVersion}
 AppPublisher=CipherBox contributors
 AppPublisherURL=https://github.com/
-DefaultDirName={localappdata}\Programs\CipherBox
+DefaultDirName={autopf}\CipherBox
+; 让用户能改安装路径（默认装 Program Files）
+DisableDirPage=no
 DefaultGroupName=CipherBox
 DisableProgramGroupPage=yes
 UninstallDisplayName=CipherBox {#AppVersion}
 UninstallDisplayIcon={app}\CipherBox.exe
 SetupIconFile=..\src\CBox.App\Assets\CipherBox.ico
-; 按当前用户安装，不需要管理员
-PrivilegesRequired=lowest
+; 装到 Program Files 需要管理员权限（会弹 UAC）
+; PrivilegesRequiredOverridesAllowed=dialog 允许用户选「仅为我安装」
+PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=dist
 OutputBaseFilename=CipherBox-{#AppVersion}-Setup
-; 133 MB 单文件，用最大压缩
+; 目录形式自包含，内容约 140 MB，用最大压缩
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
