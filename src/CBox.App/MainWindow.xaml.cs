@@ -319,17 +319,23 @@ public partial class MainWindow : Window
             return;
         }
 
-        const double Ratio = 0.70;
+        // 宽度策略：优先把内容铺满窗口，只在超宽屏上封顶。
+        // 之前的 70% 比例会让窗口越宽、两侧空白越大，用户拖宽后反而更空。
         const double MinWidth = 880;
         const double MaxWidth = 2200;
+        const double SideGap = 32;    // 左右各留一点，不让内容贴边
 
-        // 下限不能超过可用宽度：窗口被拖得很窄时，880 会比可用宽度还大，
-        // 居中对齐就会把内容推到左边之外（表现为标题的 ``C`` 被裁掉）。
-        double target = Math.Min(available, Math.Clamp(available * Ratio, MinWidth, MaxWidth));
+        double target = Math.Clamp(available - SideGap, MinWidth, MaxWidth);
         ContentHost.Width = target;
 
-        CbxLog.Info($"布局：窗口可用 {available:F0}，内容宽度 {target:F0}（比例 {Ratio:P0}）");
+        // 内容比可用宽度大（窄窗口）就靠左，否则居中
+        ContentHost.HorizontalAlignment = target > available
+            ? System.Windows.HorizontalAlignment.Left
+            : System.Windows.HorizontalAlignment.Center;
+
+        CbxLog.Info($"布局：窗口可用 {available:F0}，内容宽度 {target:F0}");
     }
+
     /// <summary>诊断：记录窗口与内容区的实际尺寸，用来确认布局约束。</summary>
     private void LogLayoutMetrics()
     {

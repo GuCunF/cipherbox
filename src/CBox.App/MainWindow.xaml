@@ -266,7 +266,7 @@
                             <ComboBoxItem Content="{ui:Tr enc.strength.standard}" IsSelected="True" />
                             <ComboBoxItem Content="{ui:Tr enc.strength.strong}" />
                         </ComboBox>
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,0,0,0">
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
                             <TextBlock x:Name="EncStrengthHint" Foreground="{DynamicResource BrushTextMuted}" FontSize="{StaticResource FontSmall}" TextWrapping="Wrap" />
                             <CheckBox x:Name="SkipTypeCheckBox" Content="{ui:Tr enc.skipcheck}"
                                       Visibility="Collapsed" Margin="0,6,0,0" IsChecked="False"
