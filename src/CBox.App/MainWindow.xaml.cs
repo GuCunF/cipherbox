@@ -73,9 +73,12 @@ public partial class MainWindow : Window
 
         Loaded += (_, _) =>
         {
-            UpdateContentWidth();
-            LogLayoutMetrics();
+            // 构造函数里设过一次，但那时 SystemParameters 可能还没就绪；
+            // 这里再算一次，确保窗口一打开就是按当前屏幕算好的大小。
+            FitWindowToWorkArea();
 
+            LogLayoutMetrics();
+            UpdateContentWidth();
             // 从外部带进来的文件（拖到 exe 图标、右键菜单、双击关联文件）
             ApplyExternalPaths(App.TakeStartupPath(), App.TakePendingPaths());
             // 第一次打开：先问一句"你熟悉加密参数吗"
