@@ -93,6 +93,7 @@ public partial class MainWindow : Window
         InitializeThemeCombo();
         RefreshStrengthLabels();
         InitializeAlgCombo();
+        InitializeKdfCombo();
         InitializeSoundPreset();
         InitializeLanguageCombo();
         UpdateStrengthHint();
@@ -1364,19 +1365,24 @@ public partial class MainWindow : Window
 
         string suffix = AppMode.IsProfessional ? string.Empty : ".short";
 
+        // 两套档位说法：PBKDF2 讲迭代次数，Argon2id 讲轮数与内存
+        string family = KdfPreference.Effective(AppMode.IsProfessional) == KdfPreference.Argon2id
+            ? ".argon"
+            : string.Empty;
+
         if (EncStrengthCombo.Items[0] is ComboBoxItem quick)
         {
-            quick.Content = UiText.Get("enc.strength.quick" + suffix);
+            quick.Content = UiText.Get("enc.strength.quick" + family + suffix);
         }
 
         if (EncStrengthCombo.Items[1] is ComboBoxItem standard)
         {
-            standard.Content = UiText.Get("enc.strength.standard" + suffix);
+            standard.Content = UiText.Get("enc.strength.standard" + family + suffix);
         }
 
         if (EncStrengthCombo.Items[2] is ComboBoxItem strong)
         {
-            strong.Content = UiText.Get("enc.strength.strong" + suffix);
+            strong.Content = UiText.Get("enc.strength.strong" + family + suffix);
         }
     }
 
@@ -1407,21 +1413,27 @@ public partial class MainWindow : Window
 
     private static string DescribeStrengthForProfessional(CbxProfile profile)
     {
+        // Argon2id 的 Iterations 是轮数，PBKDF2 是迭代次数——文案分开
+        bool argon = profile.KdfId == KdfPreference.Argon2id;
+
         return profile.Name switch
         {
-            "快速" => UiText.Get("strength.hint.quick.pro", profile.Iterations),
-            "高强度" => UiText.Get("strength.hint.strong.pro", profile.Iterations),
-            _ => UiText.Get("strength.hint.standard.pro", profile.Iterations),
+            "快速" => UiText.Get(argon ? "strength.hint.quick.argon.pro" : "strength.hint.quick.pro", profile.Iterations),
+            "高强度" => UiText.Get(argon ? "strength.hint.strong.argon.pro" : "strength.hint.strong.pro", profile.Iterations),
+            _ => UiText.Get(argon ? "strength.hint.standard.argon.pro" : "strength.hint.standard.pro", profile.Iterations),
         };
     }
 
     private CbxProfile SelectedProfile()
     {
+        // KDF 由当前模式决定：一般模式固定 Argon2id，专业模式看下拉框
+        byte kdfId = KdfPreference.Effective(AppMode.IsProfessional);
+
         return EncStrengthCombo.SelectedIndex switch
         {
-            0 => CbxProfile.Quick,
-            2 => CbxProfile.Strong,
-            _ => CbxProfile.Standard,
+            0 => CbxProfile.QuickWith(kdfId),
+            2 => CbxProfile.StrongWith(kdfId),
+            _ => CbxProfile.StandardWith(kdfId),
         };
     }
 
@@ -1881,6 +1893,49 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// 填充密钥派生下拉框。选中项来自用户设置（专业模式才有意义）。
+    /// </summary>
+    private void InitializeKdfCombo()
+    {
+        if (KdfCombo is null)
+        {
+            return;
+        }
+
+        KdfCombo.Items.Clear();
+
+        foreach (var kdf in KdfRegistry.All)
+        {
+            var item = new ComboBoxItem
+            {
+                Content = $"{kdf.DisplayName} ({kdf.KdfId})",
+                Tag = kdf.KdfId,
+            };
+
+            KdfCombo.Items.Add(item);
+
+            if (kdf.KdfId == KdfPreference.Selected)
+            {
+                KdfCombo.SelectedItem = item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 切换密钥派生：保存选择并刷新强度文案（Argon2 与 PBKDF2 的档位说法不同）。
+    /// </summary>
+    private void Kdf_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (KdfCombo?.SelectedItem is ComboBoxItem item && item.Tag is byte kdfId)
+        {
+            KdfPreference.Selected = kdfId;
+
+            RefreshStrengthLabels();
+            UpdateStrengthHint();
+        }
+    }
+
     /// <summary>把保存的档位选进下拉框。</summary>
     private void InitializeSoundPreset()
     {
@@ -1983,7 +2038,7 @@ public partial class MainWindow : Window
         {
             Name = profile.Name,
             AlgorithmId = selectedAlg,
-            KdfId = profile.KdfId,
+            KdfId = profile.KdfId,   // 已由 SelectedProfile 按 KDF 选择算好
             Iterations = profile.Iterations,
             ChunkSize = profile.ChunkSize,
             SkipTypeCheck = skipTypeCheck,

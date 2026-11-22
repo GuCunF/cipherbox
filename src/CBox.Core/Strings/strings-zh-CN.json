@@ -364,5 +364,19 @@
   "opt.theme.label": "界面配色",
   "view.zoom": "缩放",
   "view.mismatch": "注意：文件名后缀是 {0}，但内容看起来是「{1}」，后缀可能写错了。",
-  "env.temp": "临时目录"
+  "env.temp": "临时目录",
+  "strength.hint.quick.argon.pro": "Argon2id · {0} 轮 · 64 MiB 内存（抗爆破最弱，只适合临时文件）",
+  "enc.kdf.pbkdf2": "PBKDF2-SHA256",
+  "strength.hint.standard.argon.pro": "Argon2id · {0} 轮 · 64 MiB 内存（每次约 1 秒）",
+  "enc.strength.quick.argon": "快速（1 轮 · 64 MiB）",
+  "enc.kdf.argon2id": "Argon2id",
+  "enc.strength.standard.argon.short": "标准（推荐）",
+  "enc.strength.strong.argon.short": "高强度",
+  "status.kdf.note": "注意：本批文件将用 Argon2id 保护，口令一旦泄露全部失效。",
+  "enc.strength.strong.argon": "高强度（6 轮 · 64 MiB）",
+  "enc.kdf": "密钥派生：",
+  "enc.strength.standard.argon": "标准（3 轮 · 64 MiB，推荐）",
+  "enc.strength.quick.argon.short": "快速",
+  "strength.hint.strong.argon.pro": "Argon2id · {0} 轮 · 64 MiB 内存（更抗爆破，约 2 秒）",
+  "enc.kdf.tip": "专业模式：选择用哪个算法把口令变成密钥。Argon2id 抗显卡爆破强得多，代价是每次加解密多花约 1 秒。"
 }

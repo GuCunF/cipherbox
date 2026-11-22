@@ -62,6 +62,30 @@ public sealed class CbxProfile
     public string? DisplayName { get; init; }
 
     /// <summary>快速：适合临时文件，抗离线爆破较弱。</summary>
+    /// <summary>Argon2id 的迭代档位：轮数（内存固定 64 MiB）。</summary>
+    public const uint Argon2QuickIterations = 1;
+    public const uint Argon2StandardIterations = 3;
+    public const uint Argon2StrongIterations = 6;
+
+    /// <summary>
+    /// 按指定 KDF 生成档位。PBKDF2 的 Iterations 是迭代次数，
+    /// Argon2id 的 Iterations 是轮数——同一个字段，两种语义，
+    /// 解密端靠文件头的 KdfId 区分。
+    /// </summary>
+    public static CbxProfile QuickWith(byte kdfId) => WithKdf(kdfId, "快速", CbxFormat.QuickIterations, Argon2QuickIterations);
+
+    public static CbxProfile StandardWith(byte kdfId) => WithKdf(kdfId, "标准", CbxFormat.StandardIterations, Argon2StandardIterations);
+
+    public static CbxProfile StrongWith(byte kdfId) => WithKdf(kdfId, "高强度", CbxFormat.StrongIterations, Argon2StrongIterations);
+
+    private static CbxProfile WithKdf(byte kdfId, string name, uint pbkdf2Iterations, uint argon2Iterations) => new()
+    {
+        Name = name,
+        AlgorithmId = CbxFormat.DefaultAlgId,
+        KdfId = kdfId,
+        Iterations = kdfId == 2 ? argon2Iterations : pbkdf2Iterations,
+        ChunkSize = CbxFormat.DefaultChunkSize,
+    };
     public static CbxProfile Quick => new()
     {
         Name = "快速",

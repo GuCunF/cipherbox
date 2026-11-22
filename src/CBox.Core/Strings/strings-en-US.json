@@ -376,5 +376,19 @@
   "opt.theme.restart": "Saved. Restart the program to apply.",
   "opt.theme.label": "Color scheme",
   "view.mismatch": "Note: extension is {0} but content looks like \"{1}\". The extension may be wrong.",
-  "env.temp": "Temporary folder"
+  "env.temp": "Temporary folder",
+  "strength.hint.quick.argon.pro": "Argon2id, {0} pass(es), 64 MiB; weakest against cracking, for temporary files only",
+  "enc.kdf.pbkdf2": "PBKDF2-SHA256",
+  "strength.hint.standard.argon.pro": "Argon2id, {0} pass(es), 64 MiB; about one second per operation",
+  "enc.strength.quick.argon": "Fast (1 pass, 64 MiB)",
+  "enc.kdf.argon2id": "Argon2id",
+  "enc.strength.standard.argon.short": "Standard (recommended)",
+  "enc.strength.strong.argon.short": "Strong",
+  "status.kdf.note": "Note: this batch uses Argon2id; a single password leak exposes them all.",
+  "enc.strength.strong.argon": "Strong (6 passes, 64 MiB)",
+  "enc.kdf": "Key derivation:",
+  "enc.strength.standard.argon": "Standard (3 passes, 64 MiB, recommended)",
+  "enc.strength.quick.argon.short": "Fast",
+  "strength.hint.strong.argon.pro": "Argon2id, {0} pass(es), 64 MiB; stronger, about two seconds",
+  "enc.kdf.tip": "Pro mode: pick the algorithm that turns your password into a key. Argon2id is far more resistant to GPU cracking; each operation costs about one extra second."
 }
