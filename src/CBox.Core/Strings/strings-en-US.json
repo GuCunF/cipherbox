@@ -390,5 +390,10 @@
   "enc.strength.standard.argon": "Standard (3 passes, 64 MiB, recommended)",
   "enc.strength.quick.argon.short": "Fast",
   "strength.hint.strong.argon.pro": "Argon2id, {0} pass(es), 64 MiB; stronger, about two seconds",
-  "enc.kdf.tip": "Pro mode: pick the algorithm that turns your password into a key. Argon2id is far more resistant to GPU cracking; each operation costs about one extra second."
+  "enc.kdf.tip": "Pro mode: pick the algorithm that turns your password into a key. Argon2id is far more resistant to GPU cracking; each operation costs about one extra second.",
+  "keyfile.label": "Key file:",
+  "keyfile.tip": "Pro mode: pick a file as a second key. Both the password and this file are required to decrypt. The .cbx only records that a key file was used, never its contents. If you lose the file, the data cannot be recovered.",
+  "keyfile.pick": "Choose key file",
+  "keyfile.filter": "All files|*.*",
+  "keyfile.clear": "Clear"
 }

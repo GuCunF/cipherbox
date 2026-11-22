@@ -378,5 +378,10 @@
   "enc.strength.standard.argon": "标准（3 轮 · 64 MiB，推荐）",
   "enc.strength.quick.argon.short": "快速",
   "strength.hint.strong.argon.pro": "Argon2id · {0} 轮 · 64 MiB 内存（更抗爆破，约 2 秒）",
-  "enc.kdf.tip": "专业模式：选择用哪个算法把口令变成密钥。Argon2id 抗显卡爆破强得多，代价是每次加解密多花约 1 秒。"
+  "enc.kdf.tip": "专业模式：选择用哪个算法把口令变成密钥。Argon2id 抗显卡爆破强得多，代价是每次加解密多花约 1 秒。",
+  "keyfile.label": "密钥文件：",
+  "keyfile.tip": "专业模式：选一个文件作为第二把钥匙。它和口令一起才能解密；文件里只记「用了密钥文件」这个标志，不存它的内容。丢失后无法恢复。",
+  "keyfile.pick": "选择密钥文件",
+  "keyfile.filter": "所有文件|*.*",
+  "keyfile.clear": "清除"
 }

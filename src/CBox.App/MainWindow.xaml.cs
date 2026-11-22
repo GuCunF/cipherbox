@@ -602,8 +602,9 @@ public partial class MainWindow : Window
     private void DecInput_TextChanged(object sender, TextChangedEventArgs e)
     {
         RefreshPreviewButton();
-    }
+        UpdateDecKeyFileVisibility();
 
+    }
     private void DecInputBrowse_Click(object sender, RoutedEventArgs e)
     {
         // 文件夹模式下必须选文件夹，否则用户根本选不中要解密的目录
@@ -865,12 +866,15 @@ public partial class MainWindow : Window
                 }
             }
 
+            // 密钥文件（可选）：文件头要求时才需要
+            byte[]? keyFp = ReadDecryptKeyFileFingerprint();
+
             var report = await Task.Run(() => Cbx.DecryptFile(
-                input, output, Encoding.UTF8.GetBytes(password), outputName, progress));
+                input, output, Encoding.UTF8.GetBytes(password), outputName, progress, keyFp));
 
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
-        DecProgressText.Foreground = System.Windows.Media.Brushes.White;
+            DecProgressText.Foreground = System.Windows.Media.Brushes.White;
 
             if (!SoundFeedback.PlaySuccess(report.Elapsed))
             {
@@ -1494,6 +1498,16 @@ public partial class MainWindow : Window
             AlgPanel.Visibility = AppMode.IsProfessional ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        if (EncKeyFilePanel is not null)
+        {
+            EncKeyFilePanel.Visibility = AppMode.IsProfessional ? Visibility.Visible : Visibility.Collapsed;
+
+            if (!AppMode.IsProfessional && EncKeyFileBox is not null)
+            {
+                EncKeyFileBox.Text = string.Empty;   // 退回一般模式时清掉，免得带进下一次加密
+            }
+        }
+
         if (DisplayNamePanel is not null)
         {
             DisplayNamePanel.Visibility = AppMode.IsProfessional ? Visibility.Visible : Visibility.Collapsed;
@@ -2039,6 +2053,7 @@ public partial class MainWindow : Window
             Name = profile.Name,
             AlgorithmId = selectedAlg,
             KdfId = profile.KdfId,   // 已由 SelectedProfile 按 KDF 选择算好
+            KeyFileFingerprint = ReadEncryptKeyFileFingerprint(),
             Iterations = profile.Iterations,
             ChunkSize = profile.ChunkSize,
             SkipTypeCheck = skipTypeCheck,
@@ -2047,6 +2062,128 @@ public partial class MainWindow : Window
         };
     }
 
+
+    /// <summary>
+    /// <summary>
+    /// 读取加密页选的密钥文件指纹。没选返回 null。
+    /// </summary>
+    private byte[]? ReadEncryptKeyFileFingerprint()
+    {
+        string path = EncKeyFileBox?.Text ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        {
+            return null;
+        }
+
+        try
+        {
+            return CBox.Core.KeyFile.FingerprintFromFile(path);
+        }
+        catch (Exception ex)
+        {
+            CbxLog.Warn($"读取加密密钥文件失败：{ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>加密页：选密钥文件。</summary>
+    private void EncKeyFile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = UiText.Get("keyfile.pick"),
+            Filter = UiText.Get("keyfile.filter"),
+            CheckFileExists = true,
+        };
+
+        if (dialog.ShowDialog(this) == true)
+        {
+            EncKeyFileBox.Text = dialog.FileName;
+        }
+    }
+
+    /// <summary>加密页：清除已选的密钥文件。</summary>
+    private void EncKeyFileClear_Click(object sender, RoutedEventArgs e)
+    {
+        if (EncKeyFileBox is not null)
+        {
+            EncKeyFileBox.Text = string.Empty;
+        }
+    }
+
+
+    /// 读取解密页选的密钥文件，算出指纹。没选就返回 null（普通文件不需要）。
+    /// </summary>
+    private byte[]? ReadDecryptKeyFileFingerprint()
+    {
+        string path = DecKeyFileBox?.Text ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+        {
+            return null;
+        }
+
+        try
+        {
+            return CBox.Core.KeyFile.FingerprintFromFile(path);
+        }
+        catch (Exception ex)
+        {
+            CbxLog.Warn($"读取密钥文件失败：{ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>解密页：选密钥文件。</summary>
+    private void DecKeyFile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = UiText.Get("keyfile.pick"),
+            Filter = UiText.Get("keyfile.filter"),
+            CheckFileExists = true,
+        };
+
+        if (dialog.ShowDialog(this) == true)
+        {
+            DecKeyFileBox.Text = dialog.FileName;
+        }
+    }
+
+    /// <summary>
+    /// 解密页：只有当前选的 .cbx 需要密钥文件时才显示那一行。
+    /// </summary>
+    private void UpdateDecKeyFileVisibility()
+    {
+        if (DecKeyFileRow is null || DecKeyFileBox is null)
+        {
+            return;
+        }
+
+        bool needed = false;
+
+        try
+        {
+            string path = DecInputBox?.Text ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            {
+                needed = Cbx.ReadHeader(path).RequiresKeyFile;
+            }
+        }
+        catch
+        {
+            // 读不了头就当不需要，用户点下去会得到明确报错
+        }
+
+        DecKeyFileRow.Visibility = needed ? Visibility.Visible : Visibility.Collapsed;
+
+        if (!needed)
+        {
+            DecKeyFileBox.Text = string.Empty;
+        }
+    }
 
     /// <summary>
     /// 加密模式切换：单个文件 / 整个文件夹。
