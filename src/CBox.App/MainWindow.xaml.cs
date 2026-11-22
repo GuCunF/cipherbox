@@ -309,7 +309,12 @@ public partial class MainWindow : Window
     ///   上限 2200 —— 超宽屏上不再无限拉长（一行文字太长反而难读）
     /// </summary>
     /// <summary>
-    /// 把初始窗口尺寸收进屏幕工作区，避免小屏上开出去一半在屏幕外。
+    /// 按屏幕工作区自动决定初始窗口大小，任何分辨率都能一打开就看全内容。
+    ///
+    /// 为什么不用「测量内容期望尺寸」：界面里大量 * 列和流式文本，
+    /// 在无限宽约束下量出来的值偏小且不稳，反而不如按工作区比例给。
+    /// 比例取 86% 宽 / 90% 高：足够放下专业模式全部控件，
+    /// 又不会贴满屏幕显得压抑，四周还留得下抓边框的余量。
     /// </summary>
     private void FitWindowToWorkArea()
     {
@@ -320,21 +325,20 @@ public partial class MainWindow : Window
             return;
         }
 
-        // 右下留一点余量，方便抓边框
-        double maxW = work.Width - 24;
-        double maxH = work.Height - 24;
+        const double WidthRatio = 0.86;
+        const double HeightRatio = 0.90;
+        const double ComfortableWidth = 1440;   // 再宽也没必要，表单太宽反而不好看
+        const double ComfortableHeight = 940;
+        const double EdgeGap = 24;              // 四周留一点，方便抓边框
 
-        if (Width > maxW)
-        {
-            Width = Math.Max(MinWidth, maxW);
-        }
+        double targetW = Math.Min(ComfortableWidth, work.Width * WidthRatio);
+        double targetH = Math.Min(ComfortableHeight, work.Height * HeightRatio);
 
-        if (Height > maxH)
-        {
-            Height = Math.Max(MinHeight, maxH);
-        }
+        // 下限用 MinWidth/MinHeight，上限是工作区本身；中间取算出来的目标值
+        Width = Math.Max(MinWidth, Math.Min(targetW, work.Width - EdgeGap));
+        Height = Math.Max(MinHeight, Math.Min(targetH, work.Height - EdgeGap));
 
-        CbxLog.Info($"窗口初始尺寸：{Width:F0} x {Height:F0}（工作区 {work.Width:F0} x {work.Height:F0}）");
+        CbxLog.Info($"窗口自动尺寸：{Width:F0} x {Height:F0}（工作区 {work.Width:F0} x {work.Height:F0}）");
     }
 
     private void UpdateContentWidth()
