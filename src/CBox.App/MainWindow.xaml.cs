@@ -1644,11 +1644,18 @@ public partial class MainWindow : Window
         // Argon2id 的 Iterations 是轮数，PBKDF2 是迭代次数——文案分开
         bool argon = profile.KdfId == KdfPreference.Argon2id;
 
+        // Argon2 的文案有两个参数：轮数、内存；PBKDF2 只有一个迭代次数
         return profile.Name switch
         {
-            "快速" => UiText.Get(argon ? "strength.hint.quick.argon.pro" : "strength.hint.quick.pro", profile.Iterations),
-            "高强度" => UiText.Get(argon ? "strength.hint.strong.argon.pro" : "strength.hint.strong.pro", profile.Iterations),
-            _ => UiText.Get(argon ? "strength.hint.standard.argon.pro" : "strength.hint.standard.pro", profile.Iterations),
+            "快速" => argon
+                ? UiText.Get("strength.hint.quick.argon.pro", profile.Iterations, profile.Argon2MemoryMiB)
+                : UiText.Get("strength.hint.quick.pro", profile.Iterations),
+            "高强度" => argon
+                ? UiText.Get("strength.hint.strong.argon.pro", profile.Iterations, profile.Argon2MemoryMiB)
+                : UiText.Get("strength.hint.strong.pro", profile.Iterations),
+            _ => argon
+                ? UiText.Get("strength.hint.standard.argon.pro", profile.Iterations, profile.Argon2MemoryMiB)
+                : UiText.Get("strength.hint.standard.pro", profile.Iterations),
         };
     }
 
@@ -1656,13 +1663,27 @@ public partial class MainWindow : Window
     {
         // KDF 由当前模式决定：一般模式固定 Argon2id，专业模式看下拉框
         byte kdfId = KdfPreference.Effective(AppMode.IsProfessional);
+        int memoryMiB = AppMode.IsProfessional ? SelectedArgonMemoryMiB() : Argon2idKdf.DefaultMemoryMiB;
 
-        return EncStrengthCombo.SelectedIndex switch
+        CbxProfile baseProfile = EncStrengthCombo.SelectedIndex switch
         {
             0 => CbxProfile.QuickWith(kdfId),
             2 => CbxProfile.StrongWith(kdfId),
             _ => CbxProfile.StandardWith(kdfId),
         };
+
+        // 只有 Argon2 才吃内存这个参数；PBKDF2 忽略它
+        return kdfId == KdfPreference.Argon2id
+            ? new CbxProfile
+            {
+                Name = baseProfile.Name,
+                AlgorithmId = baseProfile.AlgorithmId,
+                KdfId = baseProfile.KdfId,
+                Iterations = baseProfile.Iterations,
+                Argon2MemoryMiB = memoryMiB,
+                ChunkSize = baseProfile.ChunkSize,
+            }
+            : baseProfile;
     }
 
     /// <summary>一般/专业模式切换（当前只影响文案措辞与专业选项的可见性）。</summary>
@@ -2190,6 +2211,12 @@ public partial class MainWindow : Window
         {
             ArgonMemCombo.Visibility = visibility;
         }
+    }
+
+    /// <summary>切内存时刷新提示文案（它显示当前选的内存值）。</summary>
+    private void ArgonMem_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateStrengthHint();
     }
 
     private void Kdf_Changed(object sender, SelectionChangedEventArgs e)

@@ -65,15 +65,20 @@
         </Setter>
     </Style>
 
-    <!-- 滚动条：系统默认是亮色，深色主题下很刺眼；这里换成跟随主题的细条 -->
+    <!-- 滚动条：系统默认是亮色，深色主题下很刺眼；这里换成跟随主题的细条。
+         竖直和横向共用一个模板，靠 Orientation 触发器切换 Track 方向与反转，
+         否则横向滚动条会套竖直的布局（出现方块、常驻小条）。 -->
     <Style TargetType="ScrollBar">
         <Setter Property="Width" Value="10" />
+        <Setter Property="MinWidth" Value="10" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
-                    <Grid Background="Transparent">
-                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                    <Grid x:Name="Root" Background="Transparent">
+                        <Track x:Name="PART_Track"
+                               Orientation="{TemplateBinding Orientation}"
+                               IsDirectionReversed="True">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False" />
                             </Track.DecreaseRepeatButton>
@@ -81,7 +86,8 @@
                                 <Thumb>
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Border Background="{DynamicResource BrushBorderStrong}" CornerRadius="5" Margin="1" />
+                                            <Border Background="{DynamicResource BrushBorderStrong}"
+                                                    CornerRadius="5" Margin="2" />
                                         </ControlTemplate>
                                     </Thumb.Template>
                                 </Thumb>
@@ -91,9 +97,21 @@
                             </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Height" Value="10" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!-- 输入框：白底、细边框、聚焦变蓝 -->
     <Style x:Key="ThemedTextBox" TargetType="TextBox">

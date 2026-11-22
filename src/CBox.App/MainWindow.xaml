@@ -284,7 +284,8 @@
                                           ToolTip="{ui:Tr enc.kdf.tip}" />
                                 <TextBlock x:Name="ArgonMemLabel" Text="{ui:Tr argon.mem}" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center" Margin="12,0,6,0" Visibility="Collapsed" />
                                 <ComboBox x:Name="ArgonMemCombo" Width="100" Height="26" VerticalAlignment="Center"
-                                          Visibility="Collapsed" ToolTip="{ui:Tr argon.mem.tip}">
+                                          Visibility="Collapsed" ToolTip="{ui:Tr argon.mem.tip}"
+                                          SelectionChanged="ArgonMem_Changed">
                                     <ComboBoxItem Content="32 MiB" Tag="32" />
                                     <ComboBoxItem Content="64 MiB" Tag="64" IsSelected="True" />
                                     <ComboBoxItem Content="128 MiB" Tag="128" />
