@@ -17,10 +17,15 @@ $excludeDirs = @(
     '\\release\\dist\\'
 )
 
+# 压缩包无法做字符串检查：解出来是二进制，随机字节会碰巧匹配敏感词
+# （已踩过一次：zip 里的随机数据命中了 PVZ）
+$binaryExt = @('.zip', '.7z', '.rar', '.gz', '.bz2', '.xz', '.cab', '.msi')
+
 $files = Get-ChildItem $root -Recurse -File | Where-Object {
     if ($_.Name -eq 'check-privacy.ps1') { return $false }   # 检查脚本自身包含规则，跳过
 
     $full = $_.FullName
+    if ($binaryExt -contains $_.Extension.ToLowerInvariant()) { return $false }
     -not ($excludeDirs | Where-Object { $full -match $_ })
 }
 
