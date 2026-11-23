@@ -1,5 +1,4 @@
 {
-  "_meta.note": "English pass completed for 1.4. Terminology: passphrase / ciphertext / plaintext / chunk. Re-review at each major version.",
 
   "app.title": "CipherBox",
   "app.subtitle": "Fully offline file encryption — all processing happens on this machine",
@@ -222,7 +221,7 @@
   "opt.logacl": "Log folder attributes",
   "opt.logacl.tip": "Professional mode: record ACLs and attributes of the target folder. This is an environment fingerprint; never saved.",
   "opt.keepfailed": "Keep the file when an operation fails",
-  "opt.keepfailed.tip": "Professional mode: keep the half-written file when an operation fails, to help diagnosis. If unchecked, the failed file is destroyed.",  "sound.quiet": "Quiet",
+  "opt.keepfailed.tip": "Professional mode: keep the half-written ciphertext when ENCRYPTION fails, to help diagnosis.\n\nDecryption failures are always destroyed - a half-decrypted file contains plaintext, and leaving it on disk leaks sensitive content.",  "sound.quiet": "Quiet",
   "sound.standard": "Standard",
   "sound.strong": "Loud",
   "sound.silent": "Silent (status bar only)",
@@ -283,7 +282,7 @@
   "archive.level.full": "Full: no preview on decryption",
   "archive.level.tip": "Preview on decrypt: after entering the passphrase you can inspect the tree and name before extracting, and extract selected entries. No preview: nothing is visible before extraction, the archive name is encrypted too, and only full extraction is possible.",  "common.unnamed": "unnamed",  "error.generic": "Something went wrong: {0} - {1}",
   "common.bytes": "bytes",
-  "lang.zh": "中文",  "lang.zh": "中文",
+  "lang.zh": "中文",
   "lang.en": "English",  "common.allfiles": "All files (*.*)|*.*",  "pwd.level.weak": "Passphrase strength: weak",
   "pwd.level.medium": "Passphrase strength: medium",
   "pwd.level.strong": "Passphrase strength: strong",
@@ -348,7 +347,6 @@
   "error.denied": "No permission to access this location. Try another folder; if the file is in use by another program, close it first.",
   "error.path.long": "Path exceeds the Windows limit of 260 characters. Move the file to a folder with a shorter path.",
   "error.dir.missing": "The folder could not be found; it may have been moved or deleted.",
-  "error.file.missing": "The file could not be found; it may have been moved or deleted.",
   "error.disk.full": "Not enough disk space. Free up some space and retry.",
   "opt.assoc.on": "Associate .cbx",
   "opt.assoc.off": "Remove association",

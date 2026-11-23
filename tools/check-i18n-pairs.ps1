@@ -16,6 +16,22 @@ $dir = Join-Path $root 'src\CBox.Core\Strings'
 $zhPath = Join-Path $dir 'strings-zh-CN.json'
 $enPath = Join-Path $dir 'strings-en-US.json'
 
+
+# 重复 key 检测：ConvertFrom-Json 遇到重复 key 只保留最后一个，不报错，
+# 所以必须用正则自己数一遍——否则两边「看起来对齐」但实际有一份被悄悄丢了。
+$problems = 0
+foreach ($lang in @('zh-CN', 'en-US')) {
+    $raw = [System.IO.File]::ReadAllText((Join-Path $dir "strings-$lang.json"))
+    $all = [regex]::Matches($raw, '"([a-zA-Z_][a-zA-Z0-9_.]*)"\s*:') | ForEach-Object { $_.Groups[1].Value }
+    $dup = $all | Group-Object | Where-Object Count -gt 1
+
+    if ($dup) {
+        Write-Host "$lang 存在重复 key：" -ForegroundColor Red
+        $dup | ForEach-Object { Write-Host "  $($_.Name) x $($_.Count)" -ForegroundColor Red }
+        $problems++
+    }
+}
+
 $zh = Get-Content $zhPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $en = Get-Content $enPath -Raw -Encoding UTF8 | ConvertFrom-Json
 

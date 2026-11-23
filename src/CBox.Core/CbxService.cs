@@ -529,13 +529,13 @@ public static class Cbx
         catch (UnauthorizedAccessException ex)
         {
             CbxLog.Error($"加密无权限 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
-            CleanupOnFailure(tempPath);
+            CleanupOnFailure(tempPath, isPlaintext: false);
             throw new CbxException(AccessDeniedHint(outputPath), ex);
         }
         catch (Exception ex)
         {
             CbxLog.Error($"加密失败 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
-            CleanupOnFailure(tempPath);
+            CleanupOnFailure(tempPath, isPlaintext: false);
             throw;
         }
         finally
@@ -630,7 +630,7 @@ public static class Cbx
         catch (UnauthorizedAccessException ex)
         {
             CbxLog.Error($"解密无权限 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
-            CleanupOnFailure(tempPath);
+            CleanupOnFailure(tempPath, isPlaintext: true);
             throw new CbxException(AccessDeniedHint(outputPath), ex);
         }
         catch (CbxException ex)
@@ -642,13 +642,13 @@ public static class Cbx
 
             CbxLog.Warn($"解密失败 目标={CbxLog.SafePath(outputPath)} | {hint}");
             CbxLog.Error("解密失败详情", ex);
-            CleanupOnFailure(tempPath);
+            CleanupOnFailure(tempPath, isPlaintext: true);
             throw;
         }
         catch (Exception ex)
         {
             CbxLog.Error($"解密失败 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
-            CleanupOnFailure(tempPath);
+            CleanupOnFailure(tempPath, isPlaintext: true);
             throw new CbxException($"解密过程出错：{ex.Message}", ex);
         }
 
@@ -771,14 +771,27 @@ public static class Cbx
 
     /// <summary>
     /// 失败时的清理。
-    /// 正式版：立刻删掉写了一半的临时文件，不留残缺数据。
-    /// 测试版（KeepFailedOutput）：保留并记录路径，方便排查问题。
+    ///
+    /// isPlaintext 区分临时文件里装的是不是**明文**：
+    ///   - 加密失败 → 密文，留着无妨，受 KeepFailedOutput 控制
+    ///   - 解密失败 → **解到一半的明文**，无论开关怎么设都必须删
+    ///
+    /// 这条分支不能省：界面上的「失败时保留文件」原本只写「方便排查」，
+    /// 用户根本不会想到解密失败留下的是明文。
     /// </summary>
-    private static void CleanupOnFailure(string tempPath)
+    private static void CleanupOnFailure(string tempPath, bool isPlaintext)
     {
+        // 明文优先：不管 KeepFailedOutput 开没开，一律销毁
+        if (isPlaintext)
+        {
+            CbxLog.Warn($"解密失败，已销毁明文半成品（不保留）：{CbxLog.SafePath(tempPath)}");
+            TryDelete(tempPath);
+            return;
+        }
+
         if (CbxTestHooks.KeepFailedOutput)
         {
-            CbxLog.Warn($"操作失败，已保留半成品供排查：{CbxLog.SafePath(tempPath)}");
+            CbxLog.Warn($"加密失败，已保留密文半成品供排查：{CbxLog.SafePath(tempPath)}");
             return;
         }
 
