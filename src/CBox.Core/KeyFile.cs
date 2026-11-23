@@ -61,12 +61,13 @@ public static class KeyFile
 
         if (!info.Exists)
         {
-            throw new CbxException($"找不到密钥文件：{path}");
+            throw new CbxException(CbxErrorCode.KeyFileNotFound, path);
         }
 
         if (info.Length == 0)
         {
             throw new CbxException(
+                CbxErrorCode.KeyFileEmpty,
                 $"密钥文件是空的（0 字节）：{path}\n\n" +
                 "空文件不能当钥匙——所有空文件算出来的内容都一样，" +
                 "等于随便找个空文件就能开门，第二重保护就失效了。\n" +

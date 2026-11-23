@@ -42,7 +42,7 @@ public sealed class ChaCha20Poly1305Cipher : ICipher
     {
         if (ciphertextWithTag.Length < TagSize)
         {
-            throw new CbxException("数据块长度异常，文件已损坏。");
+            throw new CbxException(CbxErrorCode.CorruptedChunk);
         }
 
         int ctLength = ciphertextWithTag.Length - TagSize;
@@ -59,7 +59,7 @@ public sealed class ChaCha20Poly1305Cipher : ICipher
         }
         catch (CryptographicException ex)
         {
-            throw new CbxException("解密失败：口令错误，或者文件已被修改/损坏。", ex);
+            throw new CbxException(CbxErrorCode.WrongPassword, ex);
         }
 
         return plaintext;

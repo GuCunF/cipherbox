@@ -24,6 +24,7 @@ public static class KemRegistry
         if (!Items.TryGetValue(id, out var kem))
         {
             throw new CbxException(
+                CbxErrorCode.UnsupportedAlgorithm,
                 $"这个文件使用了公钥封装（编号 {id}），但当前版本还不支持。请升级程序。");
         }
 

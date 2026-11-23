@@ -66,7 +66,7 @@ public static class CipherRegistry
     {
         return Map.TryGetValue(algorithmId, out var cipher)
             ? cipher
-            : throw new CbxException($"文件使用了本程序不支持的加密算法（ID={algorithmId}），请升级程序。");
+            : throw new CbxException(CbxErrorCode.UnsupportedAlgorithm, algorithmId);
     }
 
     public static bool IsSupported(byte algorithmId) => Map.ContainsKey(algorithmId);
@@ -94,7 +94,7 @@ public static class KdfRegistry
     {
         return Map.TryGetValue(kdfId, out var kdf)
             ? kdf
-            : throw new CbxException($"文件使用了本程序不支持的密钥派生算法（ID={kdfId}），请升级程序。");
+            : throw new CbxException(CbxErrorCode.UnsupportedKdf, kdfId);
     }
 
     public static IEnumerable<IKdf> All => Map.Values.OrderBy(x => x.KdfId);

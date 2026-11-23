@@ -66,7 +66,7 @@ public static class CbxArchive
 
         if (entries.Count == 0)
         {
-            throw new CbxException("这个文件夹里没有可归档的文件。");
+            throw new CbxException(CbxErrorCode.ArchiveEmpty, sourceDirectory);
         }
 
         byte[] manifest = BuildManifest(entries);
@@ -111,7 +111,7 @@ public static class CbxArchive
 
         if (!reader.Header.IsArchive)
         {
-            throw new CbxException("这不是归档文件（不是文件夹加密的产物）。");
+            throw new CbxException(CbxErrorCode.NotArchive);
         }
 
         using var head = new MemoryStream();
@@ -134,7 +134,7 @@ public static class CbxArchive
             }
         }
 
-        throw new CbxException("无法解析归档清单（文件可能损坏）。");
+        throw new CbxException(CbxErrorCode.CorruptedChunk);
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public static class CbxArchive
 
         if (!reader.Header.IsArchive)
         {
-            throw new CbxException("这不是归档文件（不是文件夹加密的产物）。");
+            throw new CbxException(CbxErrorCode.NotArchive);
         }
 
         long total = reader.PlainSize;
@@ -214,7 +214,7 @@ public static class CbxArchive
 
                     if (read <= 0)
                     {
-                        throw new CbxException("归档内容提前结束，文件可能损坏。");
+                        throw new CbxException(CbxErrorCode.TruncatedFile);
                     }
 
                     file.Write(buffer, 0, read);
@@ -241,7 +241,7 @@ public static class CbxArchive
 
             if (read <= 0)
             {
-                throw new CbxException("归档内容提前结束，文件可能损坏。");
+                throw new CbxException(CbxErrorCode.TruncatedFile);
             }
 
             count -= read;
@@ -257,14 +257,14 @@ public static class CbxArchive
 
         if (length == 0 || length > 32 * 1024 * 1024)
         {
-            throw new CbxException("归档清单长度异常，文件可能损坏。");
+            throw new CbxException(CbxErrorCode.InvalidHeader);
         }
 
         var json = new byte[length];
         ReadExactlyOrThrow(plain, json);
 
         var doc = JsonSerializer.Deserialize<ManifestDocument>(json, JsonOptions)
-                  ?? throw new CbxException("归档清单解析失败。");
+                  ?? throw new CbxException(CbxErrorCode.InvalidHeader);
 
         return doc.Entries;
     }
@@ -279,7 +279,7 @@ public static class CbxArchive
 
             if (read <= 0)
             {
-                throw new CbxException("归档内容提前结束，文件可能损坏。");
+                throw new CbxException(CbxErrorCode.TruncatedFile);
             }
 
             offset += read;
@@ -509,7 +509,7 @@ public static class CbxArchive
 
                 if (read <= 0)
                 {
-                    throw new CbxException($"归档过程中文件变短了：{_current.Name}");
+                    throw new CbxException(CbxErrorCode.TruncatedFile, _current.Name);
                 }
 
                 offset += read;

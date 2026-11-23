@@ -126,6 +126,7 @@ public sealed class CbxHeader
         if (nameBytes.Length > ushort.MaxValue)
         {
             throw new CbxException(
+                CbxErrorCode.InvalidParameter,
                 $"文件名过长（{nameBytes.Length:N0} 字节），超出文件头字段上限 {ushort.MaxValue:N0} 字节。");
         }
 
@@ -161,7 +162,7 @@ public sealed class CbxHeader
         var span = fixedPart.AsSpan();
         if (!span[..8].SequenceEqual(CbxFormat.Magic))
         {
-            throw new CbxException("这不是本程序的加密文件（文件头标识不匹配）。");
+            throw new CbxException(CbxErrorCode.NotCbxFile);
         }
 
         var header = new CbxHeader
@@ -178,7 +179,7 @@ public sealed class CbxHeader
 
         if (header.Version < CbxFormat.MinReadableVersion || header.Version > CbxFormat.Version)
         {
-            throw new CbxException($"不支持的文件版本（{header.Version}），请升级程序。");
+            throw new CbxException(CbxErrorCode.UnsupportedVersion, header.Version, CbxFormat.Version);
         }
 
         int saltLen = ReadExactly(stream, 1)[0];
@@ -240,17 +241,17 @@ public sealed class CbxHeader
     {
         if (ChunkSize < CbxFormat.MinChunkSize || ChunkSize > CbxFormat.MaxChunkSize)
         {
-            throw new CbxException($"文件头里的块大小非法（{ChunkSize}）。");
+            throw new CbxException(CbxErrorCode.InvalidHeader);
         }
 
         if (Salt.Length != CbxFormat.SaltSize)
         {
-            throw new CbxException($"文件头里的盐长度非法（{Salt.Length}）。");
+            throw new CbxException(CbxErrorCode.InvalidHeader);
         }
 
         if (BaseNonce.Length != cipher.NonceSize)
         {
-            throw new CbxException($"文件头里的 nonce 长度与算法不符（{BaseNonce.Length}）。");
+            throw new CbxException(CbxErrorCode.InvalidHeader);
         }
 
         ulong expected = PlainSize == 0
@@ -259,7 +260,7 @@ public sealed class CbxHeader
 
         if (ChunkCount != expected)
         {
-            throw new CbxException("文件头内部不自洽（块数量与明文大小不匹配）。");
+            throw new CbxException(CbxErrorCode.InvalidHeader);
         }
     }
 
@@ -297,7 +298,7 @@ public sealed class CbxHeader
         }
         catch (EndOfStreamException ex)
         {
-            throw new CbxException("文件不完整（提前结束）。", ex);
+            throw new CbxException(CbxErrorCode.TruncatedFile, ex);
         }
         return buffer;
     }

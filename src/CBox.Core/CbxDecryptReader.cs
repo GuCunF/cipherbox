@@ -87,7 +87,7 @@ public sealed class CbxDecryptReader : IPlaintextSource
         if (cipherLength < (uint)_cipher.TagSize ||
             cipherLength > (uint)ChunkSize + (uint)_cipher.TagSize)
         {
-            throw new CbxException($"第 {NextChunkIndex + 1} 块长度非法，文件已损坏。");
+            throw new CbxException(CbxErrorCode.CorruptedChunk, NextChunkIndex);
         }
 
         // 钩子放在解密之前：小文件也要能从 0% 就开始停顿/失败
@@ -103,14 +103,20 @@ public sealed class CbxDecryptReader : IPlaintextSource
         {
             plain = _cipher.Decrypt(_key, nonce, block, aad);
         }
+        catch (CbxException ex) when (ex.Code is null)
+        {
+            // 没有码的旧异常：补上块号再抛
+            throw new CbxException(ex.Message, NextChunkIndex, ex);
+        }
         catch (CbxException ex)
         {
-            // 带上块号，界面才能说清是"第几块"出的问题
-            throw new CbxException(ex.Message, NextChunkIndex, ex);
+            // 已有错误码：原样往上抛，不能把 Code 丢掉——
+            // 否则界面永远只能看到中文消息，错误码化就白做了
+            throw new CbxException(ex.Code.GetValueOrDefault(), NextChunkIndex, ex);
         }
         catch (Exception ex)
         {
-            throw new CbxException("数据块认证失败（口令不对，或文件被改动过）。", NextChunkIndex, ex);
+            throw new CbxException(CbxErrorCode.WrongPassword, NextChunkIndex, ex);
         }
 
         DeliveredBytes += plain.Length;
@@ -160,12 +166,12 @@ public sealed class CbxDecryptReader : IPlaintextSource
 
         if (DeliveredBytes != PlainSize)
         {
-            throw new CbxException("解密结果长度与文件头不符，文件已被截断或篡改。");
+            throw new CbxException(CbxErrorCode.TruncatedFile);
         }
 
         if (_source.ReadByte() != -1)
         {
-            throw new CbxException("文件末尾存在多余数据，文件已被篡改。");
+            throw new CbxException(CbxErrorCode.TruncatedFile);
         }
     }
 

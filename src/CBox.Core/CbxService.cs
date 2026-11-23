@@ -52,7 +52,7 @@ public static class Cbx
             // 文件说要密钥文件却没给 → 明确报错，别让用户以为口令错了
             if (header.RequiresKeyFile && (keyFileFingerprint is null || keyFileFingerprint.Length == 0))
             {
-                throw new CbxException("这个文件需要密钥文件才能解密：请同时提供加密时用的那个文件。");
+                throw new CbxException(CbxErrorCode.KeyFileRequired);
             }
 
             // 文件不需要却多给了 → 忽略，保持与旧文件一致的行为
@@ -366,6 +366,7 @@ public static class Cbx
         if (chunkSize < CbxFormat.MinChunkSize || chunkSize > CbxFormat.MaxChunkSize)
         {
             throw new CbxException(
+                CbxErrorCode.InvalidParameter,
                 $"块大小必须在 {CbxFormat.MinChunkSize:N0} ~ {CbxFormat.MaxChunkSize:N0} 字节之间。");
         }
 
@@ -382,7 +383,7 @@ public static class Cbx
 
         if (chunkCount == uint.MaxValue)
         {
-            throw new CbxException("文件过大，超出当前格式支持范围。");
+            throw new CbxException(CbxErrorCode.FileTooLarge);
         }
 
         // 计时从密钥派生之前开始：KDF 才是 Argon2 的主要成本，漏掉它会让报告时间骗人
@@ -530,7 +531,7 @@ public static class Cbx
         {
             CbxLog.Error($"加密无权限 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
             CleanupOnFailure(tempPath, isPlaintext: false);
-            throw new CbxException(AccessDeniedHint(outputPath), ex);
+            throw new CbxException(CbxErrorCode.AccessDenied, ex, outputPath);
         }
         catch (Exception ex)
         {
@@ -631,7 +632,7 @@ public static class Cbx
         {
             CbxLog.Error($"解密无权限 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
             CleanupOnFailure(tempPath, isPlaintext: true);
-            throw new CbxException(AccessDeniedHint(outputPath), ex);
+            throw new CbxException(CbxErrorCode.AccessDenied, ex, outputPath);
         }
         catch (CbxException ex)
         {
@@ -649,7 +650,7 @@ public static class Cbx
         {
             CbxLog.Error($"解密失败 目标={CbxLog.SafePath(outputPath)} 临时={CbxLog.SafePath(tempPath)}", ex);
             CleanupOnFailure(tempPath, isPlaintext: true);
-            throw new CbxException($"解密过程出错：{ex.Message}", ex);
+            throw new CbxException(CbxErrorCode.InvalidParameter, ex, ex.Message);
         }
 
         CbxLog.Info($"解密完成：输出 {CbxLog.SafePath(outputPath)}，耗时 {stopwatch.ElapsedMilliseconds} ms，{DescribeSpeed((long)header.PlainSize, stopwatch.Elapsed)}");
@@ -730,7 +731,7 @@ public static class Cbx
             }
         }
 
-        throw new CbxException("同名文件过多，无法生成输出文件名。");
+        throw new CbxException(CbxErrorCode.InvalidParameter, "同名文件过多，无法生成输出文件名");
     }
 
     private static void TryDelete(string path)

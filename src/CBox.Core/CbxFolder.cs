@@ -61,7 +61,7 @@ public static class CbxFolder
     {
         if (!Directory.Exists(sourceDirectory))
         {
-            throw new CbxException($"文件夹不存在：{sourceDirectory}");
+            throw new CbxException(CbxErrorCode.SourceNotFound, sourceDirectory);
         }
 
         var option = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
@@ -154,6 +154,7 @@ public static class CbxFolder
                 if (succeeded == 0 && failed >= 3)
                 {
                     throw new CbxException(
+                        CbxErrorCode.WrongPassword,
                         $"解密失败（已连续 {failed} 个文件解不开）。" + Environment.NewLine +
                         "通常是口令不对；如果这些文件是用不同口令加密的，请分开处理。",
                         ex);
@@ -249,7 +250,7 @@ public static class CbxFolder
     {
         if (!Directory.Exists(directory))
         {
-            throw new CbxException($"文件夹不存在：{directory}");
+            throw new CbxException(CbxErrorCode.SourceNotFound, directory);
         }
 
         var option = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
@@ -293,7 +294,7 @@ public static class CbxFolder
     {
         if (mode == FolderMode.Archive)
         {
-            throw new CbxException("打包模式尚未实现。");
+            throw new CbxException(CbxErrorCode.InvalidParameter, "打包模式尚未实现");
         }
 
         var files = ListEncryptableFiles(sourceDirectory, recursive);
