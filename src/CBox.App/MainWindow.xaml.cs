@@ -842,9 +842,10 @@ public partial class MainWindow : Window
 
             CbxLog.Info($"加密参数：{profile}");
 
+            using var encPwd = PasswordBytes.From(password);
+
             var report = await Task.Run(() => Cbx.EncryptFile(
-                input, output, Encoding.UTF8.GetBytes(password),
-                profile, progress));
+                input, output, encPwd.Value, profile, progress));
 
             EncProgress.Value = 100;
             EncProgressText.Text = "100%";
@@ -943,7 +944,7 @@ public partial class MainWindow : Window
 
         var profile = BuildEncryptProfile();
         string[] targets = BatchEncrypt.PlanTargets(sources, outputDirectory);
-        byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+        using var pwd = PasswordBytes.From(password);
 
         _busy = true;
         _encStartedAt = DateTime.Now;
@@ -972,7 +973,7 @@ public partial class MainWindow : Window
 
                 try
                 {
-                    await Task.Run(() => Cbx.EncryptFile(source, target, passwordBytes, profile));
+                    await Task.Run(() => Cbx.EncryptFile(source, target, pwd.Value, profile));
                     succeeded++;
                 }
                 catch (Exception ex)
@@ -1097,8 +1098,10 @@ public partial class MainWindow : Window
             // 密钥文件（可选）：文件头要求时才需要
             byte[]? keyFp = ReadDecryptKeyFileFingerprint();
 
+            using var decPwd = PasswordBytes.From(password);
+
             var report = await Task.Run(() => Cbx.DecryptFile(
-                input, output, Encoding.UTF8.GetBytes(password), outputName, progress, keyFp));
+                input, output, decPwd.Value, outputName, progress, keyFp));
 
             DecProgress.Value = 100;
             DecProgressText.Text = "100%";
@@ -2662,7 +2665,7 @@ public partial class MainWindow : Window
             : MakeUniqueDirectory(source + ".cbx");
 
         var profile = BuildEncryptProfile();
-        var passwordBytes = Encoding.UTF8.GetBytes(password);
+        using var pwd = PasswordBytes.From(password);
 
         var reporter = new Progress<(int Done, int Total, string Current)>(p =>
         {
@@ -2687,11 +2690,11 @@ public partial class MainWindow : Window
             {
                 if (archiveMode)
                 {
-                    CbxArchive.Create(source, output, passwordBytes, profile, previewable: !fullLevel);
+                    CbxArchive.Create(source, output, pwd.Value, profile, previewable: !fullLevel);
                     return new FolderReport(1, 1, 0, 0, output);
                 }
 
-                return CbxBatch.Encrypt(source, output, passwordBytes, profile, true, reporter);
+                return CbxBatch.Encrypt(source, output, pwd.Value, profile, true, reporter);
             });
 
             EncProgress.Value = 100;
@@ -2751,7 +2754,7 @@ public partial class MainWindow : Window
         // 原目录还在时自动改成 "xxx (2)"，不再直接拒绝
         output = MakeUniqueDirectory(output);
 
-        var passwordBytes = Encoding.UTF8.GetBytes(password);
+        using var pwd = PasswordBytes.From(password);
 
         var reporter = new Progress<(int Done, int Total, string Current)>(p =>
         {
@@ -2783,7 +2786,7 @@ public partial class MainWindow : Window
 
                     byte[]? keyFp = ReadDecryptKeyFileFingerprint();
                     ConflictChoice? globalChoice = null;
-                    int count = CbxArchive.ExtractAll(source, output, passwordBytes, path =>
+                    int count = CbxArchive.ExtractAll(source, output, pwd.Value, path =>
                     {
                         // 回到主线程弹框：ExtractAll 跑在后台线程
                         return Dispatcher.Invoke(() =>
@@ -2823,7 +2826,7 @@ public partial class MainWindow : Window
                     return new FolderReport(count, count, 0, 0, output, Formats: $"归档 {count} 个条目");
                 }
 
-                return CbxBatch.Decrypt(source, output, passwordBytes, true, reporter);
+                return CbxBatch.Decrypt(source, output, pwd.Value, true, reporter);
             });
 
             DecProgress.Value = 100;
@@ -3018,7 +3021,7 @@ public partial class MainWindow : Window
     /// </summary>
     private async Task ExtractArchiveAsync(string archivePath, string outputDirectory, string password)
     {
-        var passwordBytes = Encoding.UTF8.GetBytes(password);
+        using var pwd = PasswordBytes.From(password);
         ConflictChoice? globalChoice = null;
 
         var progress = new Progress<double>(p =>
@@ -3031,7 +3034,7 @@ public partial class MainWindow : Window
         Directory.CreateDirectory(outputDirectory);
 
         byte[]? keyFp = ReadDecryptKeyFileFingerprint();
-        int count = await Task.Run(() => CbxArchive.ExtractAll(archivePath, outputDirectory, passwordBytes, path =>
+        int count = await Task.Run(() => CbxArchive.ExtractAll(archivePath, outputDirectory, pwd.Value, path =>
         {
             return Dispatcher.Invoke(() =>
             {
@@ -3152,7 +3155,7 @@ public partial class MainWindow : Window
 
         Directory.CreateDirectory(target);
 
-        var passwordBytes = Encoding.UTF8.GetBytes(password);
+        using var pwd = PasswordBytes.From(password);
         var chosen = preview.SelectedEntries;
 
         try
@@ -3161,7 +3164,7 @@ public partial class MainWindow : Window
 
             byte[]? keyFp = ReadDecryptKeyFileFingerprint();
             int count = await Task.Run(() => CbxArchive.ExtractAll(
-                input, target, passwordBytes, null, null, CancellationToken.None, chosen, keyFp));
+                input, target, pwd.Value, null, null, CancellationToken.None, chosen, keyFp));
 
             SetStatus(UiText.Get("archive.done", count, target));
         }
