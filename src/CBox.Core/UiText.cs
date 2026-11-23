@@ -102,6 +102,43 @@ public static class UiText
         }
     }
 
+    /// <summary>
+    /// 取词条并填充多个占位符，缺失时用调用方给的中文兜底。
+    ///
+    /// <para>
+    /// 与 <see cref="GetOrFallback(string, string, string?)"/> 的区别是支持任意个参数——
+    /// 错误码翻译里有的需要两个（比如"版本 {0}，当前支持 {1}"）。
+    /// 取不同名字而不是重载，是为了避免两参调用时产生歧义。
+    /// </para>
+    /// </summary>
+    public static string GetOrFallbackArgs(string key, string fallback, params object?[] args)
+    {
+        EnsureInitialized();
+
+        string? text = Localization.TryGetRaw(key);
+
+        if (text is null)
+        {
+            return args.Length == 0
+                ? fallback
+                : string.Format(CultureInfo.CurrentCulture, fallback, args);
+        }
+
+        if (args.Length == 0)
+        {
+            return text;
+        }
+
+        try
+        {
+            return string.Format(CultureInfo.CurrentCulture, text, args);
+        }
+        catch (FormatException)
+        {
+            return fallback;
+        }
+    }
+
     /// <summary>两个版本直接写在调用点的写法，保留给还没迁到资源表的零散文案。</summary>
     public static string Pick(string general, string professional)
     {

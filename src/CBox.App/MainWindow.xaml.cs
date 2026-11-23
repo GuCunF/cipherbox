@@ -2130,10 +2130,17 @@ public partial class MainWindow : Window
             return friendly + Environment.NewLine + ex.Message;
         }
 
-        // CbxException 的消息本来就是写给用户看的，直接用
-        if (ex is CbxException)
+        // CbxException：有错误码就查词条（这样才能跟着界面语言变），
+        // 没有码的老路径退回它自带的中文消息
+        if (ex is CbxException cbx)
         {
-            return ex.Message;
+            if (cbx.Code is CbxErrorCode code)
+            {
+                // 词条缺失时用中文消息兜底，不会显示成 !err.XXX!
+                return UiText.GetOrFallbackArgs("err." + code, cbx.Message, cbx.Args ?? Array.Empty<object>());
+            }
+
+            return cbx.Message;
         }
 
         // 兜底：不再带类型名，只给原始消息

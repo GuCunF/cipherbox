@@ -44,11 +44,17 @@ public sealed class CbxException : Exception
     }
 
     /// <summary>带错误码 + 数据块序号构造。</summary>
-    public CbxException(CbxErrorCode code, int chunkIndex, params object[] args)
-        : base(Describe(code, args))
+    /// <remarks>
+    /// 这个重载**故意不带 params args**：
+    /// 带了的话 new CbxException(code, 3, 2) 会优先匹配到这里（chunkIndex=3, args=[2]），
+    /// 本意却是传两个参数——曾经因此让「版本不支持」少显示一个版本号。
+    /// 需要同时带块号和参数时，用 CbxException(code, inner, args...) 再单独设块号。
+    /// </remarks>
+    public CbxException(CbxErrorCode code, int chunkIndex, Exception? inner = null)
+        : base(Describe(code, Array.Empty<object>()), inner)
     {
         Code = code;
-        Args = args;
+        Args = Array.Empty<object>();
         ChunkIndex = chunkIndex;
     }
 
